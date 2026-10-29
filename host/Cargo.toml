@@ -15,7 +15,6 @@ parking_lot = "0.12"
 rand = "0.8"
 chrono = "0.4"
 dirs = "5"
-if-addrs = "0.13"
 socket2 = "0.5"
 qrcode = "0.14"
 jpeg-encoder = "0.6"
@@ -29,6 +28,9 @@ features = [
   "Win32_Foundation",
   "Win32_Graphics_Gdi",
   "Win32_Graphics_Dwm",
+  "Win32_NetworkManagement_IpHelper",
+  "Win32_NetworkManagement_Ndis",
+  "Win32_Networking_WinSock",
   "Win32_Storage_Xps",
   "Win32_System_Com",
   "Win32_System_Power",
