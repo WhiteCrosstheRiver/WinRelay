@@ -96,5 +96,10 @@
   "transferFailed": "転送に失敗しました",
   "emptyDir": "空のフォルダー",
   "grantStorage": "次の画面で「すべてのファイルへのアクセス」を許可してから、もう一度お試しください。",
-  "uploadFromPhone": "このスマホからファイルを送る"
+  "uploadFromPhone": "このスマホからファイルを送る",
+  "goBack": "戻る",
+  "goForward": "進む",
+  "addressBarHint": "検索またはURLを入力",
+  "followPc": "PCに追従",
+  "pcScreen": "PC の画面"
 }

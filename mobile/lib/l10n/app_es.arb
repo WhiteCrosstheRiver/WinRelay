@@ -96,5 +96,10 @@
   "transferFailed": "Error de transferencia",
   "emptyDir": "Carpeta vacía",
   "grantStorage": "Concede el acceso a todos los archivos en la siguiente pantalla y vuelve a intentarlo.",
-  "uploadFromPhone": "Enviar un archivo de este teléfono"
+  "uploadFromPhone": "Enviar un archivo de este teléfono",
+  "goBack": "Atrás",
+  "goForward": "Adelante",
+  "addressBarHint": "Buscar o escribir URL",
+  "followPc": "Seguir al PC",
+  "pcScreen": "Pantalla del PC"
 }

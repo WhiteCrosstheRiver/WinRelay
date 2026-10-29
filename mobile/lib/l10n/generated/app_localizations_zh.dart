@@ -310,6 +310,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get uploadFromPhone => '从本手机发送文件';
+
+  @override
+  String get goBack => '后退';
+
+  @override
+  String get goForward => '前进';
+
+  @override
+  String get addressBarHint => '搜索或输入网址';
+
+  @override
+  String get followPc => '跟随电脑';
+
+  @override
+  String get pcScreen => '电脑画面';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -618,4 +633,19 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get uploadFromPhone => '從本手機傳送檔案';
+
+  @override
+  String get goBack => '後退';
+
+  @override
+  String get goForward => '前進';
+
+  @override
+  String get addressBarHint => '搜尋或輸入網址';
+
+  @override
+  String get followPc => '跟隨電腦';
+
+  @override
+  String get pcScreen => '電腦畫面';
 }

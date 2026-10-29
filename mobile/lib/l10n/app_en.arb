@@ -134,5 +134,10 @@
   "transferFailed": "Transfer failed",
   "emptyDir": "Empty folder",
   "grantStorage": "Allow all-files access in the next screen, then try again.",
-  "uploadFromPhone": "Send a file from this phone"
+  "uploadFromPhone": "Send a file from this phone",
+  "goBack": "Back",
+  "goForward": "Forward",
+  "addressBarHint": "Search or type a URL",
+  "followPc": "Follow the PC",
+  "pcScreen": "PC screen"
 }

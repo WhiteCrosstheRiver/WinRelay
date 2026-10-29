@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-10-30 (v0.5.1) — Browser web mode overhaul + extreme saving tiers
+
+Acceptance feedback on the browser takeover drove a rework:
+
+- Browser windows now open in **web mode by default** (the phone renders the
+  page natively; no more squinting at a video stream). The app-bar icon
+  toggles to the raw PC screen for touching the browser chrome itself.
+- The web toolbar is a real browser bar: back / forward / **editable address
+  bar** (a URL loads directly, plain words become a Google search; focusing
+  selects the whole URL so typing replaces it) / follow-PC switch (polls the
+  PC's address bar every 6 s and follows its navigation; typing is never
+  stomped) / reload.
+- Stream tiers went extreme: picture size now 100 / 50 / 25 / **10 / 5 %**
+  (host accepts 0.05-1.0) and frame rate down to **2 fps**. Measured worst
+  case (5 % + grayscale + 2 fps): a frame is ~1.5 KB vs ~128 KB full colour —
+  roughly **80-90× less data**.
+
 ## 2026-10-30 (v0.5.0) — PC controlling PC with strict single-control
 
 The desktop UI gains a **Remote PCs** tab: paste another PC's pairing link,

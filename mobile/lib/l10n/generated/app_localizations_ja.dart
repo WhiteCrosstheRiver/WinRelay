@@ -312,4 +312,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get uploadFromPhone => 'このスマホからファイルを送る';
+
+  @override
+  String get goBack => '戻る';
+
+  @override
+  String get goForward => '進む';
+
+  @override
+  String get addressBarHint => '検索またはURLを入力';
+
+  @override
+  String get followPc => 'PCに追従';
+
+  @override
+  String get pcScreen => 'PC の画面';
 }

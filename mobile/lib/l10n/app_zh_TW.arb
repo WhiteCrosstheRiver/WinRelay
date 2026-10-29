@@ -96,5 +96,10 @@
   "transferFailed": "傳輸失敗",
   "emptyDir": "空資料夾",
   "grantStorage": "請在下一畫面允許「所有檔案存取」,然後重試。",
-  "uploadFromPhone": "從本手機傳送檔案"
+  "uploadFromPhone": "從本手機傳送檔案",
+  "goBack": "後退",
+  "goForward": "前進",
+  "addressBarHint": "搜尋或輸入網址",
+  "followPc": "跟隨電腦",
+  "pcScreen": "電腦畫面"
 }

@@ -181,7 +181,7 @@ impl CaptureParams {
             self.fps.store(f.clamp(1, 60), Ordering::Relaxed);
         }
         if let Some(s) = pic_scale {
-            self.scale_permil.store((s.clamp(0.2, 1.0) * 1000.0) as u32, Ordering::Relaxed);
+            self.scale_permil.store((s.clamp(0.05, 1.0) * 1000.0) as u32, Ordering::Relaxed);
         }
         if let Some(g) = gray {
             self.gray.store(g, Ordering::Relaxed);

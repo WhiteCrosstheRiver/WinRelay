@@ -322,4 +322,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uploadFromPhone => 'Envoyer un fichier de ce téléphone';
+
+  @override
+  String get goBack => 'Retour';
+
+  @override
+  String get goForward => 'Avancer';
+
+  @override
+  String get addressBarHint => 'Rechercher ou saisir une URL';
+
+  @override
+  String get followPc => 'Suivre le PC';
+
+  @override
+  String get pcScreen => 'Écran du PC';
 }

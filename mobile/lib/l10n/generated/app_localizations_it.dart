@@ -320,4 +320,19 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get uploadFromPhone => 'Invia un file da questo telefono';
+
+  @override
+  String get goBack => 'Indietro';
+
+  @override
+  String get goForward => 'Avanti';
+
+  @override
+  String get addressBarHint => 'Cerca o digita un URL';
+
+  @override
+  String get followPc => 'Segui il PC';
+
+  @override
+  String get pcScreen => 'Schermo PC';
 }

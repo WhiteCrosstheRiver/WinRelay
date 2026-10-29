@@ -96,5 +96,10 @@
   "transferFailed": "Übertragung fehlgeschlagen",
   "emptyDir": "Leerer Ordner",
   "grantStorage": "Erlaube den Zugriff auf alle Dateien im nächsten Schritt und versuche es erneut.",
-  "uploadFromPhone": "Datei von diesem Telefon senden"
+  "uploadFromPhone": "Datei von diesem Telefon senden",
+  "goBack": "Zurück",
+  "goForward": "Vor",
+  "addressBarHint": "Suchen oder URL eingeben",
+  "followPc": "Dem PC folgen",
+  "pcScreen": "PC-Bildschirm"
 }

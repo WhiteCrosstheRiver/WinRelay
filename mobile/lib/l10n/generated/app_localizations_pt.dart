@@ -319,4 +319,19 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get uploadFromPhone => 'Enviar um arquivo deste celular';
+
+  @override
+  String get goBack => 'Voltar';
+
+  @override
+  String get goForward => 'Avançar';
+
+  @override
+  String get addressBarHint => 'Pesquisar ou digitar URL';
+
+  @override
+  String get followPc => 'Seguir o PC';
+
+  @override
+  String get pcScreen => 'Tela do PC';
 }

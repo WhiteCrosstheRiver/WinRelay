@@ -157,6 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           trailing: DropdownButton<int>(
             value: s.rxFps,
             items: const [
+              DropdownMenuItem(value: 2, child: Text('2 fps')),
               DropdownMenuItem(value: 5, child: Text('5 fps')),
               DropdownMenuItem(value: 10, child: Text('10 fps')),
               DropdownMenuItem(value: 15, child: Text('15 fps')),
@@ -172,8 +173,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             value: s.rxScale,
             items: const [
               DropdownMenuItem(value: 1.0, child: Text('100%')),
-              DropdownMenuItem(value: 0.75, child: Text('75%')),
               DropdownMenuItem(value: 0.5, child: Text('50%')),
+              DropdownMenuItem(value: 0.25, child: Text('25%')),
+              DropdownMenuItem(value: 0.1, child: Text('10%')),
+              DropdownMenuItem(value: 0.05, child: Text('5%')),
             ],
             onChanged: (v) => _save(() => s.rxScale = v!),
           ),

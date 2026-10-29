@@ -319,4 +319,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get uploadFromPhone => 'Отправить файл с этого телефона';
+
+  @override
+  String get goBack => 'Назад';
+
+  @override
+  String get goForward => 'Вперёд';
+
+  @override
+  String get addressBarHint => 'Поиск или введите адрес';
+
+  @override
+  String get followPc => 'Следовать за ПК';
+
+  @override
+  String get pcScreen => 'Экран ПК';
 }

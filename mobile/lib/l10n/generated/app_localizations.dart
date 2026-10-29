@@ -696,6 +696,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send a file from this phone'**
   String get uploadFromPhone;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get goBack;
+
+  /// No description provided for @goForward.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward'**
+  String get goForward;
+
+  /// No description provided for @addressBarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search or type a URL'**
+  String get addressBarHint;
+
+  /// No description provided for @followPc.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow the PC'**
+  String get followPc;
+
+  /// No description provided for @pcScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'PC screen'**
+  String get pcScreen;
 }
 
 class _AppLocalizationsDelegate

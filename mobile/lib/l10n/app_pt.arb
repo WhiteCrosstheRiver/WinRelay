@@ -96,5 +96,10 @@
   "transferFailed": "Falha na transferência",
   "emptyDir": "Pasta vazia",
   "grantStorage": "Permita o acesso a todos os arquivos na próxima tela e tente novamente.",
-  "uploadFromPhone": "Enviar um arquivo deste celular"
+  "uploadFromPhone": "Enviar um arquivo deste celular",
+  "goBack": "Voltar",
+  "goForward": "Avançar",
+  "addressBarHint": "Pesquisar ou digitar URL",
+  "followPc": "Seguir o PC",
+  "pcScreen": "Tela do PC"
 }

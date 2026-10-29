@@ -96,5 +96,10 @@
   "transferFailed": "전송 실패",
   "emptyDir": "빈 폴더",
   "grantStorage": "다음 화면에서 모든 파일 접근을 허용한 후 다시 시도하세요.",
-  "uploadFromPhone": "이 휴대폰에서 파일 보내기"
+  "uploadFromPhone": "이 휴대폰에서 파일 보내기",
+  "goBack": "뒤로",
+  "goForward": "앞으로",
+  "addressBarHint": "검색 또는 URL 입력",
+  "followPc": "PC 따라가기",
+  "pcScreen": "PC 화면"
 }

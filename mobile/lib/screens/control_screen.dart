@@ -29,8 +29,9 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
   final _compose = TextEditingController();
   late bool _tapMode;
   bool _opened = false;
-  /// Web mode (browser windows only): native phone web view instead of video.
-  bool _webMode = false;
+  /// Browser windows start in web mode (the whole point: the page renders
+  /// natively on the phone); the video stream is one tap away.
+  bool _webMode = true;
   Orientation? _orientation;
   Timer? _rotateDebounce;
   void Function(String)? _prevOnError;
@@ -162,13 +163,12 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
               message: l10n.stealthTip,
               child: const Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Icon(Icons.visibility_off_outlined)),
             ),
-          // Browser windows can be taken over natively: the page opens in a
-          // phone web view and the PC's browser follows the navigation.
+          // Browser windows: web view by default; this toggles to the raw
+          // video stream for touching the browser chrome itself.
           if (isBrowser)
             IconButton(
-              icon: Icon(_webMode ? Icons.web : Icons.public),
-              tooltip: l10n.webMode,
-              isSelected: _webMode,
+              icon: Icon(_webMode ? Icons.desktop_windows_outlined : Icons.language),
+              tooltip: _webMode ? l10n.pcScreen : l10n.webMode,
               onPressed: () => setState(() => _webMode = !_webMode),
             ),
           Padding(

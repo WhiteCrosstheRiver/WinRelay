@@ -96,5 +96,10 @@
   "transferFailed": "Trasferimento non riuscito",
   "emptyDir": "Cartella vuota",
   "grantStorage": "Concedi l'accesso a tutti i file nella schermata successiva, poi riprova.",
-  "uploadFromPhone": "Invia un file da questo telefono"
+  "uploadFromPhone": "Invia un file da questo telefono",
+  "goBack": "Indietro",
+  "goForward": "Avanti",
+  "addressBarHint": "Cerca o digita un URL",
+  "followPc": "Segui il PC",
+  "pcScreen": "Schermo PC"
 }

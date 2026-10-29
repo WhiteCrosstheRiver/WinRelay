@@ -321,4 +321,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get uploadFromPhone => 'Enviar un archivo de este teléfono';
+
+  @override
+  String get goBack => 'Atrás';
+
+  @override
+  String get goForward => 'Adelante';
+
+  @override
+  String get addressBarHint => 'Buscar o escribir URL';
+
+  @override
+  String get followPc => 'Seguir al PC';
+
+  @override
+  String get pcScreen => 'Pantalla del PC';
 }

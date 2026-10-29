@@ -319,4 +319,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uploadFromPhone => 'Send a file from this phone';
+
+  @override
+  String get goBack => 'Back';
+
+  @override
+  String get goForward => 'Forward';
+
+  @override
+  String get addressBarHint => 'Search or type a URL';
+
+  @override
+  String get followPc => 'Follow the PC';
+
+  @override
+  String get pcScreen => 'PC screen';
 }

@@ -111,8 +111,8 @@ class AppSettings {
 
   /// Stream tuning for the received picture (saves bandwidth):
   /// capture fps, picture downscale (1.0 = full), grayscale mode.
-  int rxFps = 15; // 5 | 10 | 15 | 30
-  double rxScale = 1.0; // 1.0 | 0.75 | 0.5
+  int rxFps = 15; // 2 | 5 | 10 | 15 | 30
+  double rxScale = 1.0; // 1.0 | 0.5 | 0.25 | 0.1 | 0.05
   bool rxGray = false;
 
   /// PC window logical size = phone size x this. Bigger text on the phone = smaller PC window.

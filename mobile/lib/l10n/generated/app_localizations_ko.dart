@@ -311,4 +311,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get uploadFromPhone => '이 휴대폰에서 파일 보내기';
+
+  @override
+  String get goBack => '뒤로';
+
+  @override
+  String get goForward => '앞으로';
+
+  @override
+  String get addressBarHint => '검색 또는 URL 입력';
+
+  @override
+  String get followPc => 'PC 따라가기';
+
+  @override
+  String get pcScreen => 'PC 화면';
 }
