@@ -16,3 +16,6 @@ host/tests/*.ps1
 
 # transient nested layout from the zip (moved to flat after first build)
 /winrelay/
+
+# APKs ship from local dist/ or GitHub Releases, not git (65MB > 50MB limit)
+/dist/
