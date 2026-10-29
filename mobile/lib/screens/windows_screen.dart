@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../connection.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../models.dart';
 import '../store.dart';
 import 'control_screen.dart';
@@ -55,15 +56,16 @@ class _WindowsScreenState extends State<WindowsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.pc.name),
         actions: [
           if (conn.state == ConnState.ready)
-            IconButton(icon: const Icon(Icons.refresh), tooltip: 'Refresh', onPressed: _refresh),
+            IconButton(icon: const Icon(Icons.refresh), tooltip: l10n.refresh, onPressed: _refresh),
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Settings',
+            tooltip: l10n.settings,
             onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
           ),
         ],
@@ -71,19 +73,24 @@ class _WindowsScreenState extends State<WindowsScreen> {
       body: switch (conn.state) {
         ConnState.connecting => _centered(
             icon: null,
-            title: 'Connecting to ${widget.pc.name}…',
+            title: l10n.connectingTo(widget.pc.name),
             body: null,
           ),
         ConnState.waitingApproval => _centered(
             icon: Icons.verified_user_outlined,
-            title: 'Approve this phone on your PC',
-            body: 'Open WinRelay on the PC and click Approve next to "${Store.I.settings.deviceName}".',
+            title: l10n.approveTitle,
+            body: l10n.approveBody(Store.I.settings.deviceName),
           ),
         ConnState.failed => _centered(
             icon: Icons.cloud_off_outlined,
-            title: "Can't connect",
-            body: conn.message,
-            action: FilledButton(onPressed: conn.connect, child: const Text('Try again')),
+            title: l10n.cantConnect,
+            body: switch (conn.failKind) {
+              'unreachable' => l10n.errUnreachable(widget.pc.name),
+              'dropped' => l10n.errDropped(widget.pc.name),
+              'server' => conn.serverMessage,
+              _ => null,
+            },
+            action: FilledButton(onPressed: conn.connect, child: Text(l10n.connect)),
           ),
         ConnState.ready => _list(context),
       },
@@ -110,6 +117,7 @@ class _WindowsScreenState extends State<WindowsScreen> {
   }
 
   Widget _list(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final q = _query.toLowerCase();
     final items = conn.windows
         .where((w) => q.isEmpty || w.title.toLowerCase().contains(q) || w.app.toLowerCase().contains(q))
@@ -125,15 +133,15 @@ class _WindowsScreenState extends State<WindowsScreen> {
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
         child: SearchBar(
-          hintText: 'Search windows',
+          hintText: l10n.searchWindows,
           leading: const Icon(Icons.search),
           elevation: const WidgetStatePropertyAll(0),
           onChanged: (v) => setState(() => _query = v),
         ),
       ),
       SwitchListTile(
-        title: const Text('Hide the window on the PC'),
-        subtitle: const Text("Stealth: the PC's screen won't show it while you control it"),
+        title: Text(l10n.hideOnPc),
+        subtitle: Text(l10n.hideOnPcSub),
         value: _stealth,
         onChanged: (v) => setState(() => _stealth = v),
       ),
@@ -142,8 +150,8 @@ class _WindowsScreenState extends State<WindowsScreen> {
         child: RefreshIndicator(
           onRefresh: _refresh,
           child: items.isEmpty
-              ? ListView(children: const [
-                  Padding(padding: EdgeInsets.all(32), child: Center(child: Text('No windows match. Pull down to refresh.'))),
+              ? ListView(children: [
+                  Padding(padding: const EdgeInsets.all(32), child: Center(child: Text(l10n.noMatch))),
                 ])
               : ListView(children: [
                   for (final entry in groups.entries) ...[

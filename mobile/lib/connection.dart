@@ -26,7 +26,10 @@ class HostConnection extends ChangeNotifier {
   Timer? _ping;
 
   ConnState state = ConnState.connecting;
-  String? message;
+  /// Why we are in the failed state, so the UI can show a localized message:
+  /// 'unreachable' | 'dropped' | 'server'.
+  String? failKind;
+  String? serverMessage;
   String hostName = '';
 
   List<WinInfo> windows = [];
@@ -54,7 +57,8 @@ class HostConnection extends ChangeNotifier {
   Future<void> connect() async {
     await _teardown();
     state = ConnState.connecting;
-    message = null;
+    failKind = null;
+    serverMessage = null;
     _notify();
     try {
       final ch = WebSocketChannel.connect(pc.wsUri);
@@ -72,7 +76,7 @@ class HostConnection extends ChangeNotifier {
       _ping = Timer.periodic(const Duration(seconds: 10), (_) => _send({'t': 'ping'}));
     } catch (_) {
       state = ConnState.failed;
-      message = "Couldn't reach ${pc.name}. Check that the PC is on, WinRelay is running, and you're on a network that can reach it.";
+      failKind = 'unreachable';
       _notify();
     }
   }
@@ -81,7 +85,7 @@ class HostConnection extends ChangeNotifier {
     if (_disposed) return;
     if (state != ConnState.failed) {
       state = ConnState.failed;
-      message ??= 'The connection to ${pc.name} dropped.';
+      failKind ??= 'dropped';
     }
     _notify();
   }
@@ -112,7 +116,8 @@ class HostConnection extends ChangeNotifier {
       case 'welcome':
         state = ConnState.ready;
         hostName = m['host'] as String? ?? '';
-        message = null;
+        failKind = null;
+        serverMessage = null;
         list();
         if (_reopen != null) _send(_reopen!);
       case 'pending':
@@ -123,8 +128,9 @@ class HostConnection extends ChangeNotifier {
         Store.I.savePc(pc);
       case 'denied':
         state = ConnState.failed;
-        message = m['reason'] as String?;
-        if (message != null && message!.contains('Pair it again')) {
+        failKind = 'server';
+        serverMessage = m['reason'] as String?;
+        if (serverMessage != null && serverMessage!.contains('Pair it again')) {
           pc.secret = null; // the PC forgot us; the next attempt needs a fresh link
         }
       case 'windows':
@@ -167,10 +173,40 @@ class HostConnection extends ChangeNotifier {
     thumbs.clear();
   }
 
-  void open(int id, {required bool stealth, required Map<String, double> viewport, required double scale}) {
-    _reopen = {'t': 'open', 'id': id, 'stealth': stealth, 'viewport': viewport, 'scale': scale};
+  /// Opens a window. `rxFps`/`rxScale`/`rxGray` are the phone's stream-tuning
+  /// settings; the host keeps applying them on every reconnect (they ride in
+  /// the open request, which is replayed after a drop).
+  void open(
+    int id, {
+    required bool stealth,
+    required Map<String, double> viewport,
+    required double scale,
+    int? rxFps,
+    double? rxScale,
+    bool? rxGray,
+  }) {
+    _reopen = {
+      't': 'open',
+      'id': id,
+      'stealth': stealth,
+      'viewport': viewport,
+      'scale': scale,
+      if (rxFps != null) 'fps': rxFps,
+      if (rxScale != null) 'pic_scale': rxScale,
+      if (rxGray != null) 'gray': rxGray,
+    };
     openId = id;
     _send(_reopen!);
+  }
+
+  /// Live retune of the stream while a session runs.
+  void setStream({int? fps, double? picScale, bool? gray}) {
+    _send({
+      't': 'stream',
+      if (fps != null) 'fps': fps,
+      if (picScale != null) 'pic_scale': picScale,
+      if (gray != null) 'gray': gray,
+    });
   }
 
   void setViewport(Map<String, double> viewport) {

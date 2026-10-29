@@ -86,6 +86,14 @@ class AppSettings {
   bool keepScreenOn = true;
   bool haptics = true;
   List<String> quickKeys = ['esc', 'tab', 'shift_tab', 'ctrl_c', 'up', 'down', 'left', 'right', 'shift_enter', 'paste'];
+  String themeMode = 'system'; // system | light | dark
+  String language = 'system'; // system | BCP47 code with '_' separator, e.g. zh_TW
+
+  /// Stream tuning for the received picture (saves bandwidth):
+  /// capture fps, picture downscale (1.0 = full), grayscale mode.
+  int rxFps = 15; // 5 | 10 | 15 | 30
+  double rxScale = 1.0; // 1.0 | 0.75 | 0.5
+  bool rxGray = false;
 
   /// PC window logical size = phone size x this. Bigger text on the phone = smaller PC window.
   double get windowScale => 1.25 / textSize;
@@ -100,6 +108,11 @@ class AppSettings {
         'keepScreenOn': keepScreenOn,
         'haptics': haptics,
         'quickKeys': quickKeys,
+        'themeMode': themeMode,
+        'language': language,
+        'rxFps': rxFps,
+        'rxScale': rxScale,
+        'rxGray': rxGray,
       };
 
   static AppSettings fromJson(Map<String, dynamic> j) {
@@ -113,6 +126,11 @@ class AppSettings {
     s.keepScreenOn = j['keepScreenOn'] as bool? ?? s.keepScreenOn;
     s.haptics = j['haptics'] as bool? ?? s.haptics;
     s.quickKeys = (j['quickKeys'] as List?)?.cast<String>() ?? s.quickKeys;
+    s.themeMode = j['themeMode'] as String? ?? s.themeMode;
+    s.language = j['language'] as String? ?? s.language;
+    s.rxFps = (j['rxFps'] as num?)?.toInt() ?? s.rxFps;
+    s.rxScale = (j['rxScale'] as num?)?.toDouble() ?? s.rxScale;
+    s.rxGray = j['rxGray'] as bool? ?? s.rxGray;
     return s;
   }
 }

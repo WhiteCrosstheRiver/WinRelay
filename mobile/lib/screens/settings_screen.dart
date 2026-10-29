@@ -1,7 +1,24 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../models.dart';
 import '../store.dart';
+import '../widgets/quick_keys.dart';
+
+/// Languages offered in the dropdown, in their own names.
+const _languages = <String, String>{
+  'en': 'English',
+  'zh': '简体中文',
+  'zh_TW': '繁體中文',
+  'ja': '日本語',
+  'ko': '한국어',
+  'es': 'Español',
+  'fr': 'Français',
+  'de': 'Deutsch',
+  'it': 'Italiano',
+  'pt': 'Português (Brasil)',
+  'ru': 'Русский',
+};
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -19,15 +36,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _editName() async {
+    final l10n = AppLocalizations.of(context)!;
     final c = TextEditingController(text: s.deviceName);
     final name = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Phone name'),
+        title: Text(l10n.phoneName),
         content: TextField(controller: c, autofocus: true, maxLength: 40),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, c.text.trim()), child: const Text('Save')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, c.text.trim()), child: Text(l10n.save)),
         ],
       ),
     );
@@ -41,57 +59,84 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: ListView(children: [
-        _header('This phone'),
+        _header(l10n.secThisPhone),
         ListTile(
-          title: const Text('Phone name'),
-          subtitle: Text('${s.deviceName} · shown on the PC when you pair'),
+          title: Text(l10n.phoneName),
+          subtitle: Text('${s.deviceName} · ${l10n.phoneNameSub}'),
           onTap: _editName,
         ),
 
-        _header('Touch and typing'),
+        _header(l10n.secAppearance),
         ListTile(
-          title: const Text('Default touch mode'),
-          subtitle: const Text('View never clicks on the PC; Tap turns taps into clicks'),
+          title: Text(l10n.theme),
+          trailing: SegmentedButton<String>(
+            showSelectedIcon: false,
+            segments: [
+              ButtonSegment(value: 'system', label: Text(l10n.themeSystem)),
+              ButtonSegment(value: 'light', label: Text(l10n.themeLight)),
+              ButtonSegment(value: 'dark', label: Text(l10n.themeDark)),
+            ],
+            selected: {s.themeMode},
+            onSelectionChanged: (v) => _save(() => s.themeMode = v.first),
+          ),
+        ),
+        ListTile(
+          title: Text(l10n.language),
+          trailing: DropdownButton<String>(
+            value: _languages.containsKey(s.language) ? s.language : 'system',
+            items: [
+              DropdownMenuItem(value: 'system', child: Text(l10n.languageSystem)),
+              for (final e in _languages.entries) DropdownMenuItem(value: e.key, child: Text(e.value)),
+            ],
+            onChanged: (v) => _save(() => s.language = v!),
+          ),
+        ),
+
+        _header(l10n.secTouch),
+        ListTile(
+          title: Text(l10n.defaultTouch),
+          subtitle: Text(l10n.defaultTouchSub),
           trailing: SegmentedButton<bool>(
             showSelectedIcon: false,
-            segments: const [ButtonSegment(value: false, label: Text('View')), ButtonSegment(value: true, label: Text('Tap'))],
+            segments: [ButtonSegment(value: false, label: Text(l10n.viewMode)), ButtonSegment(value: true, label: Text(l10n.tapMode))],
             selected: {s.tapModeDefault},
             onSelectionChanged: (v) => _save(() => s.tapModeDefault = v.first),
           ),
         ),
         SwitchListTile(
-          title: const Text('Compose mode'),
-          subtitle: const Text('Write a whole message first, with autocorrect, then send it. Off: every key goes to the PC as you type.'),
+          title: Text(l10n.composeMode),
+          subtitle: Text(l10n.composeModeSub),
           value: s.composeMode,
           onChanged: (v) => _save(() => s.composeMode = v),
         ),
         ListTile(
-          title: const Text('Return key sends'),
+          title: Text(l10n.returnSends),
           trailing: DropdownButton<String>(
             value: s.enterKey,
-            items: const [
-              DropdownMenuItem(value: 'enter', child: Text('Enter')),
-              DropdownMenuItem(value: 'ctrl_enter', child: Text('Ctrl+Enter')),
+            items: [
+              DropdownMenuItem(value: 'enter', child: Text(l10n.enterKeyEnter)),
+              DropdownMenuItem(value: 'ctrl_enter', child: Text(l10n.enterKeyCtrlEnter)),
             ],
             onChanged: (v) => _save(() => s.enterKey = v!),
           ),
         ),
         SwitchListTile(
-          title: const Text('Vibrate on quick keys'),
+          title: Text(l10n.vibrate),
           value: s.haptics,
           onChanged: (v) => _save(() => s.haptics = v),
         ),
 
-        _header('Quick keys'),
+        _header(l10n.secQuickKeys),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Wrap(spacing: 8, runSpacing: 4, children: [
             for (final e in allQuickKeys.entries)
               FilterChip(
-                label: Text(e.value),
+                label: Text(quickKeyLabel(l10n, e.key)),
                 selected: s.quickKeys.contains(e.key),
                 onSelected: (on) => _save(() {
                   if (on) {
@@ -105,9 +150,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ]),
         ),
 
-        _header('Picture'),
+        _header(l10n.secStream),
         ListTile(
-          title: const Text('Text size'),
+          title: Text(l10n.rxFps),
+          subtitle: Text(l10n.rxFpsSub),
+          trailing: DropdownButton<int>(
+            value: s.rxFps,
+            items: const [
+              DropdownMenuItem(value: 5, child: Text('5 fps')),
+              DropdownMenuItem(value: 10, child: Text('10 fps')),
+              DropdownMenuItem(value: 15, child: Text('15 fps')),
+              DropdownMenuItem(value: 30, child: Text('30 fps')),
+            ],
+            onChanged: (v) => _save(() => s.rxFps = v!),
+          ),
+        ),
+        ListTile(
+          title: Text(l10n.rxScale),
+          subtitle: Text(l10n.rxScaleSub),
+          trailing: DropdownButton<double>(
+            value: s.rxScale,
+            items: const [
+              DropdownMenuItem(value: 1.0, child: Text('100%')),
+              DropdownMenuItem(value: 0.75, child: Text('75%')),
+              DropdownMenuItem(value: 0.5, child: Text('50%')),
+            ],
+            onChanged: (v) => _save(() => s.rxScale = v!),
+          ),
+        ),
+        SwitchListTile(
+          title: Text(l10n.rxGray),
+          subtitle: Text(l10n.rxGraySub),
+          value: s.rxGray,
+          onChanged: (v) => _save(() => s.rxGray = v),
+        ),
+
+        _header(l10n.secPicture),
+        ListTile(
+          title: Text(l10n.textSize),
           subtitle: Slider(
             value: s.textSize,
             min: 0.75,
@@ -119,13 +199,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           trailing: Text('${(s.textSize * 100).round()}%'),
         ),
         SwitchListTile(
-          title: const Text('Hide windows on the PC by default'),
-          subtitle: const Text('Stealth. You can still switch it per window.'),
+          title: Text(l10n.stealthDefault),
+          subtitle: Text(l10n.stealthDefaultSub),
           value: s.stealthDefault,
           onChanged: (v) => _save(() => s.stealthDefault = v),
         ),
         SwitchListTile(
-          title: const Text('Keep this screen on while controlling'),
+          title: Text(l10n.keepScreenOn),
           value: s.keepScreenOn,
           onChanged: (v) => _save(() => s.keepScreenOn = v),
         ),

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../connection.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../models.dart';
 import '../store.dart';
 import '../widgets/live_keyboard.dart';
@@ -62,7 +63,15 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
     if (!_opened) {
       _opened = true;
       _orientation = o;
-      conn.open(widget.win.id, stealth: widget.stealth, viewport: _viewport(), scale: settings.windowScale);
+      conn.open(
+        widget.win.id,
+        stealth: widget.stealth,
+        viewport: _viewport(),
+        scale: settings.windowScale,
+        rxFps: settings.rxFps,
+        rxScale: settings.rxScale,
+        rxGray: settings.rxGray,
+      );
     } else if (o != _orientation) {
       // Phone rotated: reshape the PC window. Keyboard show/hide is ignored on purpose.
       _orientation = o;
@@ -136,6 +145,7 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final title = conn.openTitle.isNotEmpty ? conn.openTitle : widget.win.title;
     final reconnecting = conn.state != ConnState.ready;
 
@@ -144,17 +154,17 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
         title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
         actions: [
           if (widget.stealth)
-            const Tooltip(
-              message: 'Stealth: hidden on the PC',
-              child: Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Icon(Icons.visibility_off_outlined)),
+            Tooltip(
+              message: l10n.stealthTip,
+              child: const Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Icon(Icons.visibility_off_outlined)),
             ),
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: SegmentedButton<bool>(
               showSelectedIcon: false,
-              segments: const [
-                ButtonSegment(value: false, label: Text('View'), tooltip: 'Look only: taps do nothing on the PC'),
-                ButtonSegment(value: true, label: Text('Tap'), tooltip: 'Taps click on the PC'),
+              segments: [
+                ButtonSegment(value: false, label: Text(l10n.viewMode), tooltip: l10n.viewTip),
+                ButtonSegment(value: true, label: Text(l10n.tapMode), tooltip: l10n.tapTip),
               ],
               selected: {_tapMode},
               onSelectionChanged: (v) => setState(() => _tapMode = v.first),
@@ -164,12 +174,12 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
       ),
       body: Column(children: [
         if (reconnecting)
-          _Notice(color: scheme.secondaryContainer, text: 'Reconnecting to the PC…'),
+          _Notice(color: scheme.secondaryContainer, text: l10n.reconnecting),
         if (conn.locked)
-          _Notice(color: scheme.errorContainer, text: 'The PC is locked. Unlock it to keep controlling this window.'),
+          _Notice(color: scheme.errorContainer, text: l10n.pcLocked),
         Expanded(child: VideoView(conn: conn, tapMode: _tapMode)),
         if (settings.composeMode)
-          _ComposeBar(controller: _compose, onSend: _sendCompose)
+          _ComposeBar(controller: _compose, onSend: _sendCompose, hint: l10n.composeHint, sendTip: l10n.sendWithEnter)
         else
           LiveKeyboard(
             focusNode: _kbFocus,
@@ -206,9 +216,11 @@ class _Notice extends StatelessWidget {
 
 /// Compose mode: write the whole message first (with autocorrect), then send it with Enter.
 class _ComposeBar extends StatelessWidget {
-  const _ComposeBar({required this.controller, required this.onSend});
+  const _ComposeBar({required this.controller, required this.onSend, required this.hint, required this.sendTip});
   final TextEditingController controller;
   final VoidCallback onSend;
+  final String hint;
+  final String sendTip;
 
   @override
   Widget build(BuildContext context) {
@@ -221,15 +233,15 @@ class _ComposeBar extends StatelessWidget {
             minLines: 1,
             maxLines: 5,
             keyboardType: TextInputType.multiline,
-            decoration: const InputDecoration(
-              hintText: 'Write a message for this window',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: hint,
+              border: const OutlineInputBorder(),
               isDense: true,
             ),
           ),
         ),
         const SizedBox(width: 8),
-        IconButton.filled(icon: const Icon(Icons.send), tooltip: 'Send with Enter', onPressed: onSend),
+        IconButton.filled(icon: const Icon(Icons.send), tooltip: sendTip, onPressed: onSend),
       ]),
     );
   }

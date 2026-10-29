@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../models.dart';
 import '../store.dart';
 import 'pcs_screen.dart';
@@ -26,7 +27,7 @@ class _PairScreenState extends State<PairScreen> {
     if (_done) return;
     final pc = parsePairLink(raw);
     if (pc == null) {
-      setState(() => _error = "That isn't a WinRelay link. Copy it again from WinRelay on the PC.");
+      setState(() => _error = AppLocalizations.of(context)!.pairBadLink);
       return;
     }
     _done = true;
@@ -48,12 +49,13 @@ class _PairScreenState extends State<PairScreen> {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Pair a PC'), automaticallyImplyLeading: !widget.first),
+      appBar: AppBar(title: Text(l10n.pairPc), automaticallyImplyLeading: !widget.first),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Text('Scan the code shown in WinRelay on your PC.', style: t.titleMedium),
+          Text(l10n.pairScanHint, style: t.titleMedium),
           const SizedBox(height: 12),
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
@@ -68,23 +70,23 @@ class _PairScreenState extends State<PairScreen> {
             ),
           ),
           const SizedBox(height: 28),
-          Text('Or paste the link', style: t.titleMedium),
+          Text(l10n.pairOrPaste, style: t.titleMedium),
           const SizedBox(height: 8),
           TextField(
             controller: _link,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              hintText: 'winrelay://pair?…',
+              hintText: l10n.pairLinkHint,
               errorText: _error,
-              suffixIcon: IconButton(icon: const Icon(Icons.content_paste), tooltip: 'Paste', onPressed: _paste),
+              suffixIcon: IconButton(icon: const Icon(Icons.content_paste), tooltip: l10n.paste, onPressed: _paste),
             ),
             onChanged: (_) => setState(() => _error = null),
           ),
           const SizedBox(height: 12),
-          FilledButton(onPressed: () => _use(_link.text), child: const Text('Connect')),
+          FilledButton(onPressed: () => _use(_link.text), child: Text(l10n.connect)),
           const SizedBox(height: 20),
           Text(
-            'After connecting, click Approve on the PC. Each link works once.',
+            l10n.pairFooter,
             style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
         ],

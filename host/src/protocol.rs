@@ -48,6 +48,23 @@ pub enum ClientMsg {
         /// PC window logical size = phone logical size x scale.
         #[serde(default = "default_scale")]
         scale: f32,
+        /// Stream overrides, applied for this session (phone saves bandwidth):
+        /// capture frame rate, picture downscale (1.0 = full size), grayscale.
+        #[serde(default)]
+        fps: Option<u32>,
+        #[serde(default)]
+        pic_scale: Option<f32>,
+        #[serde(default)]
+        gray: Option<bool>,
+    },
+    /// Live stream retune while a session is running. Any subset can be sent.
+    Stream {
+        #[serde(default)]
+        fps: Option<u32>,
+        #[serde(default)]
+        pic_scale: Option<f32>,
+        #[serde(default)]
+        gray: Option<bool>,
     },
     Viewport { viewport: Viewport },
     Close,

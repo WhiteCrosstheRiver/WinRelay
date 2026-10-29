@@ -408,6 +408,8 @@ async fn authenticate(s: &Shared, out: &mpsc::Sender<Message>, hello: ClientMsg)
 struct Live {
     session: session::Session,
     stop: Arc<AtomicBool>,
+    /// Shared with the capture thread; the phone retunes fps/scale/gray here.
+    params: Arc<capture::CaptureParams>,
     capture: Option<std::thread::JoinHandle<()>>,
     activity: Activity,
 }
@@ -530,7 +532,7 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                             if let Some(b) = pic { let _ = out2.send(Message::Binary(b)).await; }
                         });
                     }
-                    ClientMsg::Open { id, stealth, viewport, scale } => {
+                    ClientMsg::Open { id, stealth, viewport, scale, fps, pic_scale, gray } => {
                         if let Some(l) = live.take() { end_live(&s, l, &input_tx); }
                         let cfg = s.cfg.lock().clone();
                         if !winlist::is_listable(id, &cfg.hidden_apps) {
@@ -546,9 +548,11 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                         match session::begin(id, viewport, scale.clamp(0.5, 3.0), &opts) {
                             Ok(sess) => {
                                 let stop = Arc::new(AtomicBool::new(false));
+                                let params = capture::CaptureParams::new(cfg.max_fps, cfg.jpeg_quality);
+                                params.set(fps, pic_scale, gray);
                                 let cap = capture::spawn(
                                     id,
-                                    CaptureOptions { fps: cfg.max_fps, quality: cfg.jpeg_quality, keep_awake: cfg.keep_awake },
+                                    CaptureOptions { params: params.clone(), keep_awake: cfg.keep_awake },
                                     frame_tx.clone(),
                                     stop.clone(),
                                 );
@@ -572,9 +576,14 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                                 };
                                 tx(&out, HostMsg::Opened { id, title: sess.title.clone(), stealth }).await;
                                 was_locked = false;
-                                live = Some(Live { session: sess, stop, capture: Some(cap), activity });
+                                live = Some(Live { session: sess, stop, params, capture: Some(cap), activity });
                             }
                             Err(e) => tx(&out, HostMsg::Error { msg: e.to_string() }).await,
+                        }
+                    }
+                    ClientMsg::Stream { fps, pic_scale, gray } => {
+                        if let Some(l) = &live {
+                            l.params.set(fps, pic_scale, gray);
                         }
                     }
                     ClientMsg::Viewport { viewport } => {

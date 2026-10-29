@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../models.dart';
 import '../store.dart';
 import 'pair_screen.dart';
@@ -36,15 +37,16 @@ class _PcsScreenState extends State<PcsScreen> {
       Navigator.of(context).push(MaterialPageRoute(builder: (_) => WindowsScreen(pc: pc)));
 
   Future<void> _rename(PcEntry pc) async {
+    final l10n = AppLocalizations.of(context)!;
     final c = TextEditingController(text: pc.name);
     final name = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Rename PC'),
+        title: Text(l10n.renamePc),
         content: TextField(controller: c, autofocus: true),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, c.text.trim()), child: const Text('Save')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, c.text.trim()), child: Text(l10n.save)),
         ],
       ),
     );
@@ -56,20 +58,21 @@ class _PcsScreenState extends State<PcsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final pcs = Store.I.pcs;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your PCs'),
+        title: Text(l10n.pcsTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Settings',
+            tooltip: l10n.settings,
             onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
           ),
         ],
       ),
       body: pcs.isEmpty
-          ? const Center(child: Text('Pair a PC to get started.'))
+          ? Center(child: Text(l10n.pcsEmpty))
           : ListView.separated(
               itemCount: pcs.length,
               separatorBuilder: (_, __) => const Divider(height: 1),
@@ -78,16 +81,18 @@ class _PcsScreenState extends State<PcsScreen> {
                 return ListTile(
                   leading: const Icon(Icons.desktop_windows_outlined),
                   title: Text(pc.name),
-                  subtitle: Text(pc.isPaired ? '${pc.host} · port ${pc.port}' : 'Waiting for approval on the PC'),
+                  subtitle: Text(pc.isPaired
+                      ? l10n.pairedSubtitle(pc.host, pc.port.toString())
+                      : l10n.waitingApprovalSub),
                   onTap: () => _open(pc),
                   trailing: PopupMenuButton<String>(
                     onSelected: (v) async {
                       if (v == 'rename') await _rename(pc);
                       if (v == 'remove') await Store.I.removePc(pc);
                     },
-                    itemBuilder: (_) => const [
-                      PopupMenuItem(value: 'rename', child: Text('Rename')),
-                      PopupMenuItem(value: 'remove', child: Text('Remove')),
+                    itemBuilder: (_) => [
+                      PopupMenuItem(value: 'rename', child: Text(l10n.rename)),
+                      PopupMenuItem(value: 'remove', child: Text(l10n.remove)),
                     ],
                   ),
                 );
@@ -95,7 +100,7 @@ class _PcsScreenState extends State<PcsScreen> {
             ),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.qr_code_scanner),
-        label: const Text('Pair a PC'),
+        label: Text(l10n.pairPc),
         onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PairScreen())),
       ),
     );

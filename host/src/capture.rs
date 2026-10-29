@@ -3,7 +3,7 @@
 //! Upgrade path: Windows Graphics Capture + hardware H.264 (see README).
 
 use crate::{power, protocol};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU32, AtomicU8, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use windows::Win32::Foundation::{HANDLE, HWND, RECT};
@@ -107,28 +107,86 @@ pub fn downscale(f: &Frame, max_w: u32) -> Frame {
     if f.w <= max_w {
         return Frame { w: f.w, h: f.h, bgra: f.bgra.clone() };
     }
-    let k = (f.w + max_w - 1) / max_w;
-    let nw = f.w / k;
-    let nh = (f.h / k).max(1);
-    let mut out = vec![0u8; (nw * nh * 4) as usize];
-    for y in 0..nh {
-        for x in 0..nw {
-            let mut acc = [0u32; 4];
-            for dy in 0..k {
-                for dx in 0..k {
-                    let i = (((y * k + dy) * f.w + (x * k + dx)) * 4) as usize;
+    downscale_to_width(f, max_w)
+}
+
+/// Area-average downscale to an exact target width (any fraction, not just
+/// integer steps), so the phone can pick 75% or 50% of the picture.
+pub fn downscale_to_width(f: &Frame, target_w: u32) -> Frame {
+    if target_w == 0 || f.w <= target_w {
+        return Frame { w: f.w, h: f.h, bgra: f.bgra.clone() };
+    }
+    let nw = target_w.max(1) as usize;
+    let nh = (((f.h as u64) * nw as u64) / f.w as u64).max(1) as usize;
+    let (w, h) = (f.w as usize, f.h as usize);
+    let mut out = vec![0u8; nw * nh * 4];
+    for oy in 0..nh {
+        let sy0 = oy * h / nh;
+        let sy1 = ((oy + 1) * h / nh).max(sy0 + 1);
+        for ox in 0..nw {
+            let sx0 = ox * w / nw;
+            let sx1 = ((ox + 1) * w / nw).max(sx0 + 1);
+            let mut acc = [0u64; 4];
+            for sy in sy0..sy1 {
+                let row = sy * w * 4;
+                for sx in sx0..sx1 {
+                    let i = row + sx * 4;
                     for c in 0..4 {
-                        acc[c] += f.bgra[i + c] as u32;
+                        acc[c] += f.bgra[i + c] as u64;
                     }
                 }
             }
-            let o = ((y * nw + x) * 4) as usize;
+            let n = ((sy1 - sy0) * (sx1 - sx0)) as u64;
+            let o = (oy * nw + ox) * 4;
             for c in 0..4 {
-                out[o + c] = (acc[c] / (k * k)) as u8;
+                out[o + c] = (acc[c] / n) as u8;
             }
         }
     }
-    Frame { w: nw, h: nh, bgra: out }
+    Frame { w: nw as u32, h: nh as u32, bgra: out }
+}
+
+/// BT.601 luma in place; the alpha byte is left untouched.
+pub fn to_gray(bgra: &mut [u8]) {
+    for px in bgra.chunks_exact_mut(4) {
+        let l = (0.299 * px[2] as f32 + 0.587 * px[1] as f32 + 0.114 * px[0] as f32) as u8;
+        px[0] = l;
+        px[1] = l;
+        px[2] = l;
+    }
+}
+
+/// Stream settings the phone can retune at any time. Shared with the capture
+/// thread so changes apply from the next frame without a restart.
+pub struct CaptureParams {
+    pub fps: AtomicU32,
+    pub quality: AtomicU8,
+    /// Picture width as permille of the window's own width (1000 = full).
+    pub scale_permil: AtomicU32,
+    pub gray: AtomicBool,
+}
+
+impl CaptureParams {
+    pub fn new(fps: u32, quality: u8) -> Arc<Self> {
+        Arc::new(Self {
+            fps: AtomicU32::new(fps.clamp(1, 60)),
+            quality: AtomicU8::new(quality),
+            scale_permil: AtomicU32::new(1000),
+            gray: AtomicBool::new(false),
+        })
+    }
+
+    pub fn set(&self, fps: Option<u32>, pic_scale: Option<f32>, gray: Option<bool>) {
+        if let Some(f) = fps {
+            self.fps.store(f.clamp(1, 60), Ordering::Relaxed);
+        }
+        if let Some(s) = pic_scale {
+            self.scale_permil.store((s.clamp(0.2, 1.0) * 1000.0) as u32, Ordering::Relaxed);
+        }
+        if let Some(g) = gray {
+            self.gray.store(g, Ordering::Relaxed);
+        }
+    }
 }
 
 /// JPEG with 4:4:4 chroma, which keeps coloured text crisp.
@@ -142,13 +200,13 @@ pub fn encode(f: &Frame, quality: u8) -> anyhow::Result<Vec<u8>> {
 }
 
 pub struct CaptureOptions {
-    pub fps: u32,
-    pub quality: u8,
+    pub params: Arc<CaptureParams>,
     pub keep_awake: bool,
 }
 
 /// Runs until `stop` is set or the window closes. Sends only changed frames,
 /// plus a refresh every 3 s so a late-joining view always has a picture.
+/// The phone can retune fps / picture scale / grayscale live via `params`.
 pub fn spawn(
     id: u64,
     opts: CaptureOptions,
@@ -160,23 +218,31 @@ pub fn spawn(
         if opts.keep_awake {
             power::keep_awake(true);
         }
-        let interval = Duration::from_millis(1000 / opts.fps.clamp(1, 60) as u64);
+        let params = opts.params;
         let mut prev: Vec<u8> = Vec::new();
         let mut last_sent = Instant::now() - Duration::from_secs(60);
         let h = crate::winlist::hwnd(id);
 
         while !stop.load(Ordering::Relaxed) {
             let t0 = Instant::now();
+            let interval = Duration::from_millis(1000 / params.fps.load(Ordering::Relaxed).clamp(1, 60) as u64);
             if unsafe { !IsWindow(h).as_bool() } {
                 let _ = tx.blocking_send(vec![protocol::FRAME_GONE]);
                 break;
             }
             // Skip work entirely while the network is behind.
             if tx.capacity() > 0 {
-                if let Some(f) = grab(h) {
+                if let Some(mut f) = grab(h) {
+                    let permil = params.scale_permil.load(Ordering::Relaxed);
+                    if permil < 1000 {
+                        f = downscale_to_width(&f, (f.w * permil / 1000).max(1));
+                    }
+                    if params.gray.load(Ordering::Relaxed) {
+                        to_gray(&mut f.bgra);
+                    }
                     let changed = f.bgra != prev;
                     if changed || last_sent.elapsed() > Duration::from_secs(3) {
-                        if let Ok(jpg) = encode(&f, opts.quality) {
+                        if let Ok(jpg) = encode(&f, params.quality.load(Ordering::Relaxed)) {
                             let msg = protocol::binary(protocol::FRAME_VIDEO, id, f.w, f.h, &jpg);
                             if tx.try_send(msg).is_ok() {
                                 last_sent = Instant::now();

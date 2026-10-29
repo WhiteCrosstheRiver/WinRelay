@@ -2,6 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../models.dart';
+import '../l10n/generated/app_localizations.dart';
+
+/// Localized label for a quick key. Technical names (Esc, Tab, Ctrl+C, the
+/// arrows, Home, End) are universal; natural-language ones get a translation.
+String quickKeyLabel(AppLocalizations l10n, String k) => switch (k) {
+      'shift_enter' => l10n.qkNewLine,
+      'paste' => l10n.qkPaste,
+      'pgup' => l10n.qkPageUp,
+      'pgdn' => l10n.qkPageDown,
+      'delete' => l10n.qkDelete,
+      _ => allQuickKeys[k] ?? k,
+    };
 
 /// One scrollable row: keyboard toggle, then the user's chosen keys.
 class QuickKeysBar extends StatelessWidget {
@@ -25,6 +37,7 @@ class QuickKeysBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       color: scheme.surfaceContainer,
       child: SafeArea(
@@ -39,7 +52,7 @@ class QuickKeysBar extends StatelessWidget {
               children: [
                 IconButton.filledTonal(
                   icon: Icon(keyboardOpen ? Icons.keyboard_hide_outlined : Icons.keyboard_outlined),
-                  tooltip: keyboardOpen ? 'Hide keyboard' : 'Show keyboard',
+                  tooltip: keyboardOpen ? l10n.hideKeyboard : l10n.showKeyboard,
                   onPressed: onToggleKeyboard,
                 ),
                 const SizedBox(width: 4),
@@ -56,7 +69,7 @@ class QuickKeysBar extends StatelessWidget {
                           if (haptics) HapticFeedback.selectionClick();
                           onKey(k);
                         },
-                        child: Text(allQuickKeys[k]!),
+                        child: Text(quickKeyLabel(l10n, k)),
                       ),
                     ),
               ],

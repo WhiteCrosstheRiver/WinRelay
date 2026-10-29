@@ -1,0 +1,119 @@
+{
+  "@@locale": "en",
+  "pairPc": "Pair a PC",
+  "pairScanHint": "Scan the code shown in WinRelay on your PC.",
+  "pairOrPaste": "Or paste the link",
+  "pairLinkHint": "winrelay://pair?…",
+  "paste": "Paste",
+  "connect": "Connect",
+  "pairFooter": "After connecting, click Approve on the PC. Each link works once.",
+  "pairBadLink": "That isn't a WinRelay link. Copy it again from WinRelay on the PC.",
+  "pcsTitle": "Your PCs",
+  "pcsEmpty": "Pair a PC to get started.",
+  "settings": "Settings",
+  "pairedSubtitle": "{host} · port {port}",
+  "@pairedSubtitle": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      },
+      "port": {
+        "type": "String"
+      }
+    }
+  },
+  "waitingApprovalSub": "Waiting for approval on the PC",
+  "renamePc": "Rename PC",
+  "rename": "Rename",
+  "remove": "Remove",
+  "refresh": "Refresh",
+  "connectingTo": "Connecting to {name}…",
+  "@connectingTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "approveTitle": "Approve this phone on your PC",
+  "approveBody": "Open WinRelay on the PC and click Approve next to \"{name}\".",
+  "@approveBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cantConnect": "Can't connect",
+  "errUnreachable": "Couldn't reach {name}. Check that the PC is on, WinRelay is running, and you're on a network that can reach it.",
+  "@errUnreachable": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errDropped": "The connection to {name} dropped.",
+  "@errDropped": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "searchWindows": "Search windows",
+  "hideOnPc": "Hide the window on the PC",
+  "hideOnPcSub": "Stealth: the PC's screen won't show it while you control it",
+  "noMatch": "No windows match. Pull down to refresh.",
+  "viewMode": "View",
+  "tapMode": "Tap",
+  "viewTip": "Look only: taps do nothing on the PC",
+  "tapTip": "Taps click on the PC",
+  "stealthTip": "Stealth: hidden on the PC",
+  "reconnecting": "Reconnecting to the PC…",
+  "pcLocked": "The PC is locked. Unlock it to keep controlling this window.",
+  "composeHint": "Write a message for this window",
+  "sendWithEnter": "Send with Enter",
+  "settingsTitle": "Settings",
+  "secThisPhone": "This phone",
+  "phoneName": "Phone name",
+  "phoneNameSub": "Shown on the PC when you pair",
+  "secAppearance": "Appearance",
+  "theme": "Theme",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "language": "Language",
+  "languageSystem": "System default",
+  "secTouch": "Touch and typing",
+  "defaultTouch": "Default touch mode",
+  "defaultTouchSub": "View never clicks on the PC; Tap turns taps into clicks",
+  "composeMode": "Compose mode",
+  "composeModeSub": "Write a whole message first, with autocorrect, then send it. Off: every key goes to the PC as you type.",
+  "returnSends": "Return key sends",
+  "enterKeyEnter": "Enter",
+  "enterKeyCtrlEnter": "Ctrl+Enter",
+  "vibrate": "Vibrate on quick keys",
+  "secQuickKeys": "Quick keys",
+  "secPicture": "Picture",
+  "textSize": "Text size",
+  "stealthDefault": "Hide windows on the PC by default",
+  "stealthDefaultSub": "Stealth. You can still switch it per window.",
+  "keepScreenOn": "Keep this screen on while controlling",
+  "cancel": "Cancel",
+  "save": "Save",
+  "hideKeyboard": "Hide keyboard",
+  "showKeyboard": "Show keyboard",
+  "qkNewLine": "New line",
+  "qkPaste": "Paste",
+  "qkPageUp": "Page up",
+  "qkPageDown": "Page down",
+  "qkDelete": "Delete",
+  "secStream": "Stream",
+  "rxFps": "Frame rate",
+  "rxFpsSub": "Lower = smoother network, choppier picture",
+  "rxScale": "Picture size",
+  "rxScaleSub": "Smaller picture = much less data",
+  "rxGray": "Grayscale mode",
+  "rxGraySub": "Black-and-white picture; cuts data use sharply"
+}

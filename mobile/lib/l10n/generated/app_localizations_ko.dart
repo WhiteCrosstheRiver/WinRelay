@@ -1,0 +1,255 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Korean (`ko`).
+class AppLocalizationsKo extends AppLocalizations {
+  AppLocalizationsKo([String locale = 'ko']) : super(locale);
+
+  @override
+  String get pairPc => 'PC 페어링';
+
+  @override
+  String get pairScanHint => 'PC의 WinRelay에 표시된 코드를 스캔하세요.';
+
+  @override
+  String get pairOrPaste => '또는 링크 붙여넣기';
+
+  @override
+  String get pairLinkHint => 'winrelay://pair?…';
+
+  @override
+  String get paste => '붙여넣기';
+
+  @override
+  String get connect => '연결';
+
+  @override
+  String get pairFooter => '연결 후 PC에서 승인을 클릭하세요. 링크는 한 번만 사용할 수 있습니다.';
+
+  @override
+  String get pairBadLink => 'WinRelay 링크가 아닙니다. PC의 WinRelay에서 다시 복사하세요.';
+
+  @override
+  String get pcsTitle => '내 PC';
+
+  @override
+  String get pcsEmpty => '먼저 PC를 페어링하세요.';
+
+  @override
+  String get settings => '설정';
+
+  @override
+  String pairedSubtitle(String host, String port) {
+    return '$host · 포트 $port';
+  }
+
+  @override
+  String get waitingApprovalSub => 'PC 승인 대기 중';
+
+  @override
+  String get renamePc => 'PC 이름 변경';
+
+  @override
+  String get rename => '이름 변경';
+
+  @override
+  String get remove => '제거';
+
+  @override
+  String get refresh => '새로고침';
+
+  @override
+  String connectingTo(String name) {
+    return '$name에 연결 중…';
+  }
+
+  @override
+  String get approveTitle => 'PC에서 이 휴대폰을 승인하세요';
+
+  @override
+  String approveBody(String name) {
+    return 'PC에서 WinRelay를 열고 \"$name\" 옆의 승인을 클릭하세요.';
+  }
+
+  @override
+  String get cantConnect => '연결할 수 없음';
+
+  @override
+  String errUnreachable(String name) {
+    return '$name에 연결할 수 없습니다. PC가 켜져 있고 WinRelay가 실행 중이며 네트워크가 연결 가능한지 확인하세요.';
+  }
+
+  @override
+  String errDropped(String name) {
+    return '$name와의 연결이 끊겼습니다.';
+  }
+
+  @override
+  String get searchWindows => '창 검색';
+
+  @override
+  String get hideOnPc => 'PC에서 창 숨기기';
+
+  @override
+  String get hideOnPcSub => '스텔스: 제어 중 PC 화면에는 창이 표시되지 않습니다';
+
+  @override
+  String get noMatch => '일치하는 창이 없습니다. 아래로 당겨서 새로고침하세요.';
+
+  @override
+  String get viewMode => '보기';
+
+  @override
+  String get tapMode => '탭';
+
+  @override
+  String get viewTip => '보기만 함: 탭은 PC를 클릭하지 않습니다';
+
+  @override
+  String get tapTip => '탭이 PC를 클릭합니다';
+
+  @override
+  String get stealthTip => '스텔스: PC에서 숨겨짐';
+
+  @override
+  String get reconnecting => 'PC에 다시 연결 중…';
+
+  @override
+  String get pcLocked => 'PC가 잠겨 있습니다. 잠금 해제 후 이 창을 계속 제어할 수 있습니다.';
+
+  @override
+  String get composeHint => '이 창에 보낼 메시지 입력';
+
+  @override
+  String get sendWithEnter => 'Enter로 보내기';
+
+  @override
+  String get settingsTitle => '설정';
+
+  @override
+  String get secThisPhone => '이 휴대폰';
+
+  @override
+  String get phoneName => '휴대폰 이름';
+
+  @override
+  String get phoneNameSub => '페어링 시 PC에 표시됩니다';
+
+  @override
+  String get secAppearance => '화면 모드';
+
+  @override
+  String get theme => '테마';
+
+  @override
+  String get themeSystem => '시스템';
+
+  @override
+  String get themeLight => '라이트';
+
+  @override
+  String get themeDark => '다크';
+
+  @override
+  String get language => '언어';
+
+  @override
+  String get languageSystem => '시스템 기본값';
+
+  @override
+  String get secTouch => '터치와 입력';
+
+  @override
+  String get defaultTouch => '기본 터치 모드';
+
+  @override
+  String get defaultTouchSub => '보기는 PC를 클릭하지 않고, 탭은 탭을 클릭으로 바꿉니다';
+
+  @override
+  String get composeMode => '작성 모드';
+
+  @override
+  String get composeModeSub =>
+      '자동 수정과 함께 전체 메시지를 먼저 쓰고 보내세요. 끄기: 모든 키가 즉시 PC로 전송됩니다.';
+
+  @override
+  String get returnSends => 'Enter 키 전송';
+
+  @override
+  String get enterKeyEnter => 'Enter';
+
+  @override
+  String get enterKeyCtrlEnter => 'Ctrl+Enter';
+
+  @override
+  String get vibrate => '빠른 키 진동';
+
+  @override
+  String get secQuickKeys => '빠른 키';
+
+  @override
+  String get secPicture => '화면';
+
+  @override
+  String get textSize => '글자 크기';
+
+  @override
+  String get stealthDefault => '기본적으로 PC에서 창 숨기기';
+
+  @override
+  String get stealthDefaultSub => '스텔스. 창별로 전환할 수 있습니다.';
+
+  @override
+  String get keepScreenOn => '제어 중 화면 켜짐 유지';
+
+  @override
+  String get cancel => '취소';
+
+  @override
+  String get save => '저장';
+
+  @override
+  String get hideKeyboard => '키보드 숨기기';
+
+  @override
+  String get showKeyboard => '키보드 표시';
+
+  @override
+  String get qkNewLine => '줄바꿈';
+
+  @override
+  String get qkPaste => '붙여넣기';
+
+  @override
+  String get qkPageUp => '페이지 위로';
+
+  @override
+  String get qkPageDown => '페이지 아래로';
+
+  @override
+  String get qkDelete => '삭제';
+
+  @override
+  String get secStream => '스트림';
+
+  @override
+  String get rxFps => '수신 프레임레이트';
+
+  @override
+  String get rxFpsSub => '낮을수록 데이터를 절약하고 화면이 덜 부드럽습니다';
+
+  @override
+  String get rxScale => '수신 해상도';
+
+  @override
+  String get rxScaleSub => '화면이 작을수록 데이터를 크게 절약합니다';
+
+  @override
+  String get rxGray => '회색조 모드';
+
+  @override
+  String get rxGraySub => '흑백 화면으로 데이터 사용량을 크게 줄입니다';
+}
