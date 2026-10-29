@@ -1,0 +1,18 @@
+# Rust host
+host/target/
+
+# Flutter mobile
+mobile/build/
+mobile/.dart_tool/
+mobile/.flutter-plugins*
+mobile/pubspec.lock
+mobile/android/local.properties
+mobile/android/.gradle/
+mobile/android/app/.cxx/
+
+# Local tooling
+host/tests/*.ps1
+*.log
+
+# transient nested layout from the zip (moved to flat after first build)
+/winrelay/

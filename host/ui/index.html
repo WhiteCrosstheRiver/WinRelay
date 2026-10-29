@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WinRelay</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #eef1f5; --panel: #ffffff; --ink: #142030; --muted: #5b6676; --line: #d6dce4;
+    --link: #2f6feb; --live: #12935d; --alert: #c2412d; --idle: #8a94a3; --warn-bg: #fff6e5; --warn-ink: #7a4b00;
+    --font: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    --display: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #10151c; --panel: #171e27; --ink: #e6ebf1; --muted: #9aa5b3; --line: #29323e;
+      --link: #6b9bff; --live: #3cc28a; --alert: #f07a62; --idle: #6f7a89; --warn-bg: #2b2414; --warn-ink: #f2c46b;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--bg); color: var(--ink); font: 14px/1.5 var(--font); display: grid; grid-template-columns: 208px 1fr; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+
+  nav { border-right: 1px solid var(--line); padding: 20px 12px; display: flex; flex-direction: column; gap: 2px; }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 0 10px 18px; font: 600 16px var(--display); }
+  .tab { text-align: left; background: none; border: 0; border-radius: 6px; padding: 8px 10px; color: var(--muted); }
+  .tab:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
+  .tab[aria-current="page"] { background: color-mix(in srgb, var(--link) 12%, transparent); color: var(--ink); font-weight: 600; }
+  .navfoot { margin-top: auto; padding: 0 10px; color: var(--muted); font-size: 12px; }
+
+  main { overflow: auto; padding: 36px 44px 60px; }
+  .page { max-width: 720px; }
+  .page[hidden] { display: none; }
+  h1 { font: 600 30px/1.2 var(--display); margin: 0; letter-spacing: -0.01em; }
+  h2 { font: 600 16px var(--display); margin: 36px 0 12px; }
+  p.sub { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+
+  /* The status lamp: the one bold element. Same colours as the tray icon. */
+  .lamp { --c: var(--idle); width: 14px; height: 14px; border-radius: 50%; background: var(--c); flex: none; }
+  .lamp.big { width: 56px; height: 56px; box-shadow: 0 0 0 8px color-mix(in srgb, var(--c) 18%, transparent); }
+  .lamp[data-s="link"] { --c: var(--link); }
+  .lamp[data-s="live"] { --c: var(--live); }
+  .lamp[data-s="alert"] { --c: var(--alert); }
+  @media (prefers-reduced-motion: no-preference) {
+    .lamp.big[data-s="live"] { animation: breathe 2.4s ease-in-out infinite; }
+    @keyframes breathe { 50% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--c) 8%, transparent); } }
+  }
+  .hero { display: flex; align-items: center; gap: 28px; }
+
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
+  .session { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .session .meta { color: var(--muted); font-size: 13px; }
+  .approve { margin-top: 24px; border-color: var(--link); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .approve strong { font-size: 15px; }
+
+  .btn { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 7px 14px; }
+  .btn:hover { border-color: color-mix(in srgb, var(--ink) 35%, var(--line)); }
+  .btn.primary { background: var(--link); border-color: var(--link); color: #fff; }
+  .btn.danger { color: var(--alert); }
+  .row-actions { display: flex; gap: 8px; flex: none; }
+
+  .pair { display: grid; grid-template-columns: 232px 1fr; gap: 24px; align-items: start; }
+  .qr { width: 232px; height: 232px; border-radius: 8px; background: #fff; display: block; }
+  .link { font-size: 12px; color: var(--muted); word-break: break-all; margin: 10px 0 14px; }
+  ol.steps { margin: 0; padding-left: 18px; }
+  ol.steps li { margin-bottom: 6px; }
+
+  .checks { border-top: 1px solid var(--line); }
+  .check { display: grid; grid-template-columns: 14px 160px 1fr auto; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .check .what { font-weight: 600; }
+  .check .detail { color: var(--muted); font-size: 13px; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-weight: 600; color: var(--muted); font-size: 12px; padding: 0 12px 8px 0; }
+  td { padding: 10px 12px 10px 0; border-top: 1px solid var(--line); vertical-align: middle; }
+  .empty { color: var(--muted); padding: 18px 0; }
+
+  fieldset { border: 0; padding: 0; margin: 0 0 8px; }
+  legend { font: 600 16px var(--display); margin: 28px 0 8px; padding: 0; }
+  .field { display: grid; grid-template-columns: 1fr 220px; gap: 16px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .field .hint { display: block; color: var(--muted); font-size: 12px; }
+  .field input[type=text], .field input[type=number], .field select { width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); font: inherit; }
+  .field input[type=checkbox] { justify-self: end; width: 18px; height: 18px; accent-color: var(--link); }
+  .savebar { display: flex; align-items: center; gap: 12px; margin-top: 20px; }
+  .note { color: var(--muted); font-size: 13px; }
+  .banner { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 10px 14px; margin-top: 20px; }
+
+  @media (max-width: 760px) {
+    body { grid-template-columns: 1fr; }
+    nav { flex-direction: row; border-right: 0; border-bottom: 1px solid var(--line); overflow-x: auto; }
+    .brand { padding-bottom: 0; } .navfoot { display: none; }
+    main { padding: 24px 18px; }
+    .pair, .field { grid-template-columns: 1fr; }
+    .check { grid-template-columns: 14px 1fr; }
+  }
+</style>
+</head>
+<body>
+<nav aria-label="Sections">
+  <div class="brand"><span class="lamp" id="navLamp"></span>WinRelay</div>
+  <button class="tab" data-page="home" aria-current="page">Home</button>
+  <button class="tab" data-page="devices">Devices</button>
+  <button class="tab" data-page="activity">Activity</button>
+  <button class="tab" data-page="settings">Settings</button>
+  <div class="navfoot">Emergency: Ctrl+Alt+Shift+R brings every window back.</div>
+</nav>
+
+<main>
+  <!-- Home -->
+  <section class="page" id="home">
+    <div class="hero">
+      <span class="lamp big" id="heroLamp"></span>
+      <div>
+        <h1 id="heroTitle">Starting…</h1>
+        <p class="sub" id="heroSub"></p>
+      </div>
+    </div>
+
+    <div id="lockedBanner" class="banner" hidden>This PC is locked. Windows blocks capture and typing on the lock screen, so the phone can't control anything until you unlock it.</div>
+
+    <div id="approvals"></div>
+
+    <div id="sessionBox" class="panel session" hidden>
+      <div>
+        <strong id="sessionTitle"></strong>
+        <div class="meta" id="sessionMeta"></div>
+      </div>
+      <div class="row-actions">
+        <button class="btn" id="restoreBtn">Bring windows back</button>
+        <button class="btn danger" id="endBtn">End session</button>
+      </div>
+    </div>
+
+    <h2>Pair a phone</h2>
+    <div class="panel pair">
+      <img class="qr" id="qr" alt="Pairing QR code">
+      <div>
+        <ol class="steps">
+          <li>Open WinRelay on your phone and tap Pair a PC.</li>
+          <li>Scan this code, or copy the link and paste it on the phone.</li>
+          <li>Click Approve here when the phone's name appears.</li>
+        </ol>
+        <div class="link" id="link"></div>
+        <div class="row-actions">
+          <button class="btn" id="copyBtn">Copy link</button>
+          <button class="btn" id="newLinkBtn">New link</button>
+        </div>
+        <p class="note">Each link works once. A new one is made after every pairing.</p>
+      </div>
+    </div>
+
+    <h2>Checks</h2>
+    <div class="checks" id="checks"></div>
+  </section>
+
+  <!-- Devices -->
+  <section class="page" id="devices" hidden>
+    <h1>Devices</h1>
+    <p class="sub">Phones that can connect to this PC. Removing one cuts it off at once.</p>
+    <h2>Paired phones</h2>
+    <table><thead><tr><th>Name</th><th>Paired</th><th>Last seen</th><th></th></tr></thead><tbody id="deviceRows"></tbody></table>
+    <div class="empty" id="devicesEmpty" hidden>No phones yet. Pair one from Home.</div>
+  </section>
+
+  <!-- Activity -->
+  <section class="page" id="activity" hidden>
+    <h1>Activity</h1>
+    <p class="sub">Every window a phone has controlled. Stored on this PC only.</p>
+    <h2>Sessions</h2>
+    <table><thead><tr><th>Started</th><th>Phone</th><th>Window</th><th>Length</th><th>Stealth</th></tr></thead><tbody id="activityRows"></tbody></table>
+    <div class="empty" id="activityEmpty" hidden>No sessions yet.</div>
+  </section>
+
+  <!-- Settings -->
+  <section class="page" id="settings" hidden>
+    <h1>Settings</h1>
+    <p class="sub">Defaults are safe; you only need these to change how WinRelay behaves.</p>
+    <form id="settingsForm"></form>
+    <div class="savebar">
+      <button class="btn primary" id="saveBtn">Save changes</button>
+      <span class="note" id="saveNote"></span>
+    </div>
+  </section>
+</main>
+
+<script>
+const SETTINGS = [
+  { group: "Connection", fields: [
+    { k: "allow_internet", label: "Allow connections over the internet (IPv6)", hint: "Off means home network only.", type: "bool" },
+    { k: "ddns_host", label: "Dynamic DNS name", hint: "Used in the pairing link instead of the IPv6 address, if set.", type: "text" },
+    { k: "port", label: "Port", hint: "Takes effect after restarting WinRelay.", type: "number", min: 1024, max: 65535 },
+  ]},
+  { group: "Security", fields: [
+    { k: "idle_timeout_min", label: "Disconnect an idle phone after", type: "select", options: [[5,"5 minutes"],[15,"15 minutes"],[60,"1 hour"],[0,"Never"]] },
+    { k: "lock_on_disconnect", label: "Lock this PC when the phone disconnects", type: "bool" },
+    { k: "hidden_apps", label: "Hidden apps", hint: "Program file names, separated by commas. Never listed on the phone.", type: "list" },
+  ]},
+  { group: "Display and stealth", fields: [
+    { k: "stealth_default", label: "Use stealth by default", hint: "The phone can still choose per window.", type: "bool" },
+    { k: "hide_taskbar_in_stealth", label: "Hide the taskbar button in stealth", type: "bool" },
+    { k: "fence_cursor", label: "Keep the mouse off the hidden screen", type: "bool" },
+    { k: "max_fps", label: "Maximum frame rate", type: "select", options: [[10,"10 fps"],[15,"15 fps"],[30,"30 fps"]] },
+    { k: "jpeg_quality", label: "Picture quality", type: "select", options: [[92,"Sharpest text"],[85,"Balanced"],[70,"Save data"]] },
+    { k: "virtual_monitor_match", label: "Virtual display name contains", hint: "Words separated by semicolons.", type: "text" },
+  ]},
+  { group: "Power", fields: [
+    { k: "keep_awake", label: "Keep the PC awake during a session", type: "bool" },
+    { k: "screens_off_on_start", label: "Turn off screens when a session starts", hint: "Typing from the phone wakes them briefly; WinRelay turns them off again.", type: "bool" },
+  ]},
+  { group: "General", fields: [
+    { k: "log_days", label: "Keep activity for", type: "select", options: [[7,"7 days"],[30,"30 days"],[90,"90 days"],[0,"Don't keep"]] },
+  ]},
+];
+
+let state = null, settingsLoaded = false;
+const $ = (id) => document.getElementById(id);
+const api = (path, body) => fetch(path, body === undefined ? {} : {
+  method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body)
+});
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const when = (iso) => iso ? new Date(iso).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "—";
+const length = (a, b) => {
+  if (!a || !b) return "—";
+  const m = Math.round((new Date(b) - new Date(a)) / 60000);
+  return m < 1 ? "under 1 min" : m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${m % 60} min`;
+};
+
+document.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach((t) => t.removeAttribute("aria-current"));
+  b.setAttribute("aria-current", "page");
+  document.querySelectorAll(".page").forEach((p) => p.hidden = p.id !== b.dataset.page);
+}));
+
+function lampState(s) {
+  if (!s) return "alert";
+  if (s.active) return "live";
+  if (s.connected || s.pending.length) return "link";
+  return "idle";
+}
+
+function renderHome(s) {
+  const ls = lampState(s);
+  $("heroLamp").dataset.s = ls; $("navLamp").dataset.s = ls;
+  if (s.active) {
+    $("heroTitle").textContent = `${s.active.device} is controlling ${s.active.title}`;
+    $("heroSub").textContent = s.active.stealth ? "Stealth is on: the window is hidden from this screen." : "The window stays visible on this screen.";
+  } else if (s.connected) {
+    $("heroTitle").textContent = `${s.connected} is connected`;
+    $("heroSub").textContent = "Browsing the window list. Nothing is being shared yet.";
+  } else {
+    $("heroTitle").textContent = "Ready for your phone";
+    $("heroSub").textContent = s.devices.length ? `Open WinRelay on your phone to connect to ${s.host}.` : "Pair a phone below to get started.";
+  }
+  $("lockedBanner").hidden = !(s.active && s.locked);
+
+  $("approvals").innerHTML = s.pending.map((p) => `
+    <div class="panel approve">
+      <div><strong>${esc(p.name)} wants to connect</strong><div class="note">Approve only if this is your phone.</div></div>
+      <div class="row-actions">
+        <button class="btn" data-deny="${esc(p.id)}">Deny</button>
+        <button class="btn primary" data-approve="${esc(p.id)}">Approve</button>
+      </div>
+    </div>`).join("");
+
+  $("sessionBox").hidden = !s.active;
+  if (s.active) {
+    $("sessionTitle").textContent = s.active.title;
+    $("sessionMeta").textContent = `${s.active.device} · since ${new Date(s.active.since).toLocaleTimeString([], { timeStyle: "short" })}`;
+  }
+
+  if ($("link").textContent !== s.link) {
+    $("link").textContent = s.link;
+    $("qr").src = `/api/qr.svg?v=${encodeURIComponent(s.link)}`;
+  }
+
+  const v6 = s.addresses.find((a) => a.kind.startsWith("Internet"));
+  const lan = s.addresses.find((a) => a.kind === "Home network");
+  const checks = [
+    { ok: !!s.virtual_display, what: "Virtual display", detail: s.virtual_display ? `Found: ${s.virtual_display}` : "Not found. Stealth and phone-shaped windows need it. See README, step 2." },
+    { ok: !!lan, what: "Home network", detail: lan ? `${lan.ip} port ${s.port}` : "No home network address found." },
+    { ok: !s.settings.allow_internet || !!v6, what: "Internet (IPv6)", detail: !s.settings.allow_internet ? "Off. Turn it on in Settings to connect away from home." : v6 ? `${v6.ip} port ${s.port}` : "No public IPv6 address. Ask your internet provider or check the router." },
+    { ok: null, what: "Firewall", detail: "Windows must allow incoming connections on the WinRelay port.", action: `<button class="btn" id="fwBtn">Allow in firewall</button>` },
+  ];
+  $("checks").innerHTML = checks.map((c) => `
+    <div class="check">
+      <span class="lamp" data-s="${c.ok === null ? "idle" : c.ok ? "live" : "alert"}"></span>
+      <span class="what">${c.what}</span><span class="detail">${esc(c.detail)}</span>${c.action || "<span></span>"}
+    </div>`).join("");
+}
+
+function renderDevices(s) {
+  $("devicesEmpty").hidden = s.devices.length > 0;
+  $("deviceRows").innerHTML = s.devices.map((d) => `
+    <tr><td>${esc(d.name)}</td><td>${when(d.paired_at)}</td><td>${when(d.last_seen)}</td>
+    <td class="row-actions"><button class="btn" data-rename="${esc(d.id)}" data-name="${esc(d.name)}">Rename</button>
+    <button class="btn danger" data-remove="${esc(d.id)}" data-name="${esc(d.name)}">Remove</button></td></tr>`).join("");
+}
+
+function renderActivity(s) {
+  $("activityEmpty").hidden = s.activity.length > 0;
+  $("activityRows").innerHTML = s.activity.map((a) => `
+    <tr><td>${when(a.start)}</td><td>${esc(a.device)}</td><td>${esc(a.window)}</td><td>${length(a.start, a.end)}</td><td>${a.stealth ? "On" : "Off"}</td></tr>`).join("");
+}
+
+function renderSettings(values) {
+  $("settingsForm").innerHTML = SETTINGS.map((g) => `
+    <fieldset><legend>${g.group}</legend>${g.fields.map((f) => {
+      const v = values[f.k];
+      let control;
+      if (f.type === "bool") control = `<input type="checkbox" name="${f.k}" ${v ? "checked" : ""}>`;
+      else if (f.type === "select") control = `<select name="${f.k}">${f.options.map(([val, lab]) => `<option value="${val}" ${val == v ? "selected" : ""}>${lab}</option>`).join("")}</select>`;
+      else if (f.type === "number") control = `<input type="number" name="${f.k}" value="${esc(v)}" min="${f.min}" max="${f.max}">`;
+      else if (f.type === "list") control = `<input type="text" name="${f.k}" value="${esc((v || []).join(", "))}">`;
+      else control = `<input type="text" name="${f.k}" value="${esc(v)}">`;
+      return `<label class="field"><span>${f.label}${f.hint ? `<span class="hint">${f.hint}</span>` : ""}</span>${control}</label>`;
+    }).join("")}</fieldset>`).join("");
+}
+
+function readSettings() {
+  const out = {};
+  for (const g of SETTINGS) for (const f of g.fields) {
+    const el = document.querySelector(`[name="${f.k}"]`);
+    if (f.type === "bool") out[f.k] = el.checked;
+    else if (f.type === "select" || f.type === "number") out[f.k] = Number(el.value);
+    else if (f.type === "list") out[f.k] = el.value.split(",").map((x) => x.trim()).filter(Boolean);
+    else out[f.k] = el.value.trim();
+  }
+  return out;
+}
+
+async function refresh() {
+  try {
+    const r = await fetch("/api/status");
+    state = await r.json();
+    renderHome(state); renderDevices(state); renderActivity(state);
+    if (!settingsLoaded) { renderSettings(state.settings); settingsLoaded = true; }
+  } catch {
+    $("heroLamp").dataset.s = "alert"; $("navLamp").dataset.s = "alert";
+    $("heroTitle").textContent = "WinRelay isn't running";
+    $("heroSub").textContent = "Start WinRelay on this PC, then reload this page.";
+  }
+}
+
+document.addEventListener("click", async (e) => {
+  const t = e.target.closest("button");
+  if (!t) return;
+  if (t.dataset.approve) await api("/api/approve", { id: t.dataset.approve, allow: true });
+  else if (t.dataset.deny) await api("/api/approve", { id: t.dataset.deny, allow: false });
+  else if (t.dataset.remove) {
+    if (!confirm(`Remove ${t.dataset.name}? It will need to pair again.`)) return;
+    await api("/api/devices/remove", { id: t.dataset.remove });
+  } else if (t.dataset.rename) {
+    const name = prompt("New name for this phone", t.dataset.name);
+    if (name) await api("/api/devices/rename", { id: t.dataset.rename, name });
+  } else if (t.id === "endBtn") await api("/api/end", {});
+  else if (t.id === "restoreBtn") await api("/api/restore", {});
+  else if (t.id === "newLinkBtn") await api("/api/new-link", {});
+  else if (t.id === "fwBtn") await api("/api/firewall", {});
+  else if (t.id === "copyBtn") { await navigator.clipboard.writeText($("link").textContent); t.textContent = "Copied"; setTimeout(() => t.textContent = "Copy link", 1500); }
+  else if (t.id === "saveBtn") {
+    const r = await api("/api/settings", readSettings());
+    const j = await r.json().catch(() => ({}));
+    $("saveNote").textContent = r.ok ? (j.restart_needed ? "Saved. Restart WinRelay to use the new port." : "Saved") : "Couldn't save. Check the values and try again.";
+    setTimeout(() => $("saveNote").textContent = "", 4000);
+  }
+  refresh();
+});
+
+refresh();
+setInterval(refresh, 1500);
+</script>
+</body>
+</html>
