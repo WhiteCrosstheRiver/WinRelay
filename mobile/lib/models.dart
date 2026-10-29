@@ -1,0 +1,118 @@
+/// A paired (or pairing) PC.
+class PcEntry {
+  PcEntry({required this.id, required this.name, required this.host, required this.port, this.token, this.secret});
+
+  final String id;
+  String name;
+  String host;
+  int port;
+
+  /// One-time pairing token from the link. Cleared once the PC approves us.
+  String? token;
+
+  /// This phone's own key for this PC, issued on approval.
+  String? secret;
+
+  bool get isPaired => secret != null;
+
+  Uri get wsUri => Uri.parse('ws://${host.contains(':') ? '[$host]' : host}:$port/ws');
+
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'name': name, 'host': host, 'port': port, 'token': token, 'secret': secret};
+
+  factory PcEntry.fromJson(Map<String, dynamic> j) => PcEntry(
+        id: j['id'] as String,
+        name: j['name'] as String,
+        host: j['host'] as String,
+        port: j['port'] as int,
+        token: j['token'] as String?,
+        secret: j['secret'] as String?,
+      );
+}
+
+/// Parses `winrelay://pair?h=<host>&p=<port>&k=<token>&n=<name>`.
+PcEntry? parsePairLink(String raw) {
+  final uri = Uri.tryParse(raw.trim());
+  if (uri == null || uri.scheme != 'winrelay' || uri.host != 'pair') return null;
+  final q = uri.queryParameters;
+  final host = q['h'], token = q['k'];
+  final port = int.tryParse(q['p'] ?? '');
+  if (host == null || host.isEmpty || token == null || port == null) return null;
+  final name = (q['n'] ?? '').isEmpty ? host : q['n']!;
+  return PcEntry(id: '$host:$port', name: name, host: host, port: port, token: token);
+}
+
+class WinInfo {
+  WinInfo({required this.id, required this.title, required this.app, required this.exe});
+  final int id;
+  final String title, app, exe;
+
+  factory WinInfo.fromJson(Map<String, dynamic> j) => WinInfo(
+        id: (j['id'] as num).toInt(),
+        title: j['title'] as String? ?? '',
+        app: j['app'] as String? ?? '',
+        exe: j['exe'] as String? ?? '',
+      );
+}
+
+/// Every quick key the bar can show, in display order: id -> label.
+const allQuickKeys = <String, String>{
+  'esc': 'Esc',
+  'tab': 'Tab',
+  'shift_tab': 'Shift+Tab',
+  'ctrl_c': 'Ctrl+C',
+  'up': '↑',
+  'down': '↓',
+  'left': '←',
+  'right': '→',
+  'shift_enter': 'New line',
+  'paste': 'Paste',
+  'ctrl_v': 'Ctrl+V',
+  'ctrl_z': 'Ctrl+Z',
+  'home': 'Home',
+  'end': 'End',
+  'pgup': 'Page up',
+  'pgdn': 'Page down',
+  'delete': 'Delete',
+};
+
+class AppSettings {
+  String deviceName = 'My phone';
+  bool tapModeDefault = false; // false = View mode
+  bool composeMode = false; // false = Live keys
+  String enterKey = 'enter'; // or 'ctrl_enter'
+  bool stealthDefault = false;
+  double textSize = 1.0; // 0.75 .. 2.0
+  bool keepScreenOn = true;
+  bool haptics = true;
+  List<String> quickKeys = ['esc', 'tab', 'shift_tab', 'ctrl_c', 'up', 'down', 'left', 'right', 'shift_enter', 'paste'];
+
+  /// PC window logical size = phone size x this. Bigger text on the phone = smaller PC window.
+  double get windowScale => 1.25 / textSize;
+
+  Map<String, dynamic> toJson() => {
+        'deviceName': deviceName,
+        'tapModeDefault': tapModeDefault,
+        'composeMode': composeMode,
+        'enterKey': enterKey,
+        'stealthDefault': stealthDefault,
+        'textSize': textSize,
+        'keepScreenOn': keepScreenOn,
+        'haptics': haptics,
+        'quickKeys': quickKeys,
+      };
+
+  static AppSettings fromJson(Map<String, dynamic> j) {
+    final s = AppSettings();
+    s.deviceName = j['deviceName'] as String? ?? s.deviceName;
+    s.tapModeDefault = j['tapModeDefault'] as bool? ?? s.tapModeDefault;
+    s.composeMode = j['composeMode'] as bool? ?? s.composeMode;
+    s.enterKey = j['enterKey'] as String? ?? s.enterKey;
+    s.stealthDefault = j['stealthDefault'] as bool? ?? s.stealthDefault;
+    s.textSize = (j['textSize'] as num?)?.toDouble() ?? s.textSize;
+    s.keepScreenOn = j['keepScreenOn'] as bool? ?? s.keepScreenOn;
+    s.haptics = j['haptics'] as bool? ?? s.haptics;
+    s.quickKeys = (j['quickKeys'] as List?)?.cast<String>() ?? s.quickKeys;
+    return s;
+  }
+}
