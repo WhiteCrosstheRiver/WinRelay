@@ -2,7 +2,7 @@ use crate::capture::{self, CaptureOptions};
 use crate::config::{self, Activity, Config, Device};
 use crate::input::{self, Cmd};
 use crate::protocol::*;
-use crate::{browser, display, net, power, session, winlist};
+use crate::{browser, display, fs, net, power, session, winlist};
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
 use axum::extract::{ConnectInfo, State};
 use axum::http::{header, StatusCode};
@@ -421,6 +421,28 @@ fn push_browser_url(out: &mpsc::Sender<Message>, id: u64) {
     });
 }
 
+/// In-flight upload: the partially written file plus how much has arrived.
+struct UploadSink {
+    file: std::fs::File,
+    size: u64,
+    received: u64,
+}
+
+fn next_fs_id() -> u64 {
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static NEXT: AtomicU64 = AtomicU64::new(1);
+    NEXT.fetch_add(1, Ordering::Relaxed)
+}
+
+async fn report_fs(out: &mpsc::Sender<Message>, id: u64, r: Result<anyhow::Result<()>, tokio::task::JoinError>) {
+    let (ok, error) = match r {
+        Ok(Ok(())) => (true, None),
+        Ok(Err(e)) => (false, Some(e.to_string())),
+        Err(e) => (false, Some(e.to_string())),
+    };
+    tx(out, HostMsg::FsDone { id, ok, error }).await;
+}
+
 struct Live {
     session: session::Session,
     stop: Arc<AtomicBool>,
@@ -486,6 +508,10 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
     let mut last_msg = Instant::now();
     let mut was_locked = false;
     let mut tick = tokio::time::interval(Duration::from_secs(1));
+    // Active uploads: declared with FsUploadBegin, fed by kind=4 binary
+    // frames, finished by FsUploadEnd. Dropped (and files closed) on any
+    // disconnect.
+    let mut uploads: HashMap<u64, UploadSink> = HashMap::new();
 
     loop {
         tokio::select! {
@@ -522,6 +548,26 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                 let Some(Ok(msg)) = msg else { break };
                 let text = match msg {
                     Message::Text(t) => t,
+                    Message::Binary(b) => {
+                        // Upload chunks: [kind=4][id][offset][total][data].
+                        if b.len() > FS_HEADER_LEN && b[0] == FRAME_FS_WRITE {
+                            let (_, id, offset, _total, data) = fs_frame_parts(&b);
+                            if let Some(sink) = uploads.get_mut(&id) {
+                                use std::io::{Seek, SeekFrom, Write};
+                                let r = (|| -> std::io::Result<()> {
+                                    sink.file.seek(SeekFrom::Start(offset))?;
+                                    sink.file.write_all(data)?;
+                                    sink.received = sink.received.max(offset + data.len() as u64);
+                                    Ok(())
+                                })();
+                                if let Err(e) = r {
+                                    uploads.remove(&id);
+                                    tx(&out, HostMsg::FsDone { id, ok: false, error: Some(e.to_string()) }).await;
+                                }
+                            }
+                        }
+                        continue;
+                    }
                     Message::Close(_) => break,
                     _ => continue,
                 };
@@ -626,6 +672,122 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                     ClientMsg::GetUrl => {
                         if let Some(l) = &live {
                             push_browser_url(&out, l.session.id);
+                        }
+                    }
+                    ClientMsg::FsList { path } => {
+                        let p = path.clone();
+                        let items = tokio::task::spawn_blocking(move || fs::list(&p)).await.unwrap_or_else(|_| Ok(vec![]));
+                        match items {
+                            Ok(items) => tx(&out, HostMsg::FsEntries { path, items }).await,
+                            Err(e) => tx(&out, HostMsg::FsDone { id: 0, ok: false, error: Some(e.to_string()) }).await,
+                        }
+                    }
+                    ClientMsg::FsMkdir { path } => {
+                        let id = next_fs_id();
+                        let p = path.clone();
+                        let r = tokio::task::spawn_blocking(move || {
+                            fs::writable(&p)?;
+                            fs::mkdir(&p)
+                        })
+                        .await;
+                        report_fs(&out, id, r).await;
+                    }
+                    ClientMsg::FsDelete { path } => {
+                        let id = next_fs_id();
+                        let p = path.clone();
+                        let r = tokio::task::spawn_blocking(move || fs::delete_to_trash(&p)).await;
+                        report_fs(&out, id, r).await;
+                    }
+                    ClientMsg::FsDownload { id, path } => {
+                        let out2 = out.clone();
+                        tokio::spawn(async move {
+                            let total = match tokio::task::spawn_blocking({
+                                let path = path.clone();
+                                move || fs::total_size(&path)
+                            })
+                            .await
+                            {
+                                Ok(Ok(t)) => t,
+                                Ok(Err(e)) => {
+                                    if let Ok(t) = serde_json::to_string(&HostMsg::FsDone { id, ok: false, error: Some(e.to_string()) }) {
+                                        let _ = out2.send(Message::Text(t)).await;
+                                    }
+                                    return;
+                                }
+                                Err(e) => {
+                                    if let Ok(t) = serde_json::to_string(&HostMsg::FsDone { id, ok: false, error: Some(e.to_string()) }) {
+                                        let _ = out2.send(Message::Text(t)).await;
+                                    }
+                                    return;
+                                }
+                            };
+                            if let Ok(t) = serde_json::to_string(&HostMsg::FsMeta { id, size: total }) {
+                                let _ = out2.send(Message::Text(t)).await;
+                            }
+                            let _ = tokio::task::spawn_blocking(move || {
+                                let mut offset = 0u64;
+                                loop {
+                                    let (chunk, done) = match fs::read_chunk(&path, offset, fs::CHUNK_SIZE) {
+                                        Ok(r) => r,
+                                        Err(e) => {
+                                            if let Ok(t) = serde_json::to_string(&HostMsg::FsDone { id, ok: false, error: Some(e.to_string()) }) {
+                                                let _ = out2.blocking_send(Message::Text(t));
+                                            }
+                                            break;
+                                        }
+                                    };
+                                    if out2.blocking_send(Message::Binary(fs_frame(FRAME_FS_READ, id, offset, total, &chunk))).is_err() {
+                                        break;
+                                    }
+                                    offset += chunk.len() as u64;
+                                    if done {
+                                        if let Ok(t) = serde_json::to_string(&HostMsg::FsDone { id, ok: true, error: None }) {
+                                            let _ = out2.blocking_send(Message::Text(t));
+                                        }
+                                        break;
+                                    }
+                                }
+                            })
+                            .await;
+                        });
+                    }
+                    ClientMsg::FsUploadBegin { id, path, size } => {
+                        let p = path.clone();
+                        let sink = tokio::task::spawn_blocking(move || -> anyhow::Result<UploadSink> {
+                            fs::writable(&p)?;
+                            Ok(UploadSink { file: std::fs::File::create(&p)?, size, received: 0 })
+                        })
+                        .await;
+                        match sink {
+                            Ok(Ok(sink)) => {
+                                uploads.insert(id, sink);
+                                tx(&out, HostMsg::FsUploadReady { id }).await;
+                            }
+                            Ok(Err(e)) => {
+                                tx(&out, HostMsg::FsDone { id, ok: false, error: Some(e.to_string()) }).await;
+                            }
+                            Err(e) => {
+                                tx(&out, HostMsg::FsDone { id, ok: false, error: Some(e.to_string()) }).await;
+                            }
+                        }
+                    }
+                    ClientMsg::FsUploadEnd { id } => {
+                        let sink = uploads.remove(&id);
+                        match sink {
+                            Some(sink) if sink.received >= sink.size => {
+                                tx(&out, HostMsg::FsDone { id, ok: true, error: None }).await;
+                            }
+                            Some(sink) => {
+                                tx(&out, HostMsg::FsDone {
+                                    id,
+                                    ok: false,
+                                    error: Some(format!("Incomplete upload: {} of {} bytes.", sink.received, sink.size)),
+                                })
+                                .await;
+                            }
+                            None => {
+                                tx(&out, HostMsg::FsDone { id, ok: false, error: Some("Unknown upload.".into()) }).await;
+                            }
                         }
                     }
                     ClientMsg::Viewport { viewport } => {

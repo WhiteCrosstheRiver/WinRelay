@@ -81,5 +81,20 @@
   "switchIme": "切換輸入法",
   "webMode": "網頁",
   "webModeTip": "像手機一樣上網,電腦會跟隨你的導覽",
-  "loadFromPc": "載入電腦目前頁面"
+  "loadFromPc": "載入電腦目前頁面",
+  "filesTitle": "檔案",
+  "thisPc": "本機",
+  "upload": "上傳",
+  "download": "下載",
+  "newFolder": "新增資料夾",
+  "folderName": "資料夾名稱",
+  "deleteItem": "刪除",
+  "deleteConfirmTitle": "刪除?",
+  "deleteConfirmBody": "「{name}」將移到資源回收筒。",
+  "downloadDone": "已下載,選擇儲存位置。",
+  "transferDone": "傳輸完成",
+  "transferFailed": "傳輸失敗",
+  "emptyDir": "空資料夾",
+  "grantStorage": "請在下一畫面允許「所有檔案存取」,然後重試。",
+  "uploadFromPhone": "從本手機傳送檔案"
 }

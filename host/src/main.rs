@@ -5,6 +5,7 @@ mod browser;
 mod capture;
 mod config;
 mod display;
+mod fs;
 mod input;
 mod net;
 mod power;

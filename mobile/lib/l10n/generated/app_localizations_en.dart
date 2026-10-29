@@ -271,4 +271,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loadFromPc => 'Load the page the PC is showing';
+
+  @override
+  String get filesTitle => 'Files';
+
+  @override
+  String get thisPc => 'This PC';
+
+  @override
+  String get upload => 'Upload';
+
+  @override
+  String get download => 'Download';
+
+  @override
+  String get newFolder => 'New folder';
+
+  @override
+  String get folderName => 'Folder name';
+
+  @override
+  String get deleteItem => 'Delete';
+
+  @override
+  String get deleteConfirmTitle => 'Delete?';
+
+  @override
+  String deleteConfirmBody(Object name) {
+    return '\"$name\" will be moved to the Recycle Bin.';
+  }
+
+  @override
+  String get downloadDone => 'Downloaded. Choose where to keep it.';
+
+  @override
+  String get transferDone => 'Transfer complete';
+
+  @override
+  String get transferFailed => 'Transfer failed';
+
+  @override
+  String get emptyDir => 'Empty folder';
+
+  @override
+  String get grantStorage =>
+      'Allow all-files access in the next screen, then try again.';
+
+  @override
+  String get uploadFromPhone => 'Send a file from this phone';
 }

@@ -81,5 +81,20 @@
   "switchIme": "Cambiar teclado",
   "webMode": "Web",
   "webModeTip": "Navega como en un teléfono; el PC sigue tu navegación",
-  "loadFromPc": "Cargar la página que muestra el PC"
+  "loadFromPc": "Cargar la página que muestra el PC",
+  "filesTitle": "Archivos",
+  "thisPc": "Este equipo",
+  "upload": "Subir",
+  "download": "Descargar",
+  "newFolder": "Nueva carpeta",
+  "folderName": "Nombre de la carpeta",
+  "deleteItem": "Eliminar",
+  "deleteConfirmTitle": "¿Eliminar?",
+  "deleteConfirmBody": "\"{name}\" se enviará a la Papelera de reciclaje.",
+  "downloadDone": "Descargado. Elige dónde guardarlo.",
+  "transferDone": "Transferencia completada",
+  "transferFailed": "Error de transferencia",
+  "emptyDir": "Carpeta vacía",
+  "grantStorage": "Concede el acceso a todos los archivos en la siguiente pantalla y vuelve a intentarlo.",
+  "uploadFromPhone": "Enviar un archivo de este teléfono"
 }

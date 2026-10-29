@@ -81,5 +81,20 @@
   "switchIme": "Cambia tastiera",
   "webMode": "Web",
   "webModeTip": "Naviga come su un telefono; il PC segue la tua navigazione",
-  "loadFromPc": "Carica la pagina mostrata sul PC"
+  "loadFromPc": "Carica la pagina mostrata sul PC",
+  "filesTitle": "File",
+  "thisPc": "Questo PC",
+  "upload": "Carica",
+  "download": "Scarica",
+  "newFolder": "Nuova cartella",
+  "folderName": "Nome cartella",
+  "deleteItem": "Elimina",
+  "deleteConfirmTitle": "Eliminare?",
+  "deleteConfirmBody": "\"{name}\" verrà spostato nel Cestino.",
+  "downloadDone": "Scaricato. Scegli dove conservarlo.",
+  "transferDone": "Trasferimento completato",
+  "transferFailed": "Trasferimento non riuscito",
+  "emptyDir": "Cartella vuota",
+  "grantStorage": "Concedi l'accesso a tutti i file nella schermata successiva, poi riprova.",
+  "uploadFromPhone": "Invia un file da questo telefono"
 }

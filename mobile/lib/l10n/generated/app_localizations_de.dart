@@ -271,4 +271,52 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get loadFromPc => 'Die gerade angezeigte PC-Seite laden';
+
+  @override
+  String get filesTitle => 'Dateien';
+
+  @override
+  String get thisPc => 'Dieser PC';
+
+  @override
+  String get upload => 'Hochladen';
+
+  @override
+  String get download => 'Herunterladen';
+
+  @override
+  String get newFolder => 'Neuer Ordner';
+
+  @override
+  String get folderName => 'Ordnername';
+
+  @override
+  String get deleteItem => 'Löschen';
+
+  @override
+  String get deleteConfirmTitle => 'Löschen?';
+
+  @override
+  String deleteConfirmBody(Object name) {
+    return '„$name“ wird in den Papierkorb verschoben.';
+  }
+
+  @override
+  String get downloadDone => 'Geladen. Wähle, wo es gespeichert wird.';
+
+  @override
+  String get transferDone => 'Übertragung abgeschlossen';
+
+  @override
+  String get transferFailed => 'Übertragung fehlgeschlagen';
+
+  @override
+  String get emptyDir => 'Leerer Ordner';
+
+  @override
+  String get grantStorage =>
+      'Erlaube den Zugriff auf alle Dateien im nächsten Schritt und versuche es erneut.';
+
+  @override
+  String get uploadFromPhone => 'Datei von diesem Telefon senden';
 }

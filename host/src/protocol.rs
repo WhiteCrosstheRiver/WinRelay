@@ -6,9 +6,13 @@ use serde::{Deserialize, Serialize};
 
 pub const FRAME_VIDEO: u8 = 1;
 pub const FRAME_THUMB: u8 = 2;
+/// File-transfer binary frames: [kind u8][id u64 LE][offset u64 LE][total u64 LE][data].
+pub const FRAME_FS_READ: u8 = 3; // PC -> phone (download chunk)
+pub const FRAME_FS_WRITE: u8 = 4; // phone -> PC (upload chunk)
 /// Sent internally (never on the wire) by the capture thread when the window disappears.
 pub const FRAME_GONE: u8 = 0;
 pub const HEADER_LEN: usize = 17;
+pub const FS_HEADER_LEN: usize = 25;
 
 #[derive(Deserialize, Clone, Copy, Debug)]
 pub struct Viewport {
@@ -70,6 +74,16 @@ pub enum ClientMsg {
     Navigate { url: String },
     /// Phone asks for the browser's current URL again (HostMsg::Url).
     GetUrl,
+    /// File browsing: "" lists the drives ("This PC").
+    FsList { path: String },
+    FsMkdir { path: String },
+    FsDelete { path: String },
+    /// PC streams the file back as kind=3 binary chunks, then FsDone.
+    FsDownload { id: u64, path: String },
+    /// Phone declares an upload, waits for FsUploadReady, sends kind=4 binary
+    /// chunks ([id][offset][total][data]), then FsUploadEnd.
+    FsUploadBegin { id: u64, path: String, size: u64 },
+    FsUploadEnd { id: u64 },
     Viewport { viewport: Viewport },
     Close,
     /// Characters as typed. "\n" is sent as the Return key.
@@ -113,6 +127,11 @@ pub enum HostMsg {
     /// The session window is a browser; this is the page it is showing now.
     Url { url: String },
     Closed { reason: String },
+    // ---- file browsing ----
+    FsEntries { path: String, items: Vec<crate::fs::FsItem> },
+    FsDone { id: u64, ok: bool, error: Option<String> },
+    FsMeta { id: u64, size: u64 },
+    FsUploadReady { id: u64 },
     Locked { locked: bool },
     Error { msg: String },
     Pong,
@@ -126,4 +145,22 @@ pub fn binary(kind: u8, id: u64, w: u32, h: u32, jpeg: &[u8]) -> Vec<u8> {
     out.extend_from_slice(&h.to_le_bytes());
     out.extend_from_slice(jpeg);
     out
+}
+
+pub fn fs_frame(kind: u8, id: u64, offset: u64, total: u64, data: &[u8]) -> Vec<u8> {
+    let mut out = Vec::with_capacity(FS_HEADER_LEN + data.len());
+    out.push(kind);
+    out.extend_from_slice(&id.to_le_bytes());
+    out.extend_from_slice(&offset.to_le_bytes());
+    out.extend_from_slice(&total.to_le_bytes());
+    out.extend_from_slice(data);
+    out
+}
+
+/// Parses an incoming file-transfer frame (already known to be long enough).
+pub fn fs_frame_parts(b: &[u8]) -> (u8, u64, u64, u64, &[u8]) {
+    let id = u64::from_le_bytes(b[1..9].try_into().unwrap());
+    let offset = u64::from_le_bytes(b[9..17].try_into().unwrap());
+    let total = u64::from_le_bytes(b[17..25].try_into().unwrap());
+    (b[0], id, offset, total, &b[25..])
 }

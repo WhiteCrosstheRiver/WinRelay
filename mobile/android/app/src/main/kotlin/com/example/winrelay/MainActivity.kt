@@ -1,6 +1,10 @@
 package com.example.winrelay
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Environment
+import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -16,6 +20,21 @@ class MainActivity : FlutterActivity() {
                 "showPicker" -> {
                     val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.showInputMethodPicker()
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "winrelay/files").setMethodCallHandler { call, result ->
+            when (call.method) {
+                // All-files access lets the upload sheet read /sdcard directly.
+                "hasStorage" -> result.success(Environment.isExternalStorageManager())
+                "requestStorage" -> {
+                    val intent = Intent(
+                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                        Uri.parse("package:$packageName"),
+                    )
+                    startActivity(intent)
                     result.success(null)
                 }
                 else -> result.notImplemented()

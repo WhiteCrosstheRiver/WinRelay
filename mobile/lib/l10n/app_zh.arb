@@ -81,5 +81,20 @@
   "switchIme": "切换输入法",
   "webMode": "网页",
   "webModeTip": "像手机一样上网,电脑会跟随你的导航",
-  "loadFromPc": "载入电脑当前页面"
+  "loadFromPc": "载入电脑当前页面",
+  "filesTitle": "文件",
+  "thisPc": "此电脑",
+  "upload": "上传",
+  "download": "下载",
+  "newFolder": "新建文件夹",
+  "folderName": "文件夹名称",
+  "deleteItem": "删除",
+  "deleteConfirmTitle": "删除?",
+  "deleteConfirmBody": "“{name}”将移入回收站。",
+  "downloadDone": "已下载,选择保存位置。",
+  "transferDone": "传输完成",
+  "transferFailed": "传输失败",
+  "emptyDir": "空文件夹",
+  "grantStorage": "请在下一屏允许“所有文件访问”,然后重试。",
+  "uploadFromPhone": "从本手机发送文件"
 }

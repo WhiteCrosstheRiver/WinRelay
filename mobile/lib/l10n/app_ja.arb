@@ -81,5 +81,20 @@
   "switchIme": "入力方法を切り替え",
   "webMode": "ウェブ",
   "webModeTip": "スマホのように閲覧でき、PC がナビゲーションに追従します",
-  "loadFromPc": "PC の現在のページを読み込む"
+  "loadFromPc": "PC の現在のページを読み込む",
+  "filesTitle": "ファイル",
+  "thisPc": "PC",
+  "upload": "アップロード",
+  "download": "ダウンロード",
+  "newFolder": "新規フォルダー",
+  "folderName": "フォルダー名",
+  "deleteItem": "削除",
+  "deleteConfirmTitle": "削除しますか?",
+  "deleteConfirmBody": "「{name}」はごみ箱へ移動されます。",
+  "downloadDone": "ダウンロードしました。保存先を選んでください。",
+  "transferDone": "転送完了",
+  "transferFailed": "転送に失敗しました",
+  "emptyDir": "空のフォルダー",
+  "grantStorage": "次の画面で「すべてのファイルへのアクセス」を許可してから、もう一度お試しください。",
+  "uploadFromPhone": "このスマホからファイルを送る"
 }

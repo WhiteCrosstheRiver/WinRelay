@@ -606,6 +606,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Load the page the PC is showing'**
   String get loadFromPc;
+
+  /// No description provided for @filesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Files'**
+  String get filesTitle;
+
+  /// No description provided for @thisPc.
+  ///
+  /// In en, this message translates to:
+  /// **'This PC'**
+  String get thisPc;
+
+  /// No description provided for @upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload'**
+  String get upload;
+
+  /// No description provided for @download.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get download;
+
+  /// No description provided for @newFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'New folder'**
+  String get newFolder;
+
+  /// No description provided for @folderName.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder name'**
+  String get folderName;
+
+  /// No description provided for @deleteItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteItem;
+
+  /// No description provided for @deleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete?'**
+  String get deleteConfirmTitle;
+
+  /// No description provided for @deleteConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" will be moved to the Recycle Bin.'**
+  String deleteConfirmBody(Object name);
+
+  /// No description provided for @downloadDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded. Choose where to keep it.'**
+  String get downloadDone;
+
+  /// No description provided for @transferDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer complete'**
+  String get transferDone;
+
+  /// No description provided for @transferFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer failed'**
+  String get transferFailed;
+
+  /// No description provided for @emptyDir.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty folder'**
+  String get emptyDir;
+
+  /// No description provided for @grantStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow all-files access in the next screen, then try again.'**
+  String get grantStorage;
+
+  /// No description provided for @uploadFromPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a file from this phone'**
+  String get uploadFromPhone;
 }
 
 class _AppLocalizationsDelegate

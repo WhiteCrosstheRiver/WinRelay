@@ -119,5 +119,20 @@
   "switchIme": "Switch keyboard",
   "webMode": "Web",
   "webModeTip": "Browse like on a phone; the PC follows your navigation",
-  "loadFromPc": "Load the page the PC is showing"
+  "loadFromPc": "Load the page the PC is showing",
+  "filesTitle": "Files",
+  "thisPc": "This PC",
+  "upload": "Upload",
+  "download": "Download",
+  "newFolder": "New folder",
+  "folderName": "Folder name",
+  "deleteItem": "Delete",
+  "deleteConfirmTitle": "Delete?",
+  "deleteConfirmBody": "\"{name}\" will be moved to the Recycle Bin.",
+  "downloadDone": "Downloaded. Choose where to keep it.",
+  "transferDone": "Transfer complete",
+  "transferFailed": "Transfer failed",
+  "emptyDir": "Empty folder",
+  "grantStorage": "Allow all-files access in the next screen, then try again.",
+  "uploadFromPhone": "Send a file from this phone"
 }

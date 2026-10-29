@@ -40,6 +40,10 @@ class HostConnection extends ChangeNotifier {
   /// browser session opens and after each `get_url`. Null for non-browsers.
   String? browserUrl;
 
+  /// File-transfer events (fs_entries / fs_meta / fs_done / fs_chunk) for the
+  /// Files screen; broadcast because only that screen listens.
+  final fsEvents = StreamController<Map<String, dynamic>>.broadcast();
+
   /// Video frames bypass notifyListeners so only the picture repaints.
   final ValueNotifier<Frame?> frame = ValueNotifier(null);
   int? openId;
@@ -100,6 +104,19 @@ class HostConnection extends ChangeNotifier {
       return;
     }
     final b = data is Uint8List ? data : Uint8List.fromList(List<int>.from(data as List));
+    if (b.length >= 25 && (b[0] == 3 || b[0] == 4)) {
+      // File-transfer chunk: [kind][id u64][offset u64][total u64][data].
+      final fd = ByteData.sublistView(b);
+      fsEvents.add({
+        't': 'fs_chunk',
+        'kind': b[0],
+        'id': fd.getUint64(1, Endian.little),
+        'offset': fd.getUint64(9, Endian.little),
+        'total': fd.getUint64(17, Endian.little),
+        'data': Uint8List.sublistView(b, 25),
+      });
+      return;
+    }
     if (b.length < 17) return;
     final bd = ByteData.sublistView(b);
     final kind = bd.getUint8(0);
@@ -156,6 +173,8 @@ class HostConnection extends ChangeNotifier {
         locked = m['locked'] as bool? ?? false;
       case 'url':
         browserUrl = m['url'] as String?;
+      case 'fs_entries' || 'fs_meta' || 'fs_done' || 'fs_upload_ready':
+        fsEvents.add(m);
       case 'error':
         final msg = m['msg'] as String? ?? 'Something went wrong on the PC.';
         _reopen = null;
@@ -221,6 +240,30 @@ class HostConnection extends ChangeNotifier {
   /// Asks the PC to re-read the browser's current page (HostMsg::Url).
   void requestUrl() => _send({'t': 'get_url'});
 
+  // ---- file access ----
+  /// Debug tracer: the host logs every text frame it receives, even
+  /// unparseable ones, so this shows up in the host log verbatim.
+  void trace(String s) => _send({'t': s});
+
+  void fsList(String path) => _send({'t': 'fs_list', 'path': path});
+  void fsMkdir(String path) => _send({'t': 'fs_mkdir', 'path': path});
+  void fsDelete(String path) => _send({'t': 'fs_delete', 'path': path});
+  void fsDownload(int id, String path) => _send({'t': 'fs_download', 'id': id, 'path': path});
+  void fsUploadBegin(int id, String path, int size) =>
+      _send({'t': 'fs_upload_begin', 'id': id, 'path': path, 'size': size});
+  Future<void> fsUploadChunk(int id, int offset, int total, Uint8List data) async {
+    final frame = Uint8List(25 + data.length);
+    final bd = ByteData.view(frame.buffer);
+    bd.setUint8(0, 4);
+    bd.setUint64(1, id, Endian.little);
+    bd.setUint64(9, offset, Endian.little);
+    bd.setUint64(17, total, Endian.little);
+    frame.setRange(25, frame.length, data);
+    _ch?.sink.add(frame);
+  }
+
+  void fsUploadEnd(int id) => _send({'t': 'fs_upload_end', 'id': id});
+
   void setViewport(Map<String, double> viewport) {
     if (_reopen != null) _reopen!['viewport'] = viewport;
     _send({'t': 'viewport', 'viewport': viewport});
@@ -260,6 +303,7 @@ class HostConnection extends ChangeNotifier {
     _disposed = true;
     _teardown();
     frame.dispose();
+    fsEvents.close();
     super.dispose();
   }
 }

@@ -81,5 +81,20 @@
   "switchIme": "Tastatur wechseln",
   "webMode": "Web",
   "webModeTip": "Surfe wie am Handy; der PC folgt deiner Navigation",
-  "loadFromPc": "Die gerade angezeigte PC-Seite laden"
+  "loadFromPc": "Die gerade angezeigte PC-Seite laden",
+  "filesTitle": "Dateien",
+  "thisPc": "Dieser PC",
+  "upload": "Hochladen",
+  "download": "Herunterladen",
+  "newFolder": "Neuer Ordner",
+  "folderName": "Ordnername",
+  "deleteItem": "Löschen",
+  "deleteConfirmTitle": "Löschen?",
+  "deleteConfirmBody": "„{name}“ wird in den Papierkorb verschoben.",
+  "downloadDone": "Geladen. Wähle, wo es gespeichert wird.",
+  "transferDone": "Übertragung abgeschlossen",
+  "transferFailed": "Übertragung fehlgeschlagen",
+  "emptyDir": "Leerer Ordner",
+  "grantStorage": "Erlaube den Zugriff auf alle Dateien im nächsten Schritt und versuche es erneut.",
+  "uploadFromPhone": "Datei von diesem Telefon senden"
 }

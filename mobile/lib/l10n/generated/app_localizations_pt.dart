@@ -271,4 +271,52 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get loadFromPc => 'Carregar a página que o PC mostra';
+
+  @override
+  String get filesTitle => 'Arquivos';
+
+  @override
+  String get thisPc => 'Este PC';
+
+  @override
+  String get upload => 'Enviar';
+
+  @override
+  String get download => 'Baixar';
+
+  @override
+  String get newFolder => 'Nova pasta';
+
+  @override
+  String get folderName => 'Nome da pasta';
+
+  @override
+  String get deleteItem => 'Excluir';
+
+  @override
+  String get deleteConfirmTitle => 'Excluir?';
+
+  @override
+  String deleteConfirmBody(Object name) {
+    return '\"$name\" será movido para a Lixeira.';
+  }
+
+  @override
+  String get downloadDone => 'Baixado. Escolha onde salvar.';
+
+  @override
+  String get transferDone => 'Transferência concluída';
+
+  @override
+  String get transferFailed => 'Falha na transferência';
+
+  @override
+  String get emptyDir => 'Pasta vazia';
+
+  @override
+  String get grantStorage =>
+      'Permita o acesso a todos os arquivos na próxima tela e tente novamente.';
+
+  @override
+  String get uploadFromPhone => 'Enviar um arquivo deste celular';
 }

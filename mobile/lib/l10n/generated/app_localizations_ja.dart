@@ -265,4 +265,51 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get loadFromPc => 'PC の現在のページを読み込む';
+
+  @override
+  String get filesTitle => 'ファイル';
+
+  @override
+  String get thisPc => 'PC';
+
+  @override
+  String get upload => 'アップロード';
+
+  @override
+  String get download => 'ダウンロード';
+
+  @override
+  String get newFolder => '新規フォルダー';
+
+  @override
+  String get folderName => 'フォルダー名';
+
+  @override
+  String get deleteItem => '削除';
+
+  @override
+  String get deleteConfirmTitle => '削除しますか?';
+
+  @override
+  String deleteConfirmBody(Object name) {
+    return '「$name」はごみ箱へ移動されます。';
+  }
+
+  @override
+  String get downloadDone => 'ダウンロードしました。保存先を選んでください。';
+
+  @override
+  String get transferDone => '転送完了';
+
+  @override
+  String get transferFailed => '転送に失敗しました';
+
+  @override
+  String get emptyDir => '空のフォルダー';
+
+  @override
+  String get grantStorage => '次の画面で「すべてのファイルへのアクセス」を許可してから、もう一度お試しください。';
+
+  @override
+  String get uploadFromPhone => 'このスマホからファイルを送る';
 }

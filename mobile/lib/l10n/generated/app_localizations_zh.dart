@@ -263,6 +263,53 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get loadFromPc => '载入电脑当前页面';
+
+  @override
+  String get filesTitle => '文件';
+
+  @override
+  String get thisPc => '此电脑';
+
+  @override
+  String get upload => '上传';
+
+  @override
+  String get download => '下载';
+
+  @override
+  String get newFolder => '新建文件夹';
+
+  @override
+  String get folderName => '文件夹名称';
+
+  @override
+  String get deleteItem => '删除';
+
+  @override
+  String get deleteConfirmTitle => '删除?';
+
+  @override
+  String deleteConfirmBody(Object name) {
+    return '“$name”将移入回收站。';
+  }
+
+  @override
+  String get downloadDone => '已下载,选择保存位置。';
+
+  @override
+  String get transferDone => '传输完成';
+
+  @override
+  String get transferFailed => '传输失败';
+
+  @override
+  String get emptyDir => '空文件夹';
+
+  @override
+  String get grantStorage => '请在下一屏允许“所有文件访问”,然后重试。';
+
+  @override
+  String get uploadFromPhone => '从本手机发送文件';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -524,4 +571,51 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get loadFromPc => '載入電腦目前頁面';
+
+  @override
+  String get filesTitle => '檔案';
+
+  @override
+  String get thisPc => '本機';
+
+  @override
+  String get upload => '上傳';
+
+  @override
+  String get download => '下載';
+
+  @override
+  String get newFolder => '新增資料夾';
+
+  @override
+  String get folderName => '資料夾名稱';
+
+  @override
+  String get deleteItem => '刪除';
+
+  @override
+  String get deleteConfirmTitle => '刪除?';
+
+  @override
+  String deleteConfirmBody(Object name) {
+    return '「$name」將移到資源回收筒。';
+  }
+
+  @override
+  String get downloadDone => '已下載,選擇儲存位置。';
+
+  @override
+  String get transferDone => '傳輸完成';
+
+  @override
+  String get transferFailed => '傳輸失敗';
+
+  @override
+  String get emptyDir => '空資料夾';
+
+  @override
+  String get grantStorage => '請在下一畫面允許「所有檔案存取」,然後重試。';
+
+  @override
+  String get uploadFromPhone => '從本手機傳送檔案';
 }

@@ -264,4 +264,51 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get loadFromPc => 'PC의 현재 페이지 불러오기';
+
+  @override
+  String get filesTitle => '파일';
+
+  @override
+  String get thisPc => '내 PC';
+
+  @override
+  String get upload => '업로드';
+
+  @override
+  String get download => '다운로드';
+
+  @override
+  String get newFolder => '새 폴더';
+
+  @override
+  String get folderName => '폴더 이름';
+
+  @override
+  String get deleteItem => '삭제';
+
+  @override
+  String get deleteConfirmTitle => '삭제할까요?';
+
+  @override
+  String deleteConfirmBody(Object name) {
+    return '\"$name\" 항목은 휴지통으로 이동합니다.';
+  }
+
+  @override
+  String get downloadDone => '다운로드 완료. 저장 위치를 선택하세요.';
+
+  @override
+  String get transferDone => '전송 완료';
+
+  @override
+  String get transferFailed => '전송 실패';
+
+  @override
+  String get emptyDir => '빈 폴더';
+
+  @override
+  String get grantStorage => '다음 화면에서 모든 파일 접근을 허용한 후 다시 시도하세요.';
+
+  @override
+  String get uploadFromPhone => '이 휴대폰에서 파일 보내기';
 }

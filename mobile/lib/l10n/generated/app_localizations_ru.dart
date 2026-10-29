@@ -271,4 +271,52 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get loadFromPc => 'Загрузить страницу, открытую на ПК';
+
+  @override
+  String get filesTitle => 'Файлы';
+
+  @override
+  String get thisPc => 'Этот компьютер';
+
+  @override
+  String get upload => 'Отправить';
+
+  @override
+  String get download => 'Скачать';
+
+  @override
+  String get newFolder => 'Новая папка';
+
+  @override
+  String get folderName => 'Имя папки';
+
+  @override
+  String get deleteItem => 'Удалить';
+
+  @override
+  String get deleteConfirmTitle => 'Удалить?';
+
+  @override
+  String deleteConfirmBody(Object name) {
+    return '«$name» будет перемещён в корзину.';
+  }
+
+  @override
+  String get downloadDone => 'Скачано. Выберите, куда сохранить.';
+
+  @override
+  String get transferDone => 'Передача завершена';
+
+  @override
+  String get transferFailed => 'Ошибка передачи';
+
+  @override
+  String get emptyDir => 'Пустая папка';
+
+  @override
+  String get grantStorage =>
+      'Разрешите доступ ко всем файлам на следующем экране и повторите.';
+
+  @override
+  String get uploadFromPhone => 'Отправить файл с этого телефона';
 }
