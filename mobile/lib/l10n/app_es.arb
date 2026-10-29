@@ -77,5 +77,6 @@
   "rxScale": "Tamaño de imagen",
   "rxScaleSub": "Imagen más pequeña = muchos menos datos",
   "rxGray": "Modo de escala de grises",
-  "rxGraySub": "Imagen en blanco y negro; reduce mucho los datos"
+  "rxGraySub": "Imagen en blanco y negro; reduce mucho los datos",
+  "switchIme": "Cambiar teclado"
 }

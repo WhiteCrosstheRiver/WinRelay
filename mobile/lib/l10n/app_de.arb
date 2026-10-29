@@ -77,5 +77,6 @@
   "rxScale": "Bildgröße",
   "rxScaleSub": "Kleineres Bild = deutlich weniger Daten",
   "rxGray": "Graustufenmodus",
-  "rxGraySub": "Schwarzweißbild; spart deutlich Datenvolumen"
+  "rxGraySub": "Schwarzweißbild; spart deutlich Datenvolumen",
+  "switchIme": "Tastatur wechseln"
 }

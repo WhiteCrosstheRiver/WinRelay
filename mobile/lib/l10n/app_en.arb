@@ -115,5 +115,6 @@
   "rxScale": "Picture size",
   "rxScaleSub": "Smaller picture = much less data",
   "rxGray": "Grayscale mode",
-  "rxGraySub": "Black-and-white picture; cuts data use sharply"
+  "rxGraySub": "Black-and-white picture; cuts data use sharply",
+  "switchIme": "Switch keyboard"
 }

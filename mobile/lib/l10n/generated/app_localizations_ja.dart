@@ -253,4 +253,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get rxGraySub => '白黒画像で通信量を大幅に削減';
+
+  @override
+  String get switchIme => '入力方法を切り替え';
 }

@@ -55,6 +55,16 @@ class QuickKeysBar extends StatelessWidget {
                   tooltip: keyboardOpen ? l10n.hideKeyboard : l10n.showKeyboard,
                   onPressed: onToggleKeyboard,
                 ),
+                IconButton.filledTonal(
+                  icon: const Icon(Icons.language),
+                  tooltip: l10n.switchIme,
+                  onPressed: () {
+                    // Opens the system input-method picker so another keyboard
+                    // (e.g. a Chinese IME) can be chosen in place. No-op where
+                    // the platform channel isn't implemented.
+                    const MethodChannel('winrelay/ime').invokeMethod('showPicker').catchError((_) {});
+                  },
+                ),
                 const SizedBox(width: 4),
                 for (final k in keys)
                   if (allQuickKeys.containsKey(k))

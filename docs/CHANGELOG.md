@@ -1,6 +1,24 @@
 # Changelog
 
-## 2026-10-30
+## 2026-10-30 (v0.2.1) — Chinese IME / keyboard UX fix
+
+Live typing fought the phone's keyboard: `enableSuggestions: false` told IMEs
+"no candidates here", so Chinese keyboards degraded to letter-by-letter input
+with no candidate bar, no 中文/EN switch, no learning.
+
+- The hidden typing field now keeps suggestions/autocorrect on. The sentinel
+  already buffers composing text, so pinyin stays local until the word is
+  chosen, then the committed text is sent to the PC — candidate bar and IME
+  language keys work again.
+- New 🌐 button in the quick-keys bar opens the system input-method picker
+  (`InputMethodManager.showInputMethodPicker` via the `winrelay/ime` platform
+  channel, Android MainActivity), so switching keyboards never leaves the
+  control screen.
+- Note: English words are now sent on commit (word-wise) instead of per key —
+  that is what makes IME composing possible. Paste from the phone clipboard
+  is still available via Quick keys → Paste.
+
+## 2026-10-30 (v0.2.0)
 
 ### Stream tuning: control frame rate, picture size, grayscale (bandwidth saver)
 

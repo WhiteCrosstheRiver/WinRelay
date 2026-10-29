@@ -77,5 +77,6 @@
   "rxScale": "接收分辨率",
   "rxScaleSub": "画面越小,流量越省",
   "rxGray": "灰度模式",
-  "rxGraySub": "黑白画面,大幅节省流量"
+  "rxGraySub": "黑白画面,大幅节省流量",
+  "switchIme": "切换输入法"
 }

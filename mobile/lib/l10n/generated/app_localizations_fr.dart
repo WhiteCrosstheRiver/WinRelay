@@ -261,4 +261,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get rxGraySub =>
       'Image en noir et blanc ; réduit nettement les données';
+
+  @override
+  String get switchIme => 'Changer de clavier';
 }

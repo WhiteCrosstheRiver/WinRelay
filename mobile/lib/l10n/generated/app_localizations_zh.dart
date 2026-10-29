@@ -251,6 +251,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get rxGraySub => '黑白画面,大幅节省流量';
+
+  @override
+  String get switchIme => '切换输入法';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -500,4 +503,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get rxGraySub => '黑白畫面,大幅節省流量';
+
+  @override
+  String get switchIme => '切換輸入法';
 }

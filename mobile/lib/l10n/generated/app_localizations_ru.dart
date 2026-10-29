@@ -258,4 +258,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get rxGraySub => 'Чёрно-белая картинка; резко сокращает трафик';
+
+  @override
+  String get switchIme => 'Сменить клавиатуру';
 }

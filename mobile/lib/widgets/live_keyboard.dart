@@ -86,8 +86,11 @@ class _LiveKeyboardState extends State<LiveKeyboard> {
           keyboardType: TextInputType.multiline,
           textInputAction: TextInputAction.newline,
           maxLines: null,
-          autocorrect: false,
-          enableSuggestions: false,
+          // Suggestions stay on so Chinese/Japanese IMEs show their candidate
+          // bar and language-switch keys work. The sentinel makes this safe:
+          // composing text isn't forwarded until the IME commits it.
+          autocorrect: true,
+          enableSuggestions: true,
           enableIMEPersonalizedLearning: false,
           showCursor: false,
           decoration: const InputDecoration.collapsed(hintText: ''),

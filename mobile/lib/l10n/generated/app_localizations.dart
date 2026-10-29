@@ -582,6 +582,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Black-and-white picture; cuts data use sharply'**
   String get rxGraySub;
+
+  /// No description provided for @switchIme.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch keyboard'**
+  String get switchIme;
 }
 
 class _AppLocalizationsDelegate

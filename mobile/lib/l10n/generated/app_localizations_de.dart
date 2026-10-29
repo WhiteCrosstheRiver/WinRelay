@@ -259,4 +259,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get rxGraySub => 'Schwarzweißbild; spart deutlich Datenvolumen';
+
+  @override
+  String get switchIme => 'Tastatur wechseln';
 }

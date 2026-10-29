@@ -252,4 +252,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get rxGraySub => '흑백 화면으로 데이터 사용량을 크게 줄입니다';
+
+  @override
+  String get switchIme => '입력기 전환';
 }
