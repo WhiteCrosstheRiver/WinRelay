@@ -78,5 +78,8 @@
   "rxScaleSub": "Imagem menor = muito menos dados",
   "rxGray": "Modo tons de cinza",
   "rxGraySub": "Imagem em preto e branco; reduz muito os dados",
-  "switchIme": "Mudar teclado"
+  "switchIme": "Mudar teclado",
+  "webMode": "Web",
+  "webModeTip": "Navegue como no celular; o PC segue sua navegação",
+  "loadFromPc": "Carregar a página que o PC mostra"
 }

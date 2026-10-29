@@ -139,6 +139,11 @@ fn exe_name(pid: u32) -> Option<String> {
     }
 }
 
+/// The executable name (with .exe) of the process that owns the window.
+pub fn exe_of(h: HWND) -> Option<String> {
+    exe_name(pid_of(h))
+}
+
 /// "WindowsTerminal.exe" -> "Windows Terminal", "claude.exe" -> "Claude".
 fn pretty_app(exe: &str) -> String {
     let stem = exe.strip_suffix(".exe").or_else(|| exe.strip_suffix(".EXE")).unwrap_or(exe);

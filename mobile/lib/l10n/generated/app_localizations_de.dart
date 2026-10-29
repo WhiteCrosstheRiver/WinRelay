@@ -262,4 +262,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get switchIme => 'Tastatur wechseln';
+
+  @override
+  String get webMode => 'Web';
+
+  @override
+  String get webModeTip => 'Surfe wie am Handy; der PC folgt deiner Navigation';
+
+  @override
+  String get loadFromPc => 'Die gerade angezeigte PC-Seite laden';
 }

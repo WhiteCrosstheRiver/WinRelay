@@ -78,5 +78,8 @@
   "rxScaleSub": "画面越小,流量越省",
   "rxGray": "灰度模式",
   "rxGraySub": "黑白画面,大幅节省流量",
-  "switchIme": "切换输入法"
+  "switchIme": "切换输入法",
+  "webMode": "网页",
+  "webModeTip": "像手机一样上网,电脑会跟随你的导航",
+  "loadFromPc": "载入电脑当前页面"
 }

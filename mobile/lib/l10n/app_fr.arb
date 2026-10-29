@@ -78,5 +78,8 @@
   "rxScaleSub": "Image plus petite = beaucoup moins de données",
   "rxGray": "Mode niveaux de gris",
   "rxGraySub": "Image en noir et blanc ; réduit nettement les données",
-  "switchIme": "Changer de clavier"
+  "switchIme": "Changer de clavier",
+  "webMode": "Web",
+  "webModeTip": "Naviguez comme sur un téléphone ; le PC suit votre navigation",
+  "loadFromPc": "Charger la page affichée sur le PC"
 }

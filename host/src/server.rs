@@ -2,7 +2,7 @@ use crate::capture::{self, CaptureOptions};
 use crate::config::{self, Activity, Config, Device};
 use crate::input::{self, Cmd};
 use crate::protocol::*;
-use crate::{display, net, power, session, winlist};
+use crate::{browser, display, net, power, session, winlist};
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
 use axum::extract::{ConnectInfo, State};
 use axum::http::{header, StatusCode};
@@ -405,6 +405,22 @@ async fn authenticate(s: &Shared, out: &mpsc::Sender<Message>, hello: ClientMsg)
     Some((device_id, name))
 }
 
+/// Reads the browser session's current page in the background and sends it.
+fn push_browser_url(out: &mpsc::Sender<Message>, id: u64) {
+    let out = out.clone();
+    tokio::spawn(async move {
+        let url = tokio::task::spawn_blocking(move || browser::current_url(winlist::hwnd(id)))
+            .await
+            .ok()
+            .flatten();
+        if let Some(url) = url {
+            if let Ok(text) = serde_json::to_string(&HostMsg::Url { url }) {
+                let _ = out.send(Message::Text(text)).await;
+            }
+        }
+    });
+}
+
 struct Live {
     session: session::Session,
     stop: Arc<AtomicBool>,
@@ -577,6 +593,14 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                                 tx(&out, HostMsg::Opened { id, title: sess.title.clone(), stealth }).await;
                                 was_locked = false;
                                 live = Some(Live { session: sess, stop, params, capture: Some(cap), activity });
+                                // A browser session also hands the phone the
+                                // page being shown, for the phone-side web view.
+                                if winlist::exe_of(winlist::hwnd(id))
+                                    .map(|e| browser::is_browser_exe(&e))
+                                    .unwrap_or(false)
+                                {
+                                    push_browser_url(&out, id);
+                                }
                             }
                             Err(e) => tx(&out, HostMsg::Error { msg: e.to_string() }).await,
                         }
@@ -584,6 +608,24 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                     ClientMsg::Stream { fps, pic_scale, gray } => {
                         if let Some(l) = &live {
                             l.params.set(fps, pic_scale, gray);
+                        }
+                    }
+                    ClientMsg::Navigate { url } => {
+                        if let Some(l) = &live {
+                            // Only real web URLs; the address bar is a text
+                            // field, so anything else would be typed into it.
+                            if (url.starts_with("http://") || url.starts_with("https://")) && url.len() <= 2048 {
+                                let id = l.session.id;
+                                let u = url;
+                                tokio::task::spawn_blocking(move || browser::navigate(winlist::hwnd(id), &u)).await.ok();
+                            } else {
+                                tx(&out, HostMsg::Error { msg: "Only http(s) URLs can be sent to the browser.".into() }).await;
+                            }
+                        }
+                    }
+                    ClientMsg::GetUrl => {
+                        if let Some(l) = &live {
+                            push_browser_url(&out, l.session.id);
                         }
                     }
                     ClientMsg::Viewport { viewport } => {

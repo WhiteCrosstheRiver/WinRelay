@@ -263,4 +263,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get switchIme => 'Cambiar teclado';
+
+  @override
+  String get webMode => 'Web';
+
+  @override
+  String get webModeTip =>
+      'Navega como en un teléfono; el PC sigue tu navegación';
+
+  @override
+  String get loadFromPc => 'Cargar la página que muestra el PC';
 }

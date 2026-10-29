@@ -9,6 +9,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../models.dart';
 import '../store.dart';
 import '../widgets/live_keyboard.dart';
+import '../widgets/web_pane.dart';
 import '../widgets/quick_keys.dart';
 import '../widgets/video_view.dart';
 import 'settings_screen.dart';
@@ -28,6 +29,8 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
   final _compose = TextEditingController();
   late bool _tapMode;
   bool _opened = false;
+  /// Web mode (browser windows only): native phone web view instead of video.
+  bool _webMode = false;
   Orientation? _orientation;
   Timer? _rotateDebounce;
   void Function(String)? _prevOnError;
@@ -148,6 +151,7 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
     final l10n = AppLocalizations.of(context)!;
     final title = conn.openTitle.isNotEmpty ? conn.openTitle : widget.win.title;
     final reconnecting = conn.state != ConnState.ready;
+    final isBrowser = isBrowserExe(widget.win.exe);
 
     return Scaffold(
       appBar: AppBar(
@@ -157,6 +161,15 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
             Tooltip(
               message: l10n.stealthTip,
               child: const Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Icon(Icons.visibility_off_outlined)),
+            ),
+          // Browser windows can be taken over natively: the page opens in a
+          // phone web view and the PC's browser follows the navigation.
+          if (isBrowser)
+            IconButton(
+              icon: Icon(_webMode ? Icons.web : Icons.public),
+              tooltip: l10n.webMode,
+              isSelected: _webMode,
+              onPressed: () => setState(() => _webMode = !_webMode),
             ),
           Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -172,30 +185,32 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
           ),
         ],
       ),
-      body: Column(children: [
-        if (reconnecting)
-          _Notice(color: scheme.secondaryContainer, text: l10n.reconnecting),
-        if (conn.locked)
-          _Notice(color: scheme.errorContainer, text: l10n.pcLocked),
-        Expanded(child: VideoView(conn: conn, tapMode: _tapMode)),
-        if (settings.composeMode)
-          _ComposeBar(controller: _compose, onSend: _sendCompose, hint: l10n.composeHint, sendTip: l10n.sendWithEnter)
-        else
-          LiveKeyboard(
-            focusNode: _kbFocus,
-            enterKey: settings.enterKey,
-            onText: conn.text,
-            onKey: conn.key,
-          ),
-        QuickKeysBar(
-          keys: settings.quickKeys,
-          onKey: _quickKey,
-          haptics: settings.haptics,
-          keyboardOpen: settings.composeMode ? false : _kbFocus.hasFocus,
-          onToggleKeyboard: settings.composeMode ? () => FocusScope.of(context).unfocus() : _toggleKeyboard,
-          onLongPress: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
-        ),
-      ]),
+      body: _webMode
+          ? WebPane(conn: conn)
+          : Column(children: [
+              if (reconnecting)
+                _Notice(color: scheme.secondaryContainer, text: l10n.reconnecting),
+              if (conn.locked)
+                _Notice(color: scheme.errorContainer, text: l10n.pcLocked),
+              Expanded(child: VideoView(conn: conn, tapMode: _tapMode)),
+              if (settings.composeMode)
+                _ComposeBar(controller: _compose, onSend: _sendCompose, hint: l10n.composeHint, sendTip: l10n.sendWithEnter)
+              else
+                LiveKeyboard(
+                  focusNode: _kbFocus,
+                  enterKey: settings.enterKey,
+                  onText: conn.text,
+                  onKey: conn.key,
+                ),
+              QuickKeysBar(
+                keys: settings.quickKeys,
+                onKey: _quickKey,
+                haptics: settings.haptics,
+                keyboardOpen: settings.composeMode ? false : _kbFocus.hasFocus,
+                onToggleKeyboard: settings.composeMode ? () => FocusScope.of(context).unfocus() : _toggleKeyboard,
+                onLongPress: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
+              ),
+            ]),
     );
   }
 }

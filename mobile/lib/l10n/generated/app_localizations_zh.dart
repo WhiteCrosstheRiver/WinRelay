@@ -254,6 +254,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get switchIme => '切换输入法';
+
+  @override
+  String get webMode => '网页';
+
+  @override
+  String get webModeTip => '像手机一样上网,电脑会跟随你的导航';
+
+  @override
+  String get loadFromPc => '载入电脑当前页面';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -506,4 +515,13 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get switchIme => '切換輸入法';
+
+  @override
+  String get webMode => '網頁';
+
+  @override
+  String get webModeTip => '像手機一樣上網,電腦會跟隨你的導覽';
+
+  @override
+  String get loadFromPc => '載入電腦目前頁面';
 }

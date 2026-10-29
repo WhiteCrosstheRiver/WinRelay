@@ -78,5 +78,8 @@
   "rxScaleSub": "Kleineres Bild = deutlich weniger Daten",
   "rxGray": "Graustufenmodus",
   "rxGraySub": "Schwarzweißbild; spart deutlich Datenvolumen",
-  "switchIme": "Tastatur wechseln"
+  "switchIme": "Tastatur wechseln",
+  "webMode": "Web",
+  "webModeTip": "Surfe wie am Handy; der PC folgt deiner Navigation",
+  "loadFromPc": "Die gerade angezeigte PC-Seite laden"
 }

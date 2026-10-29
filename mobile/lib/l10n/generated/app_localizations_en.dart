@@ -261,4 +261,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get switchIme => 'Switch keyboard';
+
+  @override
+  String get webMode => 'Web';
+
+  @override
+  String get webModeTip =>
+      'Browse like on a phone; the PC follows your navigation';
+
+  @override
+  String get loadFromPc => 'Load the page the PC is showing';
 }

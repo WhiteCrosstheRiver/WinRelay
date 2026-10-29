@@ -55,6 +55,26 @@ class WinInfo {
       );
 }
 
+/// Executable names (lowercase, without .exe) of browsers the PC recognizes.
+/// Keep in sync with the host's list in host/src/browser.rs.
+const browserExes = <String>{
+  // Chromium family, international
+  'chrome', 'msedge', 'brave', 'vivaldi', 'opera', 'arc', 'duckduckgo', 'chromium',
+  'thorium', 'slimjet', 'iridium', 'centbrowser', 'whale', 'yandex', 'browser',
+  // Firefox family
+  'firefox', 'zen', 'waterfox', 'librewolf', 'palemoon',
+  // Chinese browsers
+  'qqbrowser', '360se', '360chrome', 'maxthon', 'sogouexplorer', 'baidubrowser',
+  'ucbrowser', 'liebao', '2345explorer', 'twinkstar', 'quark-browser', 'quarkpc',
+};
+
+/// True when a window's exe belongs to a browser the app can take over in
+/// Web mode (the page opens in a phone-native WebView).
+bool isBrowserExe(String exe) {
+  final e = exe.toLowerCase();
+  return browserExes.contains(e.endsWith('.exe') ? e.substring(0, e.length - 4) : e);
+}
+
 /// Every quick key the bar can show, in display order: id -> label.
 const allQuickKeys = <String, String>{
   'esc': 'Esc',

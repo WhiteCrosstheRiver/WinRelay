@@ -255,4 +255,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get switchIme => '입력기 전환';
+
+  @override
+  String get webMode => '웹';
+
+  @override
+  String get webModeTip => '휴대폰처럼 탐색하며 PC가 탐색을 따라갑니다';
+
+  @override
+  String get loadFromPc => 'PC의 현재 페이지 불러오기';
 }

@@ -256,4 +256,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get switchIme => '入力方法を切り替え';
+
+  @override
+  String get webMode => 'ウェブ';
+
+  @override
+  String get webModeTip => 'スマホのように閲覧でき、PC がナビゲーションに追従します';
+
+  @override
+  String get loadFromPc => 'PC の現在のページを読み込む';
 }

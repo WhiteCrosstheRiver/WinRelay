@@ -79,7 +79,7 @@ fn run(h: HWND, cmd: Cmd) {
 /// Bring the target window to the foreground so keystrokes land in it.
 /// Windows restricts focus stealing; attaching to the current foreground
 /// thread's input queue is the reliable, side-effect-free way around it.
-fn focus(h: HWND) {
+pub fn focus(h: HWND) {
     unsafe {
         let fg = GetForegroundWindow();
         if fg == h {
@@ -159,6 +159,7 @@ pub fn key(name: &str) {
         "ctrl_c" => (&[VK_CONTROL], VIRTUAL_KEY(0x43), false),
         "ctrl_v" => (&[VK_CONTROL], VIRTUAL_KEY(0x56), false),
         "ctrl_z" => (&[VK_CONTROL], VIRTUAL_KEY(0x5A), false),
+        "ctrl_l" => (&[VK_CONTROL], VIRTUAL_KEY(0x4C), false),
         "up" => (&[], VK_UP, true),
         "down" => (&[], VK_DOWN, true),
         "left" => (&[], VK_LEFT, true),

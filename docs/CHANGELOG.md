@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-10-30 (v0.3.0) — Browser takeover: browse like on a phone
+
+When the controlled window is a browser, the phone can now switch to **Web
+mode** (🌐 in the control app bar): the page opens in a real phone WebView —
+mobile layout, native touch, pinch zoom, the phone keyboard — instead of a
+video stream, and the PC's browser follows the phone's navigation.
+
+- Host `browser.rs`: browser detection by exe (Edge, Chrome, Firefox, Zen,
+  Brave, Vivaldi, Opera, Arc, DuckDuckGo, Waterfox/LibreWolf/PaleMoon,
+  Thorium, QQ/360/搜狗/百度/UC/猎豹/2345/Twinkstar/夸克, Whale, Yandex…,
+  mirrored in `mobile/lib/models.dart`); URL grab via Ctrl+L → Ctrl+C with
+  the user's clipboard restored; `navigate` types the URL into the address
+  bar (http/https only, ≤2048 chars).
+- Protocol: `url` (PC→phone, pushed on session open and after `get_url`),
+  `navigate` + `get_url` (phone→PC).
+- Phone: `WebPane` (webview_flutter) — loads the PC's page, pushes every
+  finished navigation back (echo-suppressed), toolbar has sync-from-PC and
+  reload. Non-browser windows are unchanged.
+- E2E `host/tests/e2e_browser_relay.py`: real Firefox window — URL grabbed,
+  navigate to example.com verified by re-reading the address bar.
+
 ## 2026-10-30 (v0.2.1) — Chinese IME / keyboard UX fix
 
 Live typing fought the phone's keyboard: `enableSuggestions: false` told IMEs

@@ -78,5 +78,8 @@
   "rxScaleSub": "화면이 작을수록 데이터를 크게 절약합니다",
   "rxGray": "회색조 모드",
   "rxGraySub": "흑백 화면으로 데이터 사용량을 크게 줄입니다",
-  "switchIme": "입력기 전환"
+  "switchIme": "입력기 전환",
+  "webMode": "웹",
+  "webModeTip": "휴대폰처럼 탐색하며 PC가 탐색을 따라갑니다",
+  "loadFromPc": "PC의 현재 페이지 불러오기"
 }

@@ -66,6 +66,10 @@ pub enum ClientMsg {
         #[serde(default)]
         gray: Option<bool>,
     },
+    /// Phone's web view navigated: point the browser at the same page.
+    Navigate { url: String },
+    /// Phone asks for the browser's current URL again (HostMsg::Url).
+    GetUrl,
     Viewport { viewport: Viewport },
     Close,
     /// Characters as typed. "\n" is sent as the Return key.
@@ -106,6 +110,8 @@ pub enum HostMsg {
     Denied { reason: String },
     Windows { items: Vec<WinInfo> },
     Opened { id: u64, title: String, stealth: bool },
+    /// The session window is a browser; this is the page it is showing now.
+    Url { url: String },
     Closed { reason: String },
     Locked { locked: bool },
     Error { msg: String },

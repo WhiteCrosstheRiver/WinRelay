@@ -36,6 +36,10 @@ class HostConnection extends ChangeNotifier {
   final Map<int, Uint8List> thumbs = {};
   final Set<int> _thumbAsked = {};
 
+  /// Current page of the controlled browser window, pushed by the PC when a
+  /// browser session opens and after each `get_url`. Null for non-browsers.
+  String? browserUrl;
+
   /// Video frames bypass notifyListeners so only the picture repaints.
   final ValueNotifier<Frame?> frame = ValueNotifier(null);
   int? openId;
@@ -150,6 +154,8 @@ class HostConnection extends ChangeNotifier {
         }
       case 'locked':
         locked = m['locked'] as bool? ?? false;
+      case 'url':
+        browserUrl = m['url'] as String?;
       case 'error':
         final msg = m['msg'] as String? ?? 'Something went wrong on the PC.';
         _reopen = null;
@@ -208,6 +214,12 @@ class HostConnection extends ChangeNotifier {
       if (gray != null) 'gray': gray,
     });
   }
+
+  /// Points the PC's browser at [url] (the phone's web view navigated).
+  void navigate(String url) => _send({'t': 'navigate', 'url': url});
+
+  /// Asks the PC to re-read the browser's current page (HostMsg::Url).
+  void requestUrl() => _send({'t': 'get_url'});
 
   void setViewport(Map<String, double> viewport) {
     if (_reopen != null) _reopen!['viewport'] = viewport;

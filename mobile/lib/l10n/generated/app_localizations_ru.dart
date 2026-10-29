@@ -261,4 +261,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get switchIme => 'Сменить клавиатуру';
+
+  @override
+  String get webMode => 'Веб';
+
+  @override
+  String get webModeTip =>
+      'Сёрфите как на телефоне; ПК последует за вашей навигацией';
+
+  @override
+  String get loadFromPc => 'Загрузить страницу, открытую на ПК';
 }

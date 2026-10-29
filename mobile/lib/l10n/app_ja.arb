@@ -78,5 +78,8 @@
   "rxScaleSub": "画像が小さいほど通信量を大きく節約できます",
   "rxGray": "グレースケール",
   "rxGraySub": "白黒画像で通信量を大幅に削減",
-  "switchIme": "入力方法を切り替え"
+  "switchIme": "入力方法を切り替え",
+  "webMode": "ウェブ",
+  "webModeTip": "スマホのように閲覧でき、PC がナビゲーションに追従します",
+  "loadFromPc": "PC の現在のページを読み込む"
 }

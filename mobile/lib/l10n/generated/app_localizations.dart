@@ -588,6 +588,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Switch keyboard'**
   String get switchIme;
+
+  /// No description provided for @webMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Web'**
+  String get webMode;
+
+  /// No description provided for @webModeTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse like on a phone; the PC follows your navigation'**
+  String get webModeTip;
+
+  /// No description provided for @loadFromPc.
+  ///
+  /// In en, this message translates to:
+  /// **'Load the page the PC is showing'**
+  String get loadFromPc;
 }
 
 class _AppLocalizationsDelegate
