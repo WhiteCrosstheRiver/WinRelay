@@ -33,8 +33,28 @@ async fn main() -> anyhow::Result<()> {
     // If the host crashed mid-session, put moved windows back on a physical screen.
     session::restore_all();
 
-    let cfg = config::load();
-    let port = cfg.port;
+    // Optional CLI: --port N (second instance) and --config-dir DIR (isolated
+    // data dir) exist mainly so two hosts can run side by side for testing.
+    let mut port_override: Option<u16> = None;
+    let mut args = std::env::args().skip(1);
+    while let Some(a) = args.next() {
+        match a.as_str() {
+            "--port" => port_override = args.next().and_then(|v| v.parse().ok()),
+            "--config-dir" => {
+                if let Some(dir) = args.next() {
+                    config::set_data_dir(dir);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    let mut cfg = config::load();
+    if cfg.self_id.is_empty() {
+        cfg.self_id = config::random_token(24);
+        config::save(&cfg);
+    }
+    let port = port_override.unwrap_or(cfg.port);
     let state = server::AppState::new(cfg);
 
     spawn_emergency_hotkey(state.clone());

@@ -1,5 +1,25 @@
 # Changelog
 
+## 2026-10-30 (v0.5.0) — PC controlling PC with strict single-control
+
+The desktop UI gains a **Remote PCs** tab: paste another PC's pairing link,
+approve on that PC, and its windows/video/keyboard/mouse/files are available
+right here — the phone protocol is reused verbatim, so browser takeover,
+stream tuning and file transfer all work between PCs.
+
+- Protocol: `hello` carries `pc_controller: bool`; a PC controller pairs like
+  a phone and keeps a `pc` flag on its device record.
+- Strict single-control (three server-side walls):
+  1. A host that is being controlled locks its remote-device API (423) — no
+     new control can be started from it.
+  2. While a PC controller is attached, every `open` except that controller's
+     own is refused (phone or PC).
+  3. Only one PC controller may be attached, and only to an idle host.
+  Chain length is therefore capped at one; control loops are impossible.
+- CLI: `--port N` and `--config-dir DIR` for a second side-by-side instance.
+- E2E `host/tests/e2e_pc_control.py`: two real host instances — pairing,
+  window open, live frames, all three walls asserted.
+
 ## 2026-10-30 (v0.4.0) — Phone-side file manager for the PC
 
 Browse the PC's drives and folders from the phone like a mobile file manager,

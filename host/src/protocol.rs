@@ -35,6 +35,8 @@ pub enum TapKind {
 #[serde(tag = "t", rename_all = "snake_case")]
 pub enum ClientMsg {
     /// First message on every connection. `token` while pairing, `secret` afterwards.
+    /// `pc_controller` marks a connection from another PC's WinRelay UI (PC
+    /// controlling PC); the host enforces single-control rules for those.
     Hello {
         device_id: String,
         device_name: String,
@@ -42,6 +44,8 @@ pub enum ClientMsg {
         token: Option<String>,
         #[serde(default)]
         secret: Option<String>,
+        #[serde(default)]
+        pc_controller: bool,
     },
     List,
     Thumb { id: u64 },

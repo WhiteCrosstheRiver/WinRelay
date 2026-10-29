@@ -44,6 +44,9 @@ pub struct AppState {
     pub activity: Mutex<Vec<Activity>>,
     pub fails: Mutex<HashMap<IpAddr, (u32, Instant)>>,
     pub screens_off: Arc<AtomicBool>,
+    /// Strict single-control: a PC-controller (another PC's WinRelay UI) is
+    /// currently attached. While set, every `open` — phone or PC — is refused.
+    pub pc_controller: AtomicBool,
 }
 
 pub type Shared = Arc<AppState>;
@@ -60,6 +63,7 @@ impl AppState {
             activity: Mutex::new(activity),
             fails: Mutex::new(HashMap::new()),
             screens_off: Arc::new(AtomicBool::new(false)),
+            pc_controller: AtomicBool::new(false),
         })
     }
 
@@ -109,6 +113,9 @@ pub fn router(state: Shared) -> Router {
         .route("/api/new-link", post(new_link))
         .route("/api/settings", post(save_settings))
         .route("/api/firewall", post(open_firewall))
+        .route("/api/remote/devices", get(remote_devices).post(remote_add))
+        .route("/api/remote/delete", post(remote_delete))
+        .route("/api/remote/status", get(remote_status))
         .with_state(state)
 }
 
@@ -330,6 +337,94 @@ async fn open_firewall(State(s): State<Shared>, ConnectInfo(addr): ConnectInfo<S
     }
 }
 
+// ---------- Remote PCs (PC controlling PC, localhost only) ----------
+
+/// The desktop UI needs the stored secret to connect to the remote PC's
+/// WebSocket. It is withheld while this PC is being controlled: that is
+/// strict single-control wall #3 (no new control can be started from here).
+async fn remote_devices(State(s): State<Shared>, ConnectInfo(addr): ConnectInfo<SocketAddr>) -> Result<Json<Value>, StatusCode> {
+    local_only(&addr)?;
+    // Wall #3: no new control can be started while this PC is a target.
+    if s.active.lock().is_some() || s.pc_controller.load(Ordering::SeqCst) {
+        return Err(StatusCode::LOCKED);
+    }
+    let cfg = s.cfg.lock().clone();
+    let items: Vec<Value> = cfg
+        .remote_pcs
+        .iter()
+        .map(|r| json!({ "id": r.id, "name": r.name, "host": r.host, "port": r.port, "secret": r.secret, "token": r.token }))
+        .collect();
+    Ok(Json(json!({
+        "items": items,
+        "self_id": cfg.self_id,
+        "self_name": net::host_name(),
+        "pc_controller_attached": s.pc_controller.load(Ordering::SeqCst),
+    })))
+}
+
+async fn remote_status(State(s): State<Shared>, ConnectInfo(addr): ConnectInfo<SocketAddr>) -> Result<Json<Value>, StatusCode> {
+    local_only(&addr)?;
+    Ok(Json(json!({
+        "active": !s.active.lock().is_none(),
+        "pc_controller_attached": s.pc_controller.load(Ordering::SeqCst),
+    })))
+}
+
+#[derive(Deserialize)]
+struct RemoteAddReq {
+    name: String,
+    host: String,
+    #[serde(default = "default_port")]
+    port: u16,
+    #[serde(default)]
+    token: String,
+}
+
+fn default_port() -> u16 {
+    47800
+}
+
+async fn remote_add(
+    State(s): State<Shared>,
+    ConnectInfo(addr): ConnectInfo<SocketAddr>,
+    Json(req): Json<RemoteAddReq>,
+) -> Result<Json<Value>, StatusCode> {
+    local_only(&addr)?;
+    if s.active.lock().is_some() {
+        return Err(StatusCode::LOCKED);
+    }
+    let mut cfg = s.cfg.lock();
+    let id = config::random_token(12);
+    let host = req.host.trim().to_string();
+    let name = req.name.trim().chars().take(40).collect::<String>();
+    let name = if name.is_empty() { host.clone() } else { name };
+    cfg.remote_pcs.push(config::RemotePc {
+        id: id.clone(),
+        name,
+        host,
+        port: req.port,
+        secret: String::new(),
+        token: req.token,
+    });
+    config::save(&cfg);
+    Ok(Json(json!({ "id": id })))
+}
+
+#[derive(Deserialize)]
+struct RemoteIdReq {
+    id: String,
+}
+
+async fn remote_delete(State(s): State<Shared>, ConnectInfo(addr): ConnectInfo<SocketAddr>, Json(req): Json<RemoteIdReq>) -> StatusCode {
+    if local_only(&addr).is_err() {
+        return StatusCode::FORBIDDEN;
+    }
+    let mut cfg = s.cfg.lock();
+    cfg.remote_pcs.retain(|r| r.id != req.id);
+    config::save(&cfg);
+    StatusCode::OK
+}
+
 // ---------- Phone connection ----------
 
 async fn ws_handler(
@@ -357,8 +452,8 @@ async fn tx(out: &mpsc::Sender<Message>, m: HostMsg) {
 
 /// Checks the hello. Known device + secret: in. Pairing token: wait for a click
 /// on Approve in the desktop app, then issue this phone its own secret.
-async fn authenticate(s: &Shared, out: &mpsc::Sender<Message>, hello: ClientMsg) -> Option<(String, String)> {
-    let ClientMsg::Hello { device_id, device_name, token, secret } = hello else {
+async fn authenticate(s: &Shared, out: &mpsc::Sender<Message>, hello: ClientMsg) -> Option<(String, String, bool)> {
+    let ClientMsg::Hello { device_id, device_name, token, secret, pc_controller } = hello else {
         return None;
     };
     let name: String = device_name.trim().chars().take(40).collect();
@@ -368,9 +463,14 @@ async fn authenticate(s: &Shared, out: &mpsc::Sender<Message>, hello: ClientMsg)
         let found = cfg.devices.iter_mut().find(|d| d.id == device_id && d.secret == secret)?;
         found.last_seen = config::now();
         let name = found.name.clone();
+        let pc = found.pc;
         config::save(&cfg);
-        return Some((device_id, name));
+        return Some((device_id, name, pc));
     }
+
+    // PC controllers declare themselves in the hello; same pairing flow,
+    // but the host enforces single-control rules for them.
+    let is_pc = pc_controller;
 
     let token = token?;
     if token != s.cfg.lock().pairing_token {
@@ -396,13 +496,14 @@ async fn authenticate(s: &Shared, out: &mpsc::Sender<Message>, hello: ClientMsg)
             secret: secret.clone(),
             paired_at: config::now(),
             last_seen: config::now(),
+            pc: is_pc,
         });
         // A pairing link works once.
         cfg.pairing_token = config::random_token(24);
         config::save(&cfg);
     }
     tx(out, HostMsg::Approved { secret }).await;
-    Some((device_id, name))
+    Some((device_id, name, is_pc))
 }
 
 /// Reads the browser session's current page in the background and sends it.
@@ -487,13 +588,33 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
         Some(h @ ClientMsg::Hello { .. }) => authenticate(&s, &out, h).await,
         _ => None,
     };
-    let Some((device_id, device_name)) = auth else {
+    let Some((device_id, device_name, is_pc_controller)) = auth else {
         s.fail(ip);
         tx(&out, HostMsg::Denied { reason: "This phone isn't approved on the PC. Pair it again from WinRelay on the PC.".into() }).await;
         drop(out);
         let _ = writer.await;
         return;
     };
+    if is_pc_controller {
+        // Strict single-control, wall #1: a PC controller may only attach
+        // to an idle host, and only one may be attached at any time.
+        if s.active.lock().is_some() {
+            tx(&out, HostMsg::Denied {
+                reason: "This PC is being controlled right now. End that session before controlling it from another PC.".into(),
+            }).await;
+            drop(out);
+            let _ = writer.await;
+            return;
+        }
+        if s.pc_controller.swap(true, Ordering::SeqCst) {
+            tx(&out, HostMsg::Denied {
+                reason: "Another PC is already controlling this PC.".into(),
+            }).await;
+            drop(out);
+            let _ = writer.await;
+            return;
+        }
+    }
 
     // One phone at a time: a new connection from any phone replaces the old one.
     let kick = Arc::new(Notify::new());
@@ -595,6 +716,14 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                         });
                     }
                     ClientMsg::Open { id, stealth, viewport, scale, fps, pic_scale, gray } => {
+                        // Strict single-control, wall #2: while a PC controller
+                        // is attached, no one but that controller may open here.
+                        if s.pc_controller.load(Ordering::SeqCst) && !is_pc_controller {
+                            tx(&out, HostMsg::Error {
+                                msg: "This PC is being controlled from another PC. Sessions are locked meanwhile.".into(),
+                            }).await;
+                            continue;
+                        }
                         if let Some(l) = live.take() { end_live(&s, l, &input_tx); }
                         let cfg = s.cfg.lock().clone();
                         if !winlist::is_listable(id, &cfg.hidden_apps) {
@@ -822,6 +951,9 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
     }
     if s.cfg.lock().lock_on_disconnect {
         power::lock();
+    }
+    if is_pc_controller {
+        s.pc_controller.store(false, Ordering::SeqCst);
     }
     drop(out);
     writer.abort();

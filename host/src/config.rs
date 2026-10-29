@@ -31,6 +31,26 @@ pub struct Config {
     pub screens_off_on_start: bool,
     // General
     pub log_days: u32,
+    /// Stable identity of this machine (generated once); a PC controller
+    /// presents it as its device_id when pairing with another PC.
+    pub self_id: String,
+    /// Other PCs this machine's UI can control (PC controlling PC).
+    pub remote_pcs: Vec<RemotePc>,
+}
+
+/// A remote PC the desktop UI can control, paired like a phone is.
+#[derive(Clone, Serialize, Deserialize)]
+pub struct RemotePc {
+    pub id: String,
+    pub name: String,
+    pub host: String,
+    pub port: u16,
+    /// Secret issued by the remote PC after approval.
+    pub secret: String,
+    /// One-time pairing token copied from the remote PC's link, used until
+    /// the secret above exists.
+    #[serde(default)]
+    pub token: String,
 }
 
 #[derive(Clone, Serialize, Deserialize, Default)]
@@ -40,6 +60,9 @@ pub struct Device {
     pub secret: String,
     pub paired_at: String,
     pub last_seen: String,
+    /// True when the device is another PC's WinRelay (PC controlling PC).
+    #[serde(default)]
+    pub pc: bool,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -76,6 +99,8 @@ impl Default for Config {
             keep_awake: true,
             screens_off_on_start: false,
             log_days: 30,
+            self_id: String::new(),
+            remote_pcs: vec![],
         }
     }
 }
@@ -92,7 +117,19 @@ pub fn now() -> String {
     chrono::Local::now().to_rfc3339()
 }
 
+use std::sync::OnceLock;
+static DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
+
+/// Overrides the data directory (--config-dir), mainly for a second instance.
+pub fn set_data_dir(dir: String) {
+    let _ = DATA_DIR.set(PathBuf::from(dir));
+}
+
 pub fn data_dir() -> PathBuf {
+    if let Some(d) = DATA_DIR.get() {
+        let _ = fs::create_dir_all(d);
+        return d.clone();
+    }
     let dir = dirs::config_dir()
         .unwrap_or_else(|| PathBuf::from("."))
         .join("WinRelay");
