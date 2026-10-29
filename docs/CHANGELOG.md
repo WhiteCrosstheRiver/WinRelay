@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-10-30 (v0.4.0) — Phone-side file manager for the PC
+
+Browse the PC's drives and folders from the phone like a mobile file manager,
+upload from the phone, download and share anywhere.
+
+- Protocol: `fs_list` / `fs_mkdir` / `fs_delete` (Recycle Bin via
+  SHFileOperation, not erased) / `fs_download` + binary kind=3 chunks /
+  `fs_upload_begin` + binary kind=4 chunks (256 KiB) + `fs_upload_end`,
+  acknowledged with `fs_done`.
+- Host `fs.rs`: drive root ("This PC"), sorted listings, normalised paths
+  (bare `C:` would resolve to the drive's *current directory*), system-folder
+  write guard.
+- Phone: Files screen (folder icon on the PC list), upload sheet reads
+  /sdcard/Download + /sdcard/Documents directly (all-files-access permission,
+  requested on first use), progress line, downloads land in a temp file and
+  open the system share sheet.
+- E2E `host/tests/e2e_files.py`: 1 MiB upload byte-for-byte, 4-chunk download
+  roundtrip, Recycle-Bin delete. UI verified in the emulator: browsing, C:
+  navigation, upload of a real 4.8 KB file, download then share sheet.
+- Emulator note: Flutter drops platform-channel replies that arrive while the
+  engine is paused (e.g. under the SAF screen) — the first SAF-picker design
+  relied on such a reply and was replaced by direct storage reads.
+
 ## 2026-10-30 (v0.3.0) — Browser takeover: browse like on a phone
 
 When the controlled window is a browser, the phone can now switch to **Web
