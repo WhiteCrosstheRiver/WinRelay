@@ -111,8 +111,16 @@ pub enum ClientMsg {
         #[serde(default)]
         kind: TapKind,
     },
-    /// Wheel notches; positive scrolls up.
-    Scroll { dy: i32 },
+    /// Wheel notches; positive scrolls up. The touch point (0..1 within the
+    /// picture) makes the wheel land where the finger is — scrolling works
+    /// even when the window centre is an input box or a dead area.
+    Scroll {
+        dy: i32,
+        #[serde(default)]
+        x: Option<f32>,
+        #[serde(default)]
+        y: Option<f32>,
+    },
     Ping,
 }
 

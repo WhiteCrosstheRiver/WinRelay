@@ -5,7 +5,7 @@ use crate::{capture, power, protocol::TapKind, session};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{channel, RecvTimeoutError, Sender};
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use windows::Win32::Foundation::{HWND, POINT};
 use windows::Win32::System::Threading::{AttachThreadInput, GetCurrentThreadId};
 use windows::Win32::UI::Input::KeyboardAndMouse::*;
@@ -19,7 +19,7 @@ pub enum Cmd {
     Text(String),
     Key(String),
     Tap { x: f32, y: f32, kind: TapKind },
-    Scroll(i32),
+    Scroll { dy: i32, x: Option<f32>, y: Option<f32> },
 }
 
 /// `screens_off` is shared with the session: injected input wakes the monitors,
@@ -29,16 +29,22 @@ pub fn spawn_worker(screens_off: Arc<AtomicBool>) -> Sender<Cmd> {
     std::thread::spawn(move || {
         let mut target: Option<u64> = None;
         let mut woke_screens = false;
+        let mut parked: Option<POINT> = None;
+        let mut last_scroll: Option<Instant> = None;
         loop {
             match rx.recv_timeout(Duration::from_millis(1500)) {
-                Ok(Cmd::Target(t)) => target = t,
+                Ok(Cmd::Target(t)) => {
+                    target = t;
+                    unpark(&mut parked, &mut last_scroll);
+                }
                 Ok(cmd) => {
                     if let Some(id) = target {
-                        run(crate::winlist::hwnd(id), cmd);
+                        run(crate::winlist::hwnd(id), cmd, &mut parked, &mut last_scroll);
                         woke_screens = true;
                     }
                 }
                 Err(RecvTimeoutError::Timeout) => {
+                    unpark(&mut parked, &mut last_scroll);
                     if woke_screens && target.is_some() && screens_off.load(Ordering::Relaxed) {
                         power::screens_off();
                     }
@@ -51,7 +57,7 @@ pub fn spawn_worker(screens_off: Arc<AtomicBool>) -> Sender<Cmd> {
     tx
 }
 
-fn run(h: HWND, cmd: Cmd) {
+fn run(h: HWND, cmd: Cmd, parked: &mut Option<POINT>, last_scroll: &mut Option<Instant>) {
     match cmd {
         Cmd::Text(s) => {
             focus(h);
@@ -68,10 +74,7 @@ fn run(h: HWND, cmd: Cmd) {
             let py = r.top + ((r.bottom - r.top) as f32 * y.clamp(0.0, 1.0)) as i32;
             at_point(px, py, || click(kind));
         }
-        Cmd::Scroll(dy) => {
-            let r = capture::visible_rect(h);
-            at_point((r.left + r.right) / 2, (r.top + r.bottom) / 2, || wheel(dy));
-        }
+        Cmd::Scroll { dy, x, y } => scroll_at(h, dy, x, y, parked, last_scroll),
         Cmd::Target(_) => {}
     }
 }
@@ -195,6 +198,63 @@ fn at_point<F: FnOnce()>(x: i32, y: i32, act: F) {
         let _ = SetCursorPos(old.x, old.y);
     }
     session::refence();
+}
+
+/// Wheel at the finger's position. During a fast flick the cursor stays
+/// parked on the point (restoring it per notch would stutter the stream of
+/// wheel events and drag the serial worker); it returns home once scrolling
+/// goes quiet. `state` lives in the worker thread.
+fn scroll_at(
+    h: HWND,
+    dy: i32,
+    x: Option<f32>,
+    y: Option<f32>,
+    parked: &mut Option<POINT>,
+    last_scroll: &mut Option<Instant>,
+) {
+    let r = capture::visible_rect(h);
+    let fx = x.unwrap_or(0.5).clamp(0.0, 1.0);
+    let fy = y.unwrap_or(0.5).clamp(0.0, 1.0);
+    let px = r.left + ((r.right - r.left) as f32 * fx) as i32;
+    let py = r.top + ((r.bottom - r.top) as f32 * fy) as i32;
+    let now = Instant::now();
+    let quiet = matches!(last_scroll, Some(t) if now.duration_since(*t) > Duration::from_millis(300));
+    if quiet {
+        // New scroll sequence: the target window must be foreground, or the
+        // synthetic wheel goes to whatever window currently has focus (the
+        // classic "some apps just don't scroll" bug).
+        focus(h);
+    }
+    unsafe {
+        if quiet || parked.is_none() {
+            // (Re)take the cursor: remember where it came from only when not
+            // already parked, so the home position survives a flick.
+            if parked.is_none() {
+                let mut old = POINT::default();
+                let _ = GetCursorPos(&mut old);
+                *parked = Some(old);
+            }
+            let _ = ClipCursor(None);
+            let _ = SetCursorPos(px, py);
+        }
+        wheel(dy);
+    }
+    *last_scroll = Some(now);
+    let _ = h;
+}
+
+/// Puts the parked cursor home after scrolling went quiet.
+fn unpark(parked: &mut Option<POINT>, last_scroll: &mut Option<Instant>) {
+    let due = matches!(last_scroll, Some(t) if Instant::now().duration_since(*t) > Duration::from_millis(300));
+    if due {
+        if let Some(p) = parked.take() {
+            unsafe {
+                let _ = SetCursorPos(p.x, p.y);
+            }
+            session::refence();
+        }
+        *last_scroll = None;
+    }
 }
 
 fn click(kind: TapKind) {

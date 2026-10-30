@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-10-30 (v0.6.2) — Scroll feel: touch-point wheel, inertia, foreground fix
+
+View-mode scrolling reworked after "some apps scroll badly" feedback:
+
+- **The wheel lands where the finger is** (`scroll` now carries the touch
+  point), not the window centre — chat apps whose centre is an input box or
+  a dead area scroll properly now.
+- **New scroll sequences bring the target window to the foreground first.**
+  Synthetic wheels go to the focused window on many setups, which was the
+  root cause of "some apps just don't scroll".
+- **Inertia fling**: after the finger lifts, scrolling continues with native
+  decay (velocity-based, cancelled by the next touch); the drag dead zone
+  shrank from 40 px to 36 px per notch and no longer discards sub-threshold
+  remainder on lift.
+- Host: the serial input worker parks the cursor on the scroll point during
+  fast flicks (no more move→wheel→sleep 20 ms→move-back per notch, which
+  stuttered long flicks) and returns it home once scrolling goes quiet or
+  the session ends.
+
 ## 2026-10-30 (v0.6.0) — Clipboard relay between PCs + pure black-white tier
 
 - **Clipboard relay**: the phone bridges text between controlled PCs. New

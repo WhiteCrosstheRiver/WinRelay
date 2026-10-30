@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -21,6 +22,45 @@ class _VideoViewState extends State<VideoView> {
   bool _zoomed = false;
   double _scrollAcc = 0;
   Offset _doubleTapPos = Offset.zero;
+  Offset? _touch;
+  Timer? _fling;
+  static const _pxPerNotch = 36.0;
+
+  @override
+  void dispose() {
+    _fling?.cancel();
+    _tc.dispose();
+    super.dispose();
+  }
+
+  /// Sends accumulated drag as wheel notches at the finger's position.
+  void _emitScroll(Offset pos) {
+    while (_scrollAcc.abs() >= _pxPerNotch) {
+      final notches = _scrollAcc > 0 ? 1 : -1;
+      _scrollAcc -= notches * _pxPerNotch;
+      widget.conn.scroll(notches, x: pos.dx, y: pos.dy);
+    }
+  }
+
+  /// Inertia: keep scrolling after the finger lifts, decaying like a native
+  /// list. Interrupted by the next touch.
+  void _startFling(double velocity, Offset pos) {
+    _fling?.cancel();
+    var v = velocity.clamp(-5000.0, 5000.0);
+    var acc = _scrollAcc;
+    _scrollAcc = 0;
+    if (v.abs() < 120) return;
+    _fling = Timer.periodic(const Duration(milliseconds: 16), (t) {
+      v *= 0.90;
+      acc += v * 0.016;
+      while (acc.abs() >= _pxPerNotch) {
+        final notches = acc > 0 ? 1 : -1;
+        acc -= notches * _pxPerNotch;
+        widget.conn.scroll(notches, x: pos.dx, y: pos.dy);
+      }
+      if (v.abs() < 120) t.cancel();
+    });
+  }
 
   @override
   void initState() {
@@ -29,12 +69,6 @@ class _VideoViewState extends State<VideoView> {
       final z = _tc.value.getMaxScaleOnAxis() > 1.01;
       if (z != _zoomed) setState(() => _zoomed = z);
     });
-  }
-
-  @override
-  void dispose() {
-    _tc.dispose();
-    super.dispose();
   }
 
   @override
@@ -68,6 +102,7 @@ class _VideoViewState extends State<VideoView> {
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTapUp: widget.tapMode ? (d) => tap(d.localPosition, 'left') : null,
+              onTapDown: (d) => _fling?.cancel(),
               onLongPressStart: widget.tapMode ? (d) => tap(d.localPosition, 'right') : null,
               onDoubleTapDown: (d) => _doubleTapPos = d.localPosition,
               onDoubleTap: () {
@@ -78,20 +113,25 @@ class _VideoViewState extends State<VideoView> {
                 }
               },
               // One-finger scroll, only when not zoomed (zoomed drags pan the picture).
+              onVerticalDragStart: _zoomed
+                  ? null
+                  : (d) {
+                      _fling?.cancel();
+                      _touch = d.localPosition;
+                    },
               onVerticalDragUpdate: _zoomed
                   ? null
                   : (d) {
+                      _touch = d.localPosition;
                       _scrollAcc += d.delta.dy;
-                      while (_scrollAcc > 40) {
-                        widget.conn.scroll(1);
-                        _scrollAcc -= 40;
-                      }
-                      while (_scrollAcc < -40) {
-                        widget.conn.scroll(-1);
-                        _scrollAcc += 40;
-                      }
+                      _emitScroll(d.localPosition);
                     },
-              onVerticalDragEnd: _zoomed ? null : (_) => _scrollAcc = 0,
+              onVerticalDragEnd: _zoomed
+                  ? null
+                  : (d) {
+                      final pos = _touch ?? Offset.zero;
+                      _startFling(d.primaryVelocity ?? 0, pos);
+                    },
               child: SizedBox(
                 width: box.maxWidth,
                 height: box.maxHeight,

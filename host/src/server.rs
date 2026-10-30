@@ -960,7 +960,7 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                     ClientMsg::Text { s: text } => { let _ = input_tx.send(Cmd::Text(text)); }
                     ClientMsg::Key { k } => { let _ = input_tx.send(Cmd::Key(k)); }
                     ClientMsg::Tap { x, y, kind } => { let _ = input_tx.send(Cmd::Tap { x, y, kind }); }
-                    ClientMsg::Scroll { dy } => { let _ = input_tx.send(Cmd::Scroll(dy)); }
+                    ClientMsg::Scroll { dy, x, y } => { let _ = input_tx.send(Cmd::Scroll { dy, x, y }); }
                     ClientMsg::Hello { .. } => {}
                 }
             }

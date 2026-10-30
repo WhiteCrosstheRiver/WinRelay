@@ -313,7 +313,7 @@ class HostConnection extends ChangeNotifier {
   void text(String s) => _send({'t': 'text', 's': s});
   void key(String k) => _send({'t': 'key', 'k': k});
   void tap(double x, double y, String kind) => _send({'t': 'tap', 'x': x, 'y': y, 'kind': kind});
-  void scroll(int dy) => _send({'t': 'scroll', 'dy': dy});
+  void scroll(int dy, {double? x, double? y}) => _send({'t': 'scroll', 'dy': dy, if (x != null) 'x': x, if (y != null) 'y': y});
 
   void _send(Map<String, dynamic> m) {
     try {
