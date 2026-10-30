@@ -109,5 +109,10 @@
   "clipPasted": "In den PC eingefügt.",
   "colorColor": "Farbe",
   "colorGray": "Graustufen",
-  "colorBw": "Reines Schwarzweiß"
+  "colorBw": "Reines Schwarzweiß",
+  "jumpPath": "Zu Pfad springen",
+  "pathHint": "PC-Pfad, z. B. C:\\Users\\me\\Desktop",
+  "invalidPath": "Dieser Pfad lässt sich nicht öffnen.",
+  "savedTo": "Im Telefon-Download gespeichert: {name}",
+  "share": "Teilen"
 }

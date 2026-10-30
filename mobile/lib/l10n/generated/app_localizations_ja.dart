@@ -353,4 +353,21 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get colorBw => '純白黒';
+
+  @override
+  String get jumpPath => 'パスへ移動';
+
+  @override
+  String get pathHint => 'PC のパス (例: C:\\Users\\me\\Desktop)';
+
+  @override
+  String get invalidPath => 'そのパスは開けません。';
+
+  @override
+  String savedTo(Object name) {
+    return 'スマホの Download に保存:$name';
+  }
+
+  @override
+  String get share => '共有';
 }

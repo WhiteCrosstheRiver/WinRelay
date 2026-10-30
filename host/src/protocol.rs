@@ -149,7 +149,7 @@ pub enum HostMsg {
     Url { url: String },
     Closed { reason: String },
     // ---- file browsing ----
-    FsEntries { path: String, items: Vec<crate::fs::FsItem> },
+    FsEntries { path: String, items: Vec<crate::fs::FsItem>, #[serde(default)] desktop: String },
     FsDone { id: u64, ok: bool, error: Option<String> },
     FsMeta { id: u64, size: u64 },
     FsUploadReady { id: u64 },

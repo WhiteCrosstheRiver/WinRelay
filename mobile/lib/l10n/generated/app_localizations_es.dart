@@ -363,4 +363,21 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get colorBw => 'Blanco y negro puro';
+
+  @override
+  String get jumpPath => 'Ir a la ruta';
+
+  @override
+  String get pathHint => 'Ruta del PC, p. ej. C:\\Users\\me\\Desktop';
+
+  @override
+  String get invalidPath => 'No se puede abrir esa ruta.';
+
+  @override
+  String savedTo(Object name) {
+    return 'Guardado en Download del teléfono: $name';
+  }
+
+  @override
+  String get share => 'Compartir';
 }

@@ -109,5 +109,10 @@
   "clipPasted": "Collé dans le PC.",
   "colorColor": "Couleur",
   "colorGray": "Niveaux de gris",
-  "colorBw": "Noir et blanc pur"
+  "colorBw": "Noir et blanc pur",
+  "jumpPath": "Aller au chemin",
+  "pathHint": "Chemin du PC, ex. C:\\Users\\me\\Desktop",
+  "invalidPath": "Impossible d'ouvrir ce chemin.",
+  "savedTo": "Enregistré dans Download du téléphone : {name}",
+  "share": "Partager"
 }

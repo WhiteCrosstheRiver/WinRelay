@@ -361,4 +361,21 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get colorBw => 'Чисто чёрно-белый';
+
+  @override
+  String get jumpPath => 'Перейти по пути';
+
+  @override
+  String get pathHint => 'Путь ПК, напр. C:\\Users\\me\\Desktop';
+
+  @override
+  String get invalidPath => 'Не удалось открыть этот путь.';
+
+  @override
+  String savedTo(Object name) {
+    return 'Сохранено в Download телефона: $name';
+  }
+
+  @override
+  String get share => 'Поделиться';
 }

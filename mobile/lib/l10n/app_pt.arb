@@ -109,5 +109,10 @@
   "clipPasted": "Colado no PC.",
   "colorColor": "Cor",
   "colorGray": "Tons de cinza",
-  "colorBw": "Preto e branco puro"
+  "colorBw": "Preto e branco puro",
+  "jumpPath": "Ir para o caminho",
+  "pathHint": "Caminho do PC, ex.: C:\\Users\\me\\Desktop",
+  "invalidPath": "Não foi possível abrir esse caminho.",
+  "savedTo": "Salvo no Download do celular: {name}",
+  "share": "Compartilhar"
 }

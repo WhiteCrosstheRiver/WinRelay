@@ -109,5 +109,10 @@
   "clipPasted": "已粘贴到电脑。",
   "colorColor": "彩色",
   "colorGray": "灰度",
-  "colorBw": "纯黑白"
+  "colorBw": "纯黑白",
+  "jumpPath": "跳转到路径",
+  "pathHint": "PC 路径,如 C:\\Users\\me\\Desktop",
+  "invalidPath": "打不开这个路径。",
+  "savedTo": "已保存到手机 Download:{name}",
+  "share": "分享"
 }

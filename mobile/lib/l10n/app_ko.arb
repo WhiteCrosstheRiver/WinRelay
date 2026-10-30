@@ -109,5 +109,10 @@
   "clipPasted": "PC에 붙여넣었습니다.",
   "colorColor": "컬러",
   "colorGray": "회색조",
-  "colorBw": "순흑백"
+  "colorBw": "순흑백",
+  "jumpPath": "경로로 이동",
+  "pathHint": "PC 경로 (예: C:\\Users\\me\\Desktop)",
+  "invalidPath": "그 경로를 열 수 없습니다.",
+  "savedTo": "휴대폰 Download에 저장: {name}",
+  "share": "공유"
 }

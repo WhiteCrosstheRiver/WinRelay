@@ -109,5 +109,10 @@
   "clipPasted": "Incollato nel PC.",
   "colorColor": "A colori",
   "colorGray": "Scala di grigi",
-  "colorBw": "Bianco e nero puro"
+  "colorBw": "Bianco e nero puro",
+  "jumpPath": "Vai al percorso",
+  "pathHint": "Percorso PC, es. C:\\Users\\me\\Desktop",
+  "invalidPath": "Impossibile aprire quel percorso.",
+  "savedTo": "Salvato in Download del telefono: {name}",
+  "share": "Condividi"
 }

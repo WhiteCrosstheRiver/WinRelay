@@ -774,6 +774,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pure black-white'**
   String get colorBw;
+
+  /// No description provided for @jumpPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to path'**
+  String get jumpPath;
+
+  /// No description provided for @pathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'PC path, e.g. C:\\Users\\me\\Desktop'**
+  String get pathHint;
+
+  /// No description provided for @invalidPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t open that path.'**
+  String get invalidPath;
+
+  /// No description provided for @savedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to phone Download as {name}'**
+  String savedTo(Object name);
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
 }
 
 class _AppLocalizationsDelegate

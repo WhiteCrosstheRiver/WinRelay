@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../connection.dart';
@@ -30,6 +29,14 @@ class _FilesScreenState extends State<FilesScreen> {
   StreamSubscription? _uploadSub;
   int _nextId = 100;
   bool _disposed = false;
+  /// Navigation history (per session, this screen).
+  final List<String> _back = [];
+  final List<String> _forward = [];
+  /// Filled from the host's first listing so the screen opens on the PC's
+  /// desktop instead of a bare drive list.
+  String _desktopPath = '';
+  bool _wantDesktop = true;
+  Timer? _navTimeout;
   final Map<int, ({String file, int received, int total})> _downloads = {};
   final Map<int, String> _downloadNames = {};
 
@@ -45,6 +52,7 @@ class _FilesScreenState extends State<FilesScreen> {
   @override
   void dispose() {
     _disposed = true;
+    _navTimeout?.cancel();
     _fsSub?.cancel();
     _uploadSub?.cancel();
     super.dispose();
@@ -54,7 +62,17 @@ class _FilesScreenState extends State<FilesScreen> {
     if (_disposed || !mounted) return;
     switch (m['t']) {
       case 'fs_entries':
+        if (m['desktop'] != null && (m['desktop'] as String).isNotEmpty) {
+          _desktopPath = m['desktop'] as String;
+        }
         if ((m['path'] as String) == path) {
+          if (_wantDesktop && path.isEmpty && _desktopPath.isNotEmpty) {
+            _wantDesktop = false;
+            _desktopPath = _desktopPath.replaceAll('/', String.fromCharCode(92));
+            _fetch(_desktopPath);
+            return;
+          }
+          _navTimeout?.cancel();
           setState(() {
             items = (m['items'] as List).cast<Map<String, dynamic>>();
             loading = false;
@@ -67,12 +85,56 @@ class _FilesScreenState extends State<FilesScreen> {
     }
   }
 
-  void _fetch(String p) {
+  void _fetch(String p, {bool push = true}) {
     setState(() {
+      if (push && p != path) {
+        _back.add(path);
+        _forward.clear();
+      }
       path = p;
       loading = true;
     });
+    _navTimeout?.cancel();
+    _navTimeout = Timer(const Duration(seconds: 4), () {
+      if (mounted && loading) {
+        setState(() => loading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.invalidPath)),
+        );
+      }
+    });
     conn.fsList(p);
+  }
+
+  void _goBack() {
+    if (_back.isEmpty) return;
+    _forward.add(path);
+    final p = _back.removeLast();
+    _fetch(p, push: false);
+  }
+
+  void _goForward() {
+    if (_forward.isEmpty) return;
+    _back.add(path);
+    final p = _forward.removeLast();
+    _fetch(p, push: false);
+  }
+
+  Future<void> _jumpDialog() async {
+    final l10n = AppLocalizations.of(context)!;
+    final c = TextEditingController(text: path);
+    final dest = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.jumpPath),
+        content: TextField(controller: c, autofocus: true, decoration: InputDecoration(hintText: l10n.pathHint)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, c.text.trim()), child: Text(l10n.save)),
+        ],
+      ),
+    );
+    if (dest != null && dest.isNotEmpty) _fetch(dest);
   }
 
   String _join(String dir, String name) => dir.isEmpty ? name : '$dir\\$name';
@@ -183,10 +245,20 @@ class _FilesScreenState extends State<FilesScreen> {
 
   Future<void> _download(Map<String, dynamic> item) async {
     final l10n = AppLocalizations.of(context)!;
+    // Save straight into the phone's Download folder (we already hold
+    // all-files access); share stays available as a follow-up action.
+    const files = MethodChannel('winrelay/files');
+    final granted = await files.invokeMethod<bool>('hasStorage') ?? false;
+    if (!granted) {
+      await files.invokeMethod('requestStorage');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.grantStorage)));
+      }
+      return;
+    }
     final id = _nextId++;
     final name = item['name'] as String;
-    final tmp = await getTemporaryDirectory();
-    final target = File('${tmp.path}/$name');
+    final target = File('/sdcard/Download/$name');
     _downloads[id] = (file: target.path, received: 0, total: 0);
     _downloadNames[id] = name;
     setState(() => busy = '${l10n.download} · $name · 0%');
@@ -219,11 +291,16 @@ class _FilesScreenState extends State<FilesScreen> {
     final l10n = AppLocalizations.of(context)!;
     if (_downloads.containsKey(id)) {
       final dl = _downloads.remove(id)!;
-      final name = _downloadNames.remove(id);
+      final name = _downloadNames.remove(id) ?? 'file';
       if (mounted) setState(() => busy = null);
       if (m['ok'] == true && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.downloadDone)));
-        await Share.shareXFiles([XFile(dl.file)], text: name);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l10n.savedTo(name)),
+          action: SnackBarAction(
+            label: l10n.share,
+            onPressed: () => Share.shareXFiles([XFile(dl.file)], text: name),
+          ),
+        ));
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m['error'] ?? l10n.transferFailed)));
       }
@@ -294,6 +371,16 @@ class _FilesScreenState extends State<FilesScreen> {
       appBar: AppBar(
         title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            tooltip: l10n.goBack,
+            onPressed: _back.isEmpty ? null : _goBack,
+          ),
+          IconButton(
+            icon: const Icon(Icons.arrow_forward),
+            tooltip: l10n.goForward,
+            onPressed: _forward.isEmpty ? null : _goForward,
+          ),
           if (path.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.home_outlined),
@@ -307,10 +394,21 @@ class _FilesScreenState extends State<FilesScreen> {
       body: Column(children: [
         if (path.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(path, style: Theme.of(context).textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+              child: InkWell(
+                onTap: _jumpDialog,
+                borderRadius: BorderRadius.circular(6),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Icon(Icons.edit_location_alt_outlined, size: 14, color: Theme.of(context).colorScheme.primary),
+                    const SizedBox(width: 6),
+                    Text(path, style: Theme.of(context).textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                  ]),
+                ),
+              ),
             ),
           ),
         Expanded(

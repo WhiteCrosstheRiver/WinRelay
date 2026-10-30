@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-10-30 (v0.6.4) — Files screen: desktop default, real navigation
+
+- Files opens on the PC's **Desktop** (host sends the desktop path with the
+  first listing) instead of the bare drive list.
+- **History navigation**: back / forward buttons with per-session stacks.
+- **Path jump**: tap the path line, type any PC path (e.g. D:\stuff) and go
+  straight there; invalid paths surface a snackbar after a 4 s timeout.
+- Downloads now save directly to the phone's **Download** folder (no more
+  forced share sheet — share remains an optional snackbar action).
+
 ## 2026-10-30 (v0.6.3) — Startup crash fix + paste keeps newlines
 
 Real-device reports: "packageInfo is null" crash on launch, and pasted

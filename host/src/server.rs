@@ -834,8 +834,12 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                     ClientMsg::FsList { path } => {
                         let p = path.clone();
                         let items = tokio::task::spawn_blocking(move || fs::list(&p)).await.unwrap_or_else(|_| Ok(vec![]));
+                        let desktop = dirs::desktop_dir()
+                            .or_else(dirs::home_dir)
+                            .map(|d| d.to_string_lossy().to_string())
+                            .unwrap_or_default();
                         match items {
-                            Ok(items) => tx(&out, HostMsg::FsEntries { path, items }).await,
+                            Ok(items) => tx(&out, HostMsg::FsEntries { path, items, desktop }).await,
                             Err(e) => tx(&out, HostMsg::FsDone { id: 0, ok: false, error: Some(e.to_string()) }).await,
                         }
                     }

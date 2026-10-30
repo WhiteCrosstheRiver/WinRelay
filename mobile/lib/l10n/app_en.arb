@@ -147,5 +147,10 @@
   "clipPasted": "Pasted into the PC.",
   "colorColor": "Colour",
   "colorGray": "Grayscale",
-  "colorBw": "Pure black-white"
+  "colorBw": "Pure black-white",
+  "jumpPath": "Jump to path",
+  "pathHint": "PC path, e.g. C:\\Users\\me\\Desktop",
+  "invalidPath": "Can't open that path.",
+  "savedTo": "Saved to phone Download as {name}",
+  "share": "Share"
 }

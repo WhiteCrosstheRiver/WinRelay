@@ -351,6 +351,23 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get colorBw => '纯黑白';
+
+  @override
+  String get jumpPath => '跳转到路径';
+
+  @override
+  String get pathHint => 'PC 路径,如 C:\\Users\\me\\Desktop';
+
+  @override
+  String get invalidPath => '打不开这个路径。';
+
+  @override
+  String savedTo(Object name) {
+    return '已保存到手机 Download:$name';
+  }
+
+  @override
+  String get share => '分享';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -700,4 +717,21 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get colorBw => '純黑白';
+
+  @override
+  String get jumpPath => '跳至路徑';
+
+  @override
+  String get pathHint => 'PC 路徑,如 C:\\Users\\me\\Desktop';
+
+  @override
+  String get invalidPath => '無法開啟這個路徑。';
+
+  @override
+  String savedTo(Object name) {
+    return '已儲存到手機 Download:$name';
+  }
+
+  @override
+  String get share => '分享';
 }

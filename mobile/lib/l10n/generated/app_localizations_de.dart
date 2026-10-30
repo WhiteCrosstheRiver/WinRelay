@@ -361,4 +361,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get colorBw => 'Reines Schwarzweiß';
+
+  @override
+  String get jumpPath => 'Zu Pfad springen';
+
+  @override
+  String get pathHint => 'PC-Pfad, z. B. C:\\Users\\me\\Desktop';
+
+  @override
+  String get invalidPath => 'Dieser Pfad lässt sich nicht öffnen.';
+
+  @override
+  String savedTo(Object name) {
+    return 'Im Telefon-Download gespeichert: $name';
+  }
+
+  @override
+  String get share => 'Teilen';
 }

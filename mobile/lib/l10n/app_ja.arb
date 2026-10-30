@@ -109,5 +109,10 @@
   "clipPasted": "PC に貼り付けました。",
   "colorColor": "カラー",
   "colorGray": "グレースケール",
-  "colorBw": "純白黒"
+  "colorBw": "純白黒",
+  "jumpPath": "パスへ移動",
+  "pathHint": "PC のパス (例: C:\\Users\\me\\Desktop)",
+  "invalidPath": "そのパスは開けません。",
+  "savedTo": "スマホの Download に保存:{name}",
+  "share": "共有"
 }

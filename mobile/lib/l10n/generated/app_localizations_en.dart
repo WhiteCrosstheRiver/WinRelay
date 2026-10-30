@@ -360,4 +360,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get colorBw => 'Pure black-white';
+
+  @override
+  String get jumpPath => 'Jump to path';
+
+  @override
+  String get pathHint => 'PC path, e.g. C:\\Users\\me\\Desktop';
+
+  @override
+  String get invalidPath => 'Can\'t open that path.';
+
+  @override
+  String savedTo(Object name) {
+    return 'Saved to phone Download as $name';
+  }
+
+  @override
+  String get share => 'Share';
 }

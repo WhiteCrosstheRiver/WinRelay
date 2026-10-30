@@ -109,5 +109,10 @@
   "clipPasted": "Pegado en el PC.",
   "colorColor": "Color",
   "colorGray": "Escala de grises",
-  "colorBw": "Blanco y negro puro"
+  "colorBw": "Blanco y negro puro",
+  "jumpPath": "Ir a la ruta",
+  "pathHint": "Ruta del PC, p. ej. C:\\Users\\me\\Desktop",
+  "invalidPath": "No se puede abrir esa ruta.",
+  "savedTo": "Guardado en Download del teléfono: {name}",
+  "share": "Compartir"
 }

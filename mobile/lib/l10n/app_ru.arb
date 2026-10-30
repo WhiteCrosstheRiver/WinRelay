@@ -109,5 +109,10 @@
   "clipPasted": "Вставлено в ПК.",
   "colorColor": "Цвет",
   "colorGray": "Оттенки серого",
-  "colorBw": "Чисто чёрно-белый"
+  "colorBw": "Чисто чёрно-белый",
+  "jumpPath": "Перейти по пути",
+  "pathHint": "Путь ПК, напр. C:\\Users\\me\\Desktop",
+  "invalidPath": "Не удалось открыть этот путь.",
+  "savedTo": "Сохранено в Download телефона: {name}",
+  "share": "Поделиться"
 }

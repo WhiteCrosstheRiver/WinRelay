@@ -361,4 +361,21 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get colorBw => 'Preto e branco puro';
+
+  @override
+  String get jumpPath => 'Ir para o caminho';
+
+  @override
+  String get pathHint => 'Caminho do PC, ex.: C:\\Users\\me\\Desktop';
+
+  @override
+  String get invalidPath => 'Não foi possível abrir esse caminho.';
+
+  @override
+  String savedTo(Object name) {
+    return 'Salvo no Download do celular: $name';
+  }
+
+  @override
+  String get share => 'Compartilhar';
 }

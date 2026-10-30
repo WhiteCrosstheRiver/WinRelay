@@ -352,4 +352,21 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get colorBw => '순흑백';
+
+  @override
+  String get jumpPath => '경로로 이동';
+
+  @override
+  String get pathHint => 'PC 경로 (예: C:\\Users\\me\\Desktop)';
+
+  @override
+  String get invalidPath => '그 경로를 열 수 없습니다.';
+
+  @override
+  String savedTo(Object name) {
+    return '휴대폰 Download에 저장: $name';
+  }
+
+  @override
+  String get share => '공유';
 }
