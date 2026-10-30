@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-10-30 (v0.6.3) — Startup crash fix + paste keeps newlines
+
+Real-device reports: "packageInfo is null" crash on launch, and pasted
+multi-line text turned every line into an Enter (chat apps sent one message
+per line).
+
+- **Startup crash**: `wakelock_plus` pulled in `package_info_plus`, which
+  crashes at registration on some devices ("packageInfo is null"). Both are
+  gone: keep-screen-on is now a 10-line platform channel setting
+  `FLAG_KEEP_SCREEN_ON` (winrelay/keep). package_info_plus is fully out of
+  the dependency tree (0 references in pubspec.lock).
+- **Paste newlines**: the Paste quick key no longer types the text (typing
+  turns 
+ into Return key presses — chat apps send one message per line).
+  It now writes the PC's clipboard (`clip_set`) and injects Ctrl+V, so
+  multi-line text pastes natively with formatting intact. Same path the
+  clipboard-relay paste already used.
+
 ## 2026-10-30 (v0.6.2) — Scroll feel: touch-point wheel, inertia, foreground fix
 
 View-mode scrolling reworked after "some apps scroll badly" feedback:

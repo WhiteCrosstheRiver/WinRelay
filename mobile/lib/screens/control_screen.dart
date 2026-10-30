@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../connection.dart';
 import '../l10n/generated/app_localizations.dart';
@@ -59,7 +58,9 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       if (conn.openId == null || conn.frame.value == null) Navigator.of(context).maybePop();
     };
-    if (settings.keepScreenOn) WakelockPlus.enable();
+    if (settings.keepScreenOn) {
+      const MethodChannel('winrelay/keep').invokeMethod('set', {'on': true}).catchError((_) {});
+    }
   }
 
   @override
@@ -113,7 +114,7 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
     conn.onError = _prevOnError;
     _rotateDebounce?.cancel();
     conn.close();
-    WakelockPlus.disable();
+    const MethodChannel('winrelay/keep').invokeMethod('set', {'on': false}).catchError((_) {});
     _kbFocus.dispose();
     _compose.dispose();
     super.dispose();
@@ -125,9 +126,15 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
 
   Future<void> _quickKey(String k) async {
     if (k == 'paste') {
+      // Native clipboard path: write the PC's clipboard then Ctrl+V, so
+      // multi-line text keeps its newlines (typing raw LF would send Enters).
       final data = await Clipboard.getData(Clipboard.kTextPlain);
       final text = data?.text;
-      if (text != null && text.isNotEmpty) conn.text(text);
+      if (text == null || text.isEmpty) return;
+      final ok = await conn.clipSet(text);
+      if (!ok) return;
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+      conn.key('ctrl_v');
     } else {
       conn.key(k);
     }
