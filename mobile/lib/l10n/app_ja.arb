@@ -101,5 +101,13 @@
   "goForward": "進む",
   "addressBarHint": "検索またはURLを入力",
   "followPc": "PCに追従",
-  "pcScreen": "PC の画面"
+  "pcScreen": "PC の画面",
+  "clipCopyFromPc": "この PC のクリップボードをコピー",
+  "clipPasteToPc": "中継テキストをこの PC に貼り付け",
+  "clipEmpty": "中継クリップボードは空です。先に別の PC でコピーしてください。",
+  "clipCopied": "コピーしました({n} 文字)。別の PC で貼り付けを押してください。",
+  "clipPasted": "PC に貼り付けました。",
+  "colorColor": "カラー",
+  "colorGray": "グレースケール",
+  "colorBw": "純白黒"
 }

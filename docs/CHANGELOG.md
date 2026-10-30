@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-10-30 (v0.6.0) — Clipboard relay between PCs + pure black-white tier
+
+- **Clipboard relay**: the phone bridges text between controlled PCs. New
+  copy/paste buttons in the quick-keys bar — copy grabs the current PC's
+  clipboard into the phone (also the phone's own clipboard), switching to
+  another PC and pressing paste writes the text there and sends Ctrl+V, so
+  it lands directly in a dialog. Protocol: `clip_get` / `clip_set` /
+  `clip_text` / `clip_ok`; in-memory only, dies with the app.
+- **Pure black-and-white tier**: 颜色 setting now 彩色 / 灰度 / 纯黑白.
+  BW frames are thresholded and encoded as **8-bit grayscale PNG** (two-tone
+  content collapses far below JPEG on sharp edges): measured 8.7 KB vs
+  40.8 KB grayscale JPEG at 50 % size — **21 %**, stacking with the size/fps
+  tiers. Protocol carries `bw` alongside `gray`; `rxGray` migrates to
+  `rxColorMode`.
+- Fix: only real browser windows start in web mode (a non-browser window
+  could inherit the web pane after the default flipped).
+
 ## 2026-10-30 (v0.5.1) — Browser web mode overhaul + extreme saving tiers
 
 Acceptance feedback on the browser takeover drove a rework:

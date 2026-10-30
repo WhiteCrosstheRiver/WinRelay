@@ -57,13 +57,16 @@ pub enum ClientMsg {
         #[serde(default = "default_scale")]
         scale: f32,
         /// Stream overrides, applied for this session (phone saves bandwidth):
-        /// capture frame rate, picture downscale (1.0 = full size), grayscale.
+        /// capture frame rate, picture downscale (1.0 = full size), grayscale,
+        /// pure black-and-white.
         #[serde(default)]
         fps: Option<u32>,
         #[serde(default)]
         pic_scale: Option<f32>,
         #[serde(default)]
         gray: Option<bool>,
+        #[serde(default)]
+        bw: Option<bool>,
     },
     /// Live stream retune while a session is running. Any subset can be sent.
     Stream {
@@ -73,7 +76,13 @@ pub enum ClientMsg {
         pic_scale: Option<f32>,
         #[serde(default)]
         gray: Option<bool>,
+        #[serde(default)]
+        bw: Option<bool>,
     },
+    /// Clipboard relay (phone bridges two PCs): read this PC's clipboard.
+    ClipGet,
+    /// Write this PC's clipboard so a following Ctrl+V pastes the text.
+    ClipSet { s: String },
     /// Phone's web view navigated: point the browser at the same page.
     Navigate { url: String },
     /// Phone asks for the browser's current URL again (HostMsg::Url).
@@ -136,6 +145,10 @@ pub enum HostMsg {
     FsDone { id: u64, ok: bool, error: Option<String> },
     FsMeta { id: u64, size: u64 },
     FsUploadReady { id: u64 },
+    /// Reply to ClipGet; empty string when the clipboard holds no text.
+    ClipText { s: String },
+    /// ClipSet (and other clipboard writes) completed.
+    ClipOk,
     Locked { locked: bool },
     Error { msg: String },
     Pong,

@@ -334,4 +334,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pcScreen => 'PC screen';
+
+  @override
+  String get clipCopyFromPc => 'Copy this PC\'s clipboard';
+
+  @override
+  String get clipPasteToPc => 'Paste relayed text into this PC';
+
+  @override
+  String get clipEmpty => 'Clipboard relay is empty — copy something first.';
+
+  @override
+  String clipCopied(Object n) {
+    return 'Copied ($n chars). Control the other PC and press paste.';
+  }
+
+  @override
+  String get clipPasted => 'Pasted into the PC.';
+
+  @override
+  String get colorColor => 'Colour';
+
+  @override
+  String get colorGray => 'Grayscale';
+
+  @override
+  String get colorBw => 'Pure black-white';
 }

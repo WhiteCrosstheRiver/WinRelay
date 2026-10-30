@@ -334,4 +334,31 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pcScreen => 'PC-Bildschirm';
+
+  @override
+  String get clipCopyFromPc => 'Zwischenablage dieses PCs kopieren';
+
+  @override
+  String get clipPasteToPc => ' Weitergeleiteten Text in diesen PC einfügen';
+
+  @override
+  String get clipEmpty =>
+      'Relais-Zwischenablage ist leer — zuerst etwas kopieren.';
+
+  @override
+  String clipCopied(Object n) {
+    return 'Kopiert ($n Zeichen). Steuere den anderen PC und drücke Einfügen.';
+  }
+
+  @override
+  String get clipPasted => 'In den PC eingefügt.';
+
+  @override
+  String get colorColor => 'Farbe';
+
+  @override
+  String get colorGray => 'Graustufen';
+
+  @override
+  String get colorBw => 'Reines Schwarzweiß';
 }

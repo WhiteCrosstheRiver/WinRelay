@@ -139,5 +139,13 @@
   "goForward": "Forward",
   "addressBarHint": "Search or type a URL",
   "followPc": "Follow the PC",
-  "pcScreen": "PC screen"
+  "pcScreen": "PC screen",
+  "clipCopyFromPc": "Copy this PC's clipboard",
+  "clipPasteToPc": "Paste relayed text into this PC",
+  "clipEmpty": "Clipboard relay is empty — copy something first.",
+  "clipCopied": "Copied ({n} chars). Control the other PC and press paste.",
+  "clipPasted": "Pasted into the PC.",
+  "colorColor": "Colour",
+  "colorGray": "Grayscale",
+  "colorBw": "Pure black-white"
 }

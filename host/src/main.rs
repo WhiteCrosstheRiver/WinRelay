@@ -3,6 +3,7 @@
 
 mod browser;
 mod capture;
+mod clipboard;
 mod config;
 mod display;
 mod fs;

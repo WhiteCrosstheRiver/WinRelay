@@ -101,5 +101,13 @@
   "goForward": "前進",
   "addressBarHint": "搜尋或輸入網址",
   "followPc": "跟隨電腦",
-  "pcScreen": "電腦畫面"
+  "pcScreen": "電腦畫面",
+  "clipCopyFromPc": "複製這台電腦的剪貼簿",
+  "clipPasteToPc": "把接力文字貼進這台電腦",
+  "clipEmpty": "接力剪貼簿是空的——請先在另一台電腦按複製。",
+  "clipCopied": "已複製({n} 字)。切到另一台電腦按貼上。",
+  "clipPasted": "已貼到電腦。",
+  "colorColor": "彩色",
+  "colorGray": "灰階",
+  "colorBw": "純黑白"
 }

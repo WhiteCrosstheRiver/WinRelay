@@ -101,5 +101,13 @@
   "goForward": "Vor",
   "addressBarHint": "Suchen oder URL eingeben",
   "followPc": "Dem PC folgen",
-  "pcScreen": "PC-Bildschirm"
+  "pcScreen": "PC-Bildschirm",
+  "clipCopyFromPc": "Zwischenablage dieses PCs kopieren",
+  "clipPasteToPc": " Weitergeleiteten Text in diesen PC einfügen",
+  "clipEmpty": "Relais-Zwischenablage ist leer — zuerst etwas kopieren.",
+  "clipCopied": "Kopiert ({n} Zeichen). Steuere den anderen PC und drücke Einfügen.",
+  "clipPasted": "In den PC eingefügt.",
+  "colorColor": "Farbe",
+  "colorGray": "Graustufen",
+  "colorBw": "Reines Schwarzweiß"
 }

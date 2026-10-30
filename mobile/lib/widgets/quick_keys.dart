@@ -25,6 +25,8 @@ class QuickKeysBar extends StatelessWidget {
     required this.onToggleKeyboard,
     required this.haptics,
     this.onLongPress,
+    this.onClipCopy,
+    this.onClipPaste,
   });
 
   final List<String> keys;
@@ -33,6 +35,10 @@ class QuickKeysBar extends StatelessWidget {
   final VoidCallback onToggleKeyboard;
   final bool haptics;
   final VoidCallback? onLongPress;
+
+  /// Clipboard relay: grab this PC's clipboard / paste the relayed text.
+  final VoidCallback? onClipCopy;
+  final VoidCallback? onClipPaste;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +71,18 @@ class QuickKeysBar extends StatelessWidget {
                     const MethodChannel('winrelay/ime').invokeMethod('showPicker').catchError((_) {});
                   },
                 ),
+                if (onClipCopy != null)
+                  IconButton.filledTonal(
+                    icon: const Icon(Icons.content_copy),
+                    tooltip: l10n.clipCopyFromPc,
+                    onPressed: onClipCopy,
+                  ),
+                if (onClipPaste != null)
+                  IconButton.filledTonal(
+                    icon: const Icon(Icons.content_paste),
+                    tooltip: l10n.clipPasteToPc,
+                    onPressed: onClipPaste,
+                  ),
                 const SizedBox(width: 4),
                 for (final k in keys)
                   if (allQuickKeys.containsKey(k))

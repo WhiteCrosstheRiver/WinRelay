@@ -15,6 +15,9 @@ class Store extends ChangeNotifier {
   late String deviceId;
   AppSettings settings = AppSettings();
   List<PcEntry> pcs = [];
+  /// Last text grabbed from a PC's clipboard (clipboard relay A -> phone -> B).
+  /// In-memory only: it dies with the app, like a real clipboard would.
+  String clipBuffer = '';
 
   Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();

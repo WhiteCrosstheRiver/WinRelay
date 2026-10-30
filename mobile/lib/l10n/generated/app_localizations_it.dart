@@ -335,4 +335,30 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pcScreen => 'Schermo PC';
+
+  @override
+  String get clipCopyFromPc => 'Copia gli appunti di questo PC';
+
+  @override
+  String get clipPasteToPc => 'Incolla il testo relay in questo PC';
+
+  @override
+  String get clipEmpty => 'Gli appunti relay sono vuoti: copia prima qualcosa.';
+
+  @override
+  String clipCopied(Object n) {
+    return 'Copiato ($n caratteri). Controlla l\'altro PC e premi incolla.';
+  }
+
+  @override
+  String get clipPasted => 'Incollato nel PC.';
+
+  @override
+  String get colorColor => 'A colori';
+
+  @override
+  String get colorGray => 'Scala di grigi';
+
+  @override
+  String get colorBw => 'Bianco e nero puro';
 }

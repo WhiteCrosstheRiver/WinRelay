@@ -101,5 +101,13 @@
   "goForward": "Avanti",
   "addressBarHint": "Cerca o digita un URL",
   "followPc": "Segui il PC",
-  "pcScreen": "Schermo PC"
+  "pcScreen": "Schermo PC",
+  "clipCopyFromPc": "Copia gli appunti di questo PC",
+  "clipPasteToPc": "Incolla il testo relay in questo PC",
+  "clipEmpty": "Gli appunti relay sono vuoti: copia prima qualcosa.",
+  "clipCopied": "Copiato ({n} caratteri). Controlla l'altro PC e premi incolla.",
+  "clipPasted": "Incollato nel PC.",
+  "colorColor": "A colori",
+  "colorGray": "Scala di grigi",
+  "colorBw": "Bianco e nero puro"
 }

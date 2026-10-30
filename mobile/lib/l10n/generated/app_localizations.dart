@@ -726,6 +726,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PC screen'**
   String get pcScreen;
+
+  /// No description provided for @clipCopyFromPc.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy this PC\'s clipboard'**
+  String get clipCopyFromPc;
+
+  /// No description provided for @clipPasteToPc.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste relayed text into this PC'**
+  String get clipPasteToPc;
+
+  /// No description provided for @clipEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Clipboard relay is empty — copy something first.'**
+  String get clipEmpty;
+
+  /// No description provided for @clipCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied ({n} chars). Control the other PC and press paste.'**
+  String clipCopied(Object n);
+
+  /// No description provided for @clipPasted.
+  ///
+  /// In en, this message translates to:
+  /// **'Pasted into the PC.'**
+  String get clipPasted;
+
+  /// No description provided for @colorColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Colour'**
+  String get colorColor;
+
+  /// No description provided for @colorGray.
+  ///
+  /// In en, this message translates to:
+  /// **'Grayscale'**
+  String get colorGray;
+
+  /// No description provided for @colorBw.
+  ///
+  /// In en, this message translates to:
+  /// **'Pure black-white'**
+  String get colorBw;
 }
 
 class _AppLocalizationsDelegate

@@ -113,7 +113,8 @@ class AppSettings {
   /// capture fps, picture downscale (1.0 = full), grayscale mode.
   int rxFps = 15; // 2 | 5 | 10 | 15 | 30
   double rxScale = 1.0; // 1.0 | 0.5 | 0.25 | 0.1 | 0.05
-  bool rxGray = false;
+  /// Picture colours: color | gray | bw (pure black-and-white, PNG-encoded).
+  String rxColorMode = 'color';
 
   /// PC window logical size = phone size x this. Bigger text on the phone = smaller PC window.
   double get windowScale => 1.25 / textSize;
@@ -132,7 +133,7 @@ class AppSettings {
         'language': language,
         'rxFps': rxFps,
         'rxScale': rxScale,
-        'rxGray': rxGray,
+        'rxColorMode': rxColorMode,
       };
 
   static AppSettings fromJson(Map<String, dynamic> j) {
@@ -150,7 +151,8 @@ class AppSettings {
     s.language = j['language'] as String? ?? s.language;
     s.rxFps = (j['rxFps'] as num?)?.toInt() ?? s.rxFps;
     s.rxScale = (j['rxScale'] as num?)?.toDouble() ?? s.rxScale;
-    s.rxGray = j['rxGray'] as bool? ?? s.rxGray;
+    final legacy = j['rxGray'] as bool?;
+    s.rxColorMode = (j['rxColorMode'] as String?) ?? (legacy == true ? 'gray' : s.rxColorMode);
     return s;
   }
 }

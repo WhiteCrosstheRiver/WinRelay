@@ -336,4 +336,31 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get pcScreen => 'Pantalla del PC';
+
+  @override
+  String get clipCopyFromPc => 'Copiar el portapapeles de este PC';
+
+  @override
+  String get clipPasteToPc => 'Pegar el texto retransmitido en este PC';
+
+  @override
+  String get clipEmpty =>
+      'El portapapeles de retransmisión está vacío: copia algo primero.';
+
+  @override
+  String clipCopied(Object n) {
+    return 'Copiado ($n caracteres). Controla el otro PC y pulsa pegar.';
+  }
+
+  @override
+  String get clipPasted => 'Pegado en el PC.';
+
+  @override
+  String get colorColor => 'Color';
+
+  @override
+  String get colorGray => 'Escala de grises';
+
+  @override
+  String get colorBw => 'Blanco y negro puro';
 }

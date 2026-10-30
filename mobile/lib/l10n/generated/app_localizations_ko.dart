@@ -326,4 +326,30 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get pcScreen => 'PC 화면';
+
+  @override
+  String get clipCopyFromPc => '이 PC의 클립보드 복사';
+
+  @override
+  String get clipPasteToPc => '중계 텍스트를 이 PC에 붙여넣기';
+
+  @override
+  String get clipEmpty => '중계 클립보드가 비어 있습니다. 먼저 다른 PC에서 복사하세요.';
+
+  @override
+  String clipCopied(Object n) {
+    return '복사됨($n자). 다른 PC에서 붙여넣기를 누르세요.';
+  }
+
+  @override
+  String get clipPasted => 'PC에 붙여넣었습니다.';
+
+  @override
+  String get colorColor => '컬러';
+
+  @override
+  String get colorGray => '회색조';
+
+  @override
+  String get colorBw => '순흑백';
 }

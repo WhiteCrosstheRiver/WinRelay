@@ -715,7 +715,7 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                             if let Some(b) = pic { let _ = out2.send(Message::Binary(b)).await; }
                         });
                     }
-                    ClientMsg::Open { id, stealth, viewport, scale, fps, pic_scale, gray } => {
+                    ClientMsg::Open { id, stealth, viewport, scale, fps, pic_scale, gray, bw } => {
                         // Strict single-control, wall #2: while a PC controller
                         // is attached, no one but that controller may open here.
                         if s.pc_controller.load(Ordering::SeqCst) && !is_pc_controller {
@@ -740,7 +740,7 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                             Ok(sess) => {
                                 let stop = Arc::new(AtomicBool::new(false));
                                 let params = capture::CaptureParams::new(cfg.max_fps, cfg.jpeg_quality);
-                                params.set(fps, pic_scale, gray);
+                                params.set(fps, pic_scale, gray, bw);
                                 let cap = capture::spawn(
                                     id,
                                     CaptureOptions { params: params.clone(), keep_awake: cfg.keep_awake },
@@ -780,10 +780,38 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                             Err(e) => tx(&out, HostMsg::Error { msg: e.to_string() }).await,
                         }
                     }
-                    ClientMsg::Stream { fps, pic_scale, gray } => {
+                    ClientMsg::Stream { fps, pic_scale, gray, bw } => {
                         if let Some(l) = &live {
-                            l.params.set(fps, pic_scale, gray);
+                            l.params.set(fps, pic_scale, gray, bw);
                         }
+                    }
+                    ClientMsg::ClipGet => {
+                        let out2 = out.clone();
+                        tokio::spawn(async move {
+                            let text = tokio::task::spawn_blocking(crate::clipboard::get_text)
+                                .await
+                                .unwrap_or_else(|_| Some(String::new()))
+                                .unwrap_or_default();
+                            if let Ok(t) = serde_json::to_string(&HostMsg::ClipText { s: text }) {
+                                let _ = out2.send(Message::Text(t)).await;
+                            }
+                        });
+                    }
+                    ClientMsg::ClipSet { s: text } => {
+                        let out2 = out.clone();
+                        tokio::spawn(async move {
+                            let ok = tokio::task::spawn_blocking(move || {
+                                crate::clipboard::set_text(&text);
+                                true
+                            })
+                            .await
+                            .unwrap_or(false);
+                            if ok {
+                                if let Ok(t) = serde_json::to_string(&HostMsg::ClipOk) {
+                                    let _ = out2.send(Message::Text(t)).await;
+                                }
+                            }
+                        });
                     }
                     ClientMsg::Navigate { url } => {
                         if let Some(l) = &live {

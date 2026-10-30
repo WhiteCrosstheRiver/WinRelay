@@ -101,5 +101,13 @@
   "goForward": "Avancer",
   "addressBarHint": "Rechercher ou saisir une URL",
   "followPc": "Suivre le PC",
-  "pcScreen": "Écran du PC"
+  "pcScreen": "Écran du PC",
+  "clipCopyFromPc": "Copier le presse-papiers de ce PC",
+  "clipPasteToPc": "Coller le texte relayé dans ce PC",
+  "clipEmpty": "Le presse-papiers relais est vide — copiez quelque part avant.",
+  "clipCopied": "Copié ({n} caractères). Contrôlez l'autre PC et appuyez sur coller.",
+  "clipPasted": "Collé dans le PC.",
+  "colorColor": "Couleur",
+  "colorGray": "Niveaux de gris",
+  "colorBw": "Noir et blanc pur"
 }

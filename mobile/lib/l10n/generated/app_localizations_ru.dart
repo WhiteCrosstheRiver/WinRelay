@@ -334,4 +334,31 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pcScreen => 'Экран ПК';
+
+  @override
+  String get clipCopyFromPc => 'Копировать буфер этого ПК';
+
+  @override
+  String get clipPasteToPc => 'Вставить переданный текст в этот ПК';
+
+  @override
+  String get clipEmpty =>
+      'Буфер-ретранслятор пуст — сначала скопируйте на другом ПК.';
+
+  @override
+  String clipCopied(Object n) {
+    return 'Скопировано ($n симв.). Управляйте другим ПК и нажмите «вставить».';
+  }
+
+  @override
+  String get clipPasted => 'Вставлено в ПК.';
+
+  @override
+  String get colorColor => 'Цвет';
+
+  @override
+  String get colorGray => 'Оттенки серого';
+
+  @override
+  String get colorBw => 'Чисто чёрно-белый';
 }

@@ -30,8 +30,9 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
   late bool _tapMode;
   bool _opened = false;
   /// Browser windows start in web mode (the whole point: the page renders
-  /// natively on the phone); the video stream is one tap away.
-  bool _webMode = true;
+  /// natively on the phone); the video stream is one tap away. Non-browser
+  /// windows never enter web mode.
+  late bool _webMode;
   Orientation? _orientation;
   Timer? _rotateDebounce;
   void Function(String)? _prevOnError;
@@ -43,6 +44,7 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
   void initState() {
     super.initState();
     _tapMode = settings.tapModeDefault;
+    _webMode = isBrowserExe(widget.win.exe);
     WidgetsBinding.instance.addObserver(this);
     conn.addListener(_changed);
     _kbFocus.addListener(_changed);
@@ -74,7 +76,8 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
         scale: settings.windowScale,
         rxFps: settings.rxFps,
         rxScale: settings.rxScale,
-        rxGray: settings.rxGray,
+        rxGray: settings.rxColorMode == 'gray',
+        rxBw: settings.rxColorMode == 'bw',
       );
     } else if (o != _orientation) {
       // Phone rotated: reshape the PC window. Keyboard show/hide is ignored on purpose.
@@ -138,6 +141,47 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
     }
   }
 
+  /// Clipboard relay, copy side: grab the controlled PC's clipboard text into
+  /// the phone buffer (and the phone's own clipboard for reuse anywhere).
+  Future<void> _clipCopy() async {
+    final l10n = AppLocalizations.of(context)!;
+    final text = await conn.clipGet();
+    Store.I.clipBuffer = text;
+    if (text.isNotEmpty) {
+      await Clipboard.setData(ClipboardData(text: text));
+    }
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(text.isEmpty ? l10n.clipEmpty : l10n.clipCopied(text.length))),
+      );
+    }
+  }
+
+  /// Clipboard relay, paste side: write the relayed text into this PC's
+  /// clipboard, then Ctrl+V lands it in the focused window (a dialog, say).
+  Future<void> _clipPaste() async {
+    final l10n = AppLocalizations.of(context)!;
+    final text = Store.I.clipBuffer;
+    if (text.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.clipEmpty)));
+      }
+      return;
+    }
+    final ok = await conn.clipSet(text);
+    if (!ok) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.transferFailed)));
+      }
+      return;
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 120));
+    conn.key('ctrl_v');
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.clipPasted)));
+    }
+  }
+
   void _sendCompose() {
     final text = _compose.text;
     if (text.isEmpty) return;
@@ -185,7 +229,7 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
           ),
         ],
       ),
-      body: _webMode
+      body: isBrowser && _webMode
           ? WebPane(conn: conn)
           : Column(children: [
               if (reconnecting)
@@ -209,6 +253,8 @@ class _ControlScreenState extends State<ControlScreen> with WidgetsBindingObserv
                 keyboardOpen: settings.composeMode ? false : _kbFocus.hasFocus,
                 onToggleKeyboard: settings.composeMode ? () => FocusScope.of(context).unfocus() : _toggleKeyboard,
                 onLongPress: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
+                onClipCopy: _clipCopy,
+                onClipPaste: _clipPaste,
               ),
             ]),
     );

@@ -6,7 +6,7 @@
 //! window, Ctrl+L (focus the address bar), Ctrl+C, read the clipboard, then
 //! restore the user's clipboard and close the dropdown with Esc.
 
-use crate::input;
+use crate::{clipboard, input};
 use std::time::Duration;
 use windows::Win32::Foundation::HWND;
 
@@ -42,73 +42,19 @@ fn looks_like_url(s: &str) -> bool {
     (scheme_ok || (s.contains('.') && !s.contains(' '))) && s.len() < 2048 && !s.is_empty()
 }
 
-fn clipboard_text() -> Option<String> {
-    use windows::Win32::Foundation::HGLOBAL;
-    use windows::Win32::System::DataExchange::{CloseClipboard, GetClipboardData, OpenClipboard};
-    use windows::Win32::System::Memory::{GlobalLock, GlobalUnlock};
-    unsafe {
-        if OpenClipboard(HWND::default()).is_err() {
-            return None;
-        }
-        let out = (|| {
-            // CF_UNICODETEXT = 13
-            let h = GetClipboardData(13).ok()?;
-            let p = GlobalLock(HGLOBAL(h.0)) as *const u16;
-            if p.is_null() {
-                return None;
-            }
-            let mut len = 0usize;
-            while *p.add(len) != 0 {
-                len += 1;
-            }
-            let slice = std::slice::from_raw_parts(p, len);
-            let _ = GlobalUnlock(HGLOBAL(h.0));
-            Some(String::from_utf16_lossy(slice))
-        })();
-        let _ = CloseClipboard();
-        out
-    }
-}
-
-fn set_clipboard_text(s: &str) {
-    use windows::Win32::Foundation::HANDLE;
-    use windows::Win32::System::DataExchange::{
-        CloseClipboard, EmptyClipboard, OpenClipboard, SetClipboardData,
-    };
-    use windows::Win32::System::Memory::{GlobalAlloc, GlobalLock, GlobalUnlock, GMEM_MOVEABLE};
-    unsafe {
-        if OpenClipboard(HWND::default()).is_err() {
-            return;
-        }
-        let mut v: Vec<u16> = s.encode_utf16().collect();
-        v.push(0);
-        let bytes = v.len() * 2;
-        if let Ok(h) = GlobalAlloc(GMEM_MOVEABLE, bytes) {
-            let p = GlobalLock(h) as *mut u16;
-            if !p.is_null() {
-                std::ptr::copy_nonoverlapping(v.as_ptr(), p, v.len());
-                let _ = GlobalUnlock(h);
-                // Ownership of the block moves to the clipboard; do not free it.
-                let _ = SetClipboardData(13, HANDLE(h.0));
-            }
-        }
-        let _ = CloseClipboard().ok();
-    }
-}
-
 /// The URL the browser window is currently showing, or None.
 /// Grabs it via the address bar; the user's clipboard is restored afterwards.
 pub fn current_url(h: HWND) -> Option<String> {
-    let saved = clipboard_text();
+    let saved = clipboard::get_text();
     input::focus(h);
     input::key("ctrl_l");
     std::thread::sleep(Duration::from_millis(90));
     input::key("ctrl_c");
     std::thread::sleep(Duration::from_millis(160));
-    let text = clipboard_text();
+    let text = clipboard::get_text();
     if let Some(saved) = saved {
         std::thread::sleep(Duration::from_millis(30));
-        set_clipboard_text(&saved);
+        clipboard::set_text(&saved);
     }
     input::key("esc");
     let url = text?.trim().to_string();

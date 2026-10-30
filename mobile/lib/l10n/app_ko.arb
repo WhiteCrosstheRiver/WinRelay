@@ -101,5 +101,13 @@
   "goForward": "앞으로",
   "addressBarHint": "검색 또는 URL 입력",
   "followPc": "PC 따라가기",
-  "pcScreen": "PC 화면"
+  "pcScreen": "PC 화면",
+  "clipCopyFromPc": "이 PC의 클립보드 복사",
+  "clipPasteToPc": "중계 텍스트를 이 PC에 붙여넣기",
+  "clipEmpty": "중계 클립보드가 비어 있습니다. 먼저 다른 PC에서 복사하세요.",
+  "clipCopied": "복사됨({n}자). 다른 PC에서 붙여넣기를 누르세요.",
+  "clipPasted": "PC에 붙여넣었습니다.",
+  "colorColor": "컬러",
+  "colorGray": "회색조",
+  "colorBw": "순흑백"
 }

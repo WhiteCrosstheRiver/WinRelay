@@ -337,4 +337,31 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pcScreen => 'Écran du PC';
+
+  @override
+  String get clipCopyFromPc => 'Copier le presse-papiers de ce PC';
+
+  @override
+  String get clipPasteToPc => 'Coller le texte relayé dans ce PC';
+
+  @override
+  String get clipEmpty =>
+      'Le presse-papiers relais est vide — copiez quelque part avant.';
+
+  @override
+  String clipCopied(Object n) {
+    return 'Copié ($n caractères). Contrôlez l\'autre PC et appuyez sur coller.';
+  }
+
+  @override
+  String get clipPasted => 'Collé dans le PC.';
+
+  @override
+  String get colorColor => 'Couleur';
+
+  @override
+  String get colorGray => 'Niveaux de gris';
+
+  @override
+  String get colorBw => 'Noir et blanc pur';
 }

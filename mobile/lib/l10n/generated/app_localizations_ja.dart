@@ -327,4 +327,30 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get pcScreen => 'PC の画面';
+
+  @override
+  String get clipCopyFromPc => 'この PC のクリップボードをコピー';
+
+  @override
+  String get clipPasteToPc => '中継テキストをこの PC に貼り付け';
+
+  @override
+  String get clipEmpty => '中継クリップボードは空です。先に別の PC でコピーしてください。';
+
+  @override
+  String clipCopied(Object n) {
+    return 'コピーしました($n 文字)。別の PC で貼り付けを押してください。';
+  }
+
+  @override
+  String get clipPasted => 'PC に貼り付けました。';
+
+  @override
+  String get colorColor => 'カラー';
+
+  @override
+  String get colorGray => 'グレースケール';
+
+  @override
+  String get colorBw => '純白黒';
 }

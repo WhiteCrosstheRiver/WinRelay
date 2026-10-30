@@ -156,6 +156,34 @@ pub fn to_gray(bgra: &mut [u8]) {
     }
 }
 
+/// Pure black-and-white: luma thresholded to two values. The extreme tier —
+/// only useful for plain text / simple UI, where it shrinks frames further.
+pub fn to_bw(bgra: &mut [u8]) {
+    for px in bgra.chunks_exact_mut(4) {
+        let l = 0.299 * px[2] as f32 + 0.587 * px[1] as f32 + 0.114 * px[0] as f32;
+        let v = if l >= 128.0 { 255 } else { 0 };
+        px[0] = v;
+        px[1] = v;
+        px[2] = v;
+    }
+}
+
+/// 8-bit grayscale PNG for pure black-and-white frames: two-tone content
+/// collapses to a few kilobytes, far below what JPEG manages on sharp edges.
+/// The phone's Image widget decodes PNG just like JPEG.
+pub fn encode_png_gray(f: &Frame) -> anyhow::Result<Vec<u8>> {
+    use image::{ImageBuffer, ImageFormat, Luma};
+    let mut gray = Vec::with_capacity((f.w as usize) * (f.h as usize));
+    for px in f.bgra.chunks_exact(4) {
+        gray.push(px[0]);
+    }
+    let img = ImageBuffer::<Luma<u8>, Vec<u8>>::from_raw(f.w, f.h, gray)
+        .ok_or_else(|| anyhow::anyhow!("frame size mismatch"))?;
+    let mut out = std::io::Cursor::new(Vec::new());
+    img.write_to(&mut out, ImageFormat::Png)?;
+    Ok(out.into_inner())
+}
+
 /// Stream settings the phone can retune at any time. Shared with the capture
 /// thread so changes apply from the next frame without a restart.
 pub struct CaptureParams {
@@ -164,6 +192,7 @@ pub struct CaptureParams {
     /// Picture width as permille of the window's own width (1000 = full).
     pub scale_permil: AtomicU32,
     pub gray: AtomicBool,
+    pub bw: AtomicBool,
 }
 
 impl CaptureParams {
@@ -173,10 +202,11 @@ impl CaptureParams {
             quality: AtomicU8::new(quality),
             scale_permil: AtomicU32::new(1000),
             gray: AtomicBool::new(false),
+            bw: AtomicBool::new(false),
         })
     }
 
-    pub fn set(&self, fps: Option<u32>, pic_scale: Option<f32>, gray: Option<bool>) {
+    pub fn set(&self, fps: Option<u32>, pic_scale: Option<f32>, gray: Option<bool>, bw: Option<bool>) {
         if let Some(f) = fps {
             self.fps.store(f.clamp(1, 60), Ordering::Relaxed);
         }
@@ -185,6 +215,9 @@ impl CaptureParams {
         }
         if let Some(g) = gray {
             self.gray.store(g, Ordering::Relaxed);
+        }
+        if let Some(b) = bw {
+            self.bw.store(b, Ordering::Relaxed);
         }
     }
 }
@@ -237,13 +270,20 @@ pub fn spawn(
                     if permil < 1000 {
                         f = downscale_to_width(&f, (f.w * permil / 1000).max(1));
                     }
-                    if params.gray.load(Ordering::Relaxed) {
+                    if params.bw.load(Ordering::Relaxed) {
+                        to_bw(&mut f.bgra);
+                    } else if params.gray.load(Ordering::Relaxed) {
                         to_gray(&mut f.bgra);
                     }
                     let changed = f.bgra != prev;
                     if changed || last_sent.elapsed() > Duration::from_secs(3) {
-                        if let Ok(jpg) = encode(&f, params.quality.load(Ordering::Relaxed)) {
-                            let msg = protocol::binary(protocol::FRAME_VIDEO, id, f.w, f.h, &jpg);
+                        let is_bw = params.bw.load(Ordering::Relaxed);
+                        let msg = if is_bw {
+                            encode_png_gray(&f).ok().map(|png| protocol::binary(protocol::FRAME_VIDEO, id, f.w, f.h, &png))
+                        } else {
+                            encode(&f, params.quality.load(Ordering::Relaxed)).ok().map(|jpg| protocol::binary(protocol::FRAME_VIDEO, id, f.w, f.h, &jpg))
+                        };
+                        if let Some(msg) = msg {
                             if tx.try_send(msg).is_ok() {
                                 last_sent = Instant::now();
                             }

@@ -325,6 +325,32 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pcScreen => '电脑画面';
+
+  @override
+  String get clipCopyFromPc => '复制这台电脑的剪贴板';
+
+  @override
+  String get clipPasteToPc => '把接力文本粘贴进这台电脑';
+
+  @override
+  String get clipEmpty => '接力剪贴板是空的——请先在另一台电脑上点复制。';
+
+  @override
+  String clipCopied(Object n) {
+    return '已复制($n 字)。切到另一台电脑点粘贴。';
+  }
+
+  @override
+  String get clipPasted => '已粘贴到电脑。';
+
+  @override
+  String get colorColor => '彩色';
+
+  @override
+  String get colorGray => '灰度';
+
+  @override
+  String get colorBw => '纯黑白';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -648,4 +674,30 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get pcScreen => '電腦畫面';
+
+  @override
+  String get clipCopyFromPc => '複製這台電腦的剪貼簿';
+
+  @override
+  String get clipPasteToPc => '把接力文字貼進這台電腦';
+
+  @override
+  String get clipEmpty => '接力剪貼簿是空的——請先在另一台電腦按複製。';
+
+  @override
+  String clipCopied(Object n) {
+    return '已複製($n 字)。切到另一台電腦按貼上。';
+  }
+
+  @override
+  String get clipPasted => '已貼到電腦。';
+
+  @override
+  String get colorColor => '彩色';
+
+  @override
+  String get colorGray => '灰階';
+
+  @override
+  String get colorBw => '純黑白';
 }

@@ -43,6 +43,10 @@ class HostConnection extends ChangeNotifier {
   /// File-transfer events (fs_entries / fs_meta / fs_done / fs_chunk) for the
   /// Files screen; broadcast because only that screen listens.
   final fsEvents = StreamController<Map<String, dynamic>>.broadcast();
+  /// Clipboard-relay events (clip_text / clip_ok).
+  final clipEvents = StreamController<Map<String, dynamic>>.broadcast();
+  Completer<String>? _clipGetPending;
+  Completer<bool>? _clipSetPending;
 
   /// Video frames bypass notifyListeners so only the picture repaints.
   final ValueNotifier<Frame?> frame = ValueNotifier(null);
@@ -175,6 +179,14 @@ class HostConnection extends ChangeNotifier {
         browserUrl = m['url'] as String?;
       case 'fs_entries' || 'fs_meta' || 'fs_done' || 'fs_upload_ready':
         fsEvents.add(m);
+      case 'clip_text':
+        _clipGetPending?.complete(m['s'] as String? ?? '');
+        _clipGetPending = null;
+        clipEvents.add(m);
+      case 'clip_ok':
+        _clipSetPending?.complete(true);
+        _clipSetPending = null;
+        clipEvents.add(m);
       case 'error':
         final msg = m['msg'] as String? ?? 'Something went wrong on the PC.';
         _reopen = null;
@@ -209,6 +221,7 @@ class HostConnection extends ChangeNotifier {
     int? rxFps,
     double? rxScale,
     bool? rxGray,
+    bool? rxBw,
   }) {
     _reopen = {
       't': 'open',
@@ -219,6 +232,7 @@ class HostConnection extends ChangeNotifier {
       if (rxFps != null) 'fps': rxFps,
       if (rxScale != null) 'pic_scale': rxScale,
       if (rxGray != null) 'gray': rxGray,
+      if (rxBw != null) 'bw': rxBw,
     };
     openId = id;
     _send(_reopen!);
@@ -264,6 +278,26 @@ class HostConnection extends ChangeNotifier {
 
   void fsUploadEnd(int id) => _send({'t': 'fs_upload_end', 'id': id});
 
+  // ---- clipboard relay (phone bridges two PCs) ----
+
+  /// Reads this PC's clipboard text. Resolves '' when it holds no text.
+  Future<String> clipGet() async {
+    _clipGetPending?.complete('');
+    final c = Completer<String>();
+    _clipGetPending = c;
+    _send({'t': 'clip_get'});
+    return c.future.timeout(const Duration(seconds: 6), onTimeout: () => '');
+  }
+
+  /// Writes this PC's clipboard. The caller then sends Ctrl+V to paste.
+  Future<bool> clipSet(String s) async {
+    _clipSetPending?.complete(false);
+    final c = Completer<bool>();
+    _clipSetPending = c;
+    _send({'t': 'clip_set', 's': s});
+    return c.future.timeout(const Duration(seconds: 6), onTimeout: () => false);
+  }
+
   void setViewport(Map<String, double> viewport) {
     if (_reopen != null) _reopen!['viewport'] = viewport;
     _send({'t': 'viewport', 'viewport': viewport});
@@ -304,6 +338,7 @@ class HostConnection extends ChangeNotifier {
     _teardown();
     frame.dispose();
     fsEvents.close();
+    clipEvents.close();
     super.dispose();
   }
 }

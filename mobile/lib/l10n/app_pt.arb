@@ -101,5 +101,13 @@
   "goForward": "Avançar",
   "addressBarHint": "Pesquisar ou digitar URL",
   "followPc": "Seguir o PC",
-  "pcScreen": "Tela do PC"
+  "pcScreen": "Tela do PC",
+  "clipCopyFromPc": "Copiar a área de transferência deste PC",
+  "clipPasteToPc": "Colar o texto retransmitido neste PC",
+  "clipEmpty": "A área de transferência de retransmissão está vazia — copie algo antes.",
+  "clipCopied": "Copiado ({n} caracteres). Controle o outro PC e pressione colar.",
+  "clipPasted": "Colado no PC.",
+  "colorColor": "Cor",
+  "colorGray": "Tons de cinza",
+  "colorBw": "Preto e branco puro"
 }

@@ -181,11 +181,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onChanged: (v) => _save(() => s.rxScale = v!),
           ),
         ),
-        SwitchListTile(
+        ListTile(
           title: Text(l10n.rxGray),
           subtitle: Text(l10n.rxGraySub),
-          value: s.rxGray,
-          onChanged: (v) => _save(() => s.rxGray = v),
+          trailing: DropdownButton<String>(
+            value: s.rxColorMode,
+            items: [
+              DropdownMenuItem(value: 'color', child: Text(l10n.colorColor)),
+              DropdownMenuItem(value: 'gray', child: Text(l10n.colorGray)),
+              DropdownMenuItem(value: 'bw', child: Text(l10n.colorBw)),
+            ],
+            onChanged: (v) => _save(() => s.rxColorMode = v!),
+          ),
         ),
 
         _header(l10n.secPicture),
