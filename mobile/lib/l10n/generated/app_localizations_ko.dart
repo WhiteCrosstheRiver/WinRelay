@@ -369,4 +369,33 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get share => '공유';
+
+  @override
+  String get appsTitle => '앱';
+
+  @override
+  String get searchApps => '앱 검색…';
+
+  @override
+  String get running => '실행 중';
+
+  @override
+  String get appOpen => '실행';
+
+  @override
+  String get appClose => '앱 종료';
+
+  @override
+  String get closeAppTitle => '종료할까요?';
+
+  @override
+  String closeAppBody(Object name) {
+    return '\"$name\" 앱이 PC에서 종료됩니다(저장 여부를 물을 수 있음).';
+  }
+
+  @override
+  String get appDone => '완료';
+
+  @override
+  String get appsEmpty => '일치하는 앱이 없습니다.';
 }

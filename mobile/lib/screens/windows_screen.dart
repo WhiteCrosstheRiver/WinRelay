@@ -5,6 +5,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../models.dart';
 import '../store.dart';
 import 'control_screen.dart';
+import 'apps_screen.dart';
 import 'files_screen.dart';
 import 'settings_screen.dart';
 
@@ -62,9 +63,12 @@ class _WindowsScreenState extends State<WindowsScreen> {
       appBar: AppBar(
         title: Text(widget.pc.name),
         actions: [
-          if (conn.state == ConnState.ready)
+          if (conn.state == ConnState.ready) ...[
+            IconButton(icon: const Icon(Icons.apps), tooltip: l10n.appsTitle,
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => AppsScreen(conn: conn)))),
             IconButton(icon: const Icon(Icons.folder_outlined), tooltip: l10n.filesTitle,
               onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => FilesScreen(conn: conn)))),
+          ],
           if (conn.state == ConnState.ready)
             IconButton(icon: const Icon(Icons.refresh), tooltip: l10n.refresh, onPressed: _refresh),
           IconButton(

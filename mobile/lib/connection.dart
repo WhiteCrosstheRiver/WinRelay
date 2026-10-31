@@ -45,6 +45,10 @@ class HostConnection extends ChangeNotifier {
   final fsEvents = StreamController<Map<String, dynamic>>.broadcast();
   /// Clipboard-relay events (clip_text / clip_ok).
   final clipEvents = StreamController<Map<String, dynamic>>.broadcast();
+  /// App-launcher events (apps / app_result) for the launcher screen.
+  final appsEvents = StreamController<Map<String, dynamic>>.broadcast();
+  /// Latest app-launcher candidates (matching the query last sent).
+  List<AppInfo> apps = [];
   Completer<String>? _clipGetPending;
   Completer<bool>? _clipSetPending;
 
@@ -187,6 +191,13 @@ class HostConnection extends ChangeNotifier {
         _clipSetPending?.complete(true);
         _clipSetPending = null;
         clipEvents.add(m);
+      case 'apps':
+        if (m['q'] == _appsQuery) {
+          apps = (m['items'] as List).map((e) => AppInfo.fromJson(e as Map<String, dynamic>)).toList();
+          notifyListeners();
+        }
+      case 'app_result':
+        appsEvents.add(m);
       case 'error':
         final msg = m['msg'] as String? ?? 'Something went wrong on the PC.';
         _reopen = null;
@@ -278,6 +289,19 @@ class HostConnection extends ChangeNotifier {
 
   void fsUploadEnd(int id) => _send({'t': 'fs_upload_end', 'id': id});
 
+  // ---- app launcher ----
+  String _appsQuery = '';
+
+  /// Searches Start-Menu apps on the PC; results arrive via [apps].
+  void appsSearch(String q) {
+    _appsQuery = q;
+    _send({'t': 'apps_search', 'q': q});
+  }
+
+  void appLaunch(String path) => _send({'t': 'app_launch', 'path': path});
+
+  void appClose(String name) => _send({'t': 'app_close', 'name': name});
+
   // ---- clipboard relay (phone bridges two PCs) ----
 
   /// Reads this PC's clipboard text. Resolves '' when it holds no text.
@@ -339,6 +363,7 @@ class HostConnection extends ChangeNotifier {
     frame.dispose();
     fsEvents.close();
     clipEvents.close();
+    appsEvents.close();
     super.dispose();
   }
 }

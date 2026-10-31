@@ -79,6 +79,10 @@ pub enum ClientMsg {
         #[serde(default)]
         bw: Option<bool>,
     },
+    /// App launcher: search Start-Menu apps, launch or close one.
+    AppsSearch { q: String },
+    AppLaunch { path: String },
+    AppClose { name: String },
     /// Clipboard relay (phone bridges two PCs): read this PC's clipboard.
     ClipGet,
     /// Write this PC's clipboard so a following Ctrl+V pastes the text.
@@ -157,6 +161,10 @@ pub enum HostMsg {
     ClipText { s: String },
     /// ClipSet (and other clipboard writes) completed.
     ClipOk,
+    /// Reply to AppsSearch; running apps come first.
+    Apps { q: String, items: Vec<crate::apps::AppInfo> },
+    /// AppLaunch / AppClose outcome.
+    AppResult { ok: bool, error: Option<String> },
     Locked { locked: bool },
     Error { msg: String },
     Pong,

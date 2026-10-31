@@ -114,5 +114,14 @@
   "pathHint": "Ruta del PC, p. ej. C:\\Users\\me\\Desktop",
   "invalidPath": "No se puede abrir esa ruta.",
   "savedTo": "Guardado en Download del teléfono: {name}",
-  "share": "Compartir"
+  "share": "Compartir",
+  "appsTitle": "Aplicaciones",
+  "searchApps": "Buscar aplicaciones…",
+  "running": "En ejecución",
+  "appOpen": "Abrir",
+  "appClose": "Cerrar app",
+  "closeAppTitle": "¿Cerrar la app?",
+  "closeAppBody": "\"{name}\" se cerrará en el PC (puede avisar de trabajo sin guardar).",
+  "appDone": "Hecho",
+  "appsEmpty": "Ninguna aplicación coincide."
 }

@@ -114,5 +114,14 @@
   "pathHint": "PC 路徑,如 C:\\Users\\me\\Desktop",
   "invalidPath": "無法開啟這個路徑。",
   "savedTo": "已儲存到手機 Download:{name}",
-  "share": "分享"
+  "share": "分享",
+  "appsTitle": "應用",
+  "searchApps": "搜尋應用…",
+  "running": "執行中",
+  "appOpen": "啟動",
+  "appClose": "關閉程式",
+  "closeAppTitle": "關閉程式?",
+  "closeAppBody": "「{name}」將在電腦上被關閉(程式可能會提示儲存)。",
+  "appDone": "完成",
+  "appsEmpty": "沒有符合的應用。"
 }

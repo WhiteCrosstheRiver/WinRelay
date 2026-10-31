@@ -114,5 +114,14 @@
   "pathHint": "PC-Pfad, z. B. C:\\Users\\me\\Desktop",
   "invalidPath": "Dieser Pfad lässt sich nicht öffnen.",
   "savedTo": "Im Telefon-Download gespeichert: {name}",
-  "share": "Teilen"
+  "share": "Teilen",
+  "appsTitle": "Apps",
+  "searchApps": "Apps suchen…",
+  "running": "Läuft",
+  "appOpen": "Starten",
+  "appClose": "App beenden",
+  "closeAppTitle": "App beenden?",
+  "closeAppBody": "„{name}“ wird auf dem PC beendet (evtl. Nachfrage wegen ungespeicherter Daten).",
+  "appDone": "Fertig",
+  "appsEmpty": "Keine passenden Apps."
 }

@@ -114,5 +114,14 @@
   "pathHint": "Caminho do PC, ex.: C:\\Users\\me\\Desktop",
   "invalidPath": "Não foi possível abrir esse caminho.",
   "savedTo": "Salvo no Download do celular: {name}",
-  "share": "Compartilhar"
+  "share": "Compartilhar",
+  "appsTitle": "Apps",
+  "searchApps": "Buscar apps…",
+  "running": "Em execução",
+  "appOpen": "Abrir",
+  "appClose": "Fechar app",
+  "closeAppTitle": "Fechar o app?",
+  "closeAppBody": "\"{name}\" será fechado no PC (pode pedir para salvar).",
+  "appDone": "Concluído",
+  "appsEmpty": "Nenhum app corresponde."
 }

@@ -152,5 +152,14 @@
   "pathHint": "PC path, e.g. C:\\Users\\me\\Desktop",
   "invalidPath": "Can't open that path.",
   "savedTo": "Saved to phone Download as {name}",
-  "share": "Share"
+  "share": "Share",
+  "appsTitle": "Apps",
+  "searchApps": "Search apps…",
+  "running": "Running",
+  "appOpen": "Launch",
+  "appClose": "Close app",
+  "closeAppTitle": "Close app?",
+  "closeAppBody": "\"{name}\" will be closed on the PC (apps may prompt about unsaved work).",
+  "appDone": "Done",
+  "appsEmpty": "No apps match."
 }

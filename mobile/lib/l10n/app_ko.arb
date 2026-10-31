@@ -114,5 +114,14 @@
   "pathHint": "PC 경로 (예: C:\\Users\\me\\Desktop)",
   "invalidPath": "그 경로를 열 수 없습니다.",
   "savedTo": "휴대폰 Download에 저장: {name}",
-  "share": "공유"
+  "share": "공유",
+  "appsTitle": "앱",
+  "searchApps": "앱 검색…",
+  "running": "실행 중",
+  "appOpen": "실행",
+  "appClose": "앱 종료",
+  "closeAppTitle": "종료할까요?",
+  "closeAppBody": "\"{name}\" 앱이 PC에서 종료됩니다(저장 여부를 물을 수 있음).",
+  "appDone": "완료",
+  "appsEmpty": "일치하는 앱이 없습니다."
 }

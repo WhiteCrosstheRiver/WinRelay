@@ -804,6 +804,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share'**
   String get share;
+
+  /// No description provided for @appsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apps'**
+  String get appsTitle;
+
+  /// No description provided for @searchApps.
+  ///
+  /// In en, this message translates to:
+  /// **'Search apps…'**
+  String get searchApps;
+
+  /// No description provided for @running.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get running;
+
+  /// No description provided for @appOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Launch'**
+  String get appOpen;
+
+  /// No description provided for @appClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close app'**
+  String get appClose;
+
+  /// No description provided for @closeAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Close app?'**
+  String get closeAppTitle;
+
+  /// No description provided for @closeAppBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" will be closed on the PC (apps may prompt about unsaved work).'**
+  String closeAppBody(Object name);
+
+  /// No description provided for @appDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get appDone;
+
+  /// No description provided for @appsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No apps match.'**
+  String get appsEmpty;
 }
 
 class _AppLocalizationsDelegate

@@ -114,5 +114,14 @@
   "pathHint": "PC 路径,如 C:\\Users\\me\\Desktop",
   "invalidPath": "打不开这个路径。",
   "savedTo": "已保存到手机 Download:{name}",
-  "share": "分享"
+  "share": "分享",
+  "appsTitle": "应用",
+  "searchApps": "搜索应用…",
+  "running": "运行中",
+  "appOpen": "启动",
+  "appClose": "关闭程序",
+  "closeAppTitle": "关闭程序?",
+  "closeAppBody": "“{name}”将在电脑上被关闭(程序可能会提示保存)。",
+  "appDone": "完成",
+  "appsEmpty": "没有匹配的应用。"
 }

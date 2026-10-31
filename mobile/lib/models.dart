@@ -75,6 +75,20 @@ bool isBrowserExe(String exe) {
   return browserExes.contains(e.endsWith('.exe') ? e.substring(0, e.length - 4) : e);
 }
 
+/// A Start-Menu app on the controlled PC (app launcher candidates).
+class AppInfo {
+  AppInfo({required this.name, required this.path, required this.running});
+  final String name;
+  final String path;
+  final bool running;
+
+  factory AppInfo.fromJson(Map<String, dynamic> j) => AppInfo(
+        name: j['name'] as String? ?? '',
+        path: j['path'] as String? ?? '',
+        running: j['running'] as bool? ?? false,
+      );
+}
+
 /// Every quick key the bar can show, in display order: id -> label.
 const allQuickKeys = <String, String>{
   'esc': 'Esc',

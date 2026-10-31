@@ -2,7 +2,7 @@ use crate::capture::{self, CaptureOptions};
 use crate::config::{self, Activity, Config, Device};
 use crate::input::{self, Cmd};
 use crate::protocol::*;
-use crate::{browser, display, fs, net, power, session, winlist};
+use crate::{apps, browser, display, fs, net, power, session, winlist};
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
 use axum::extract::{ConnectInfo, State};
 use axum::http::{header, StatusCode};
@@ -783,6 +783,55 @@ async fn client(sock: WebSocket, s: Shared, ip: IpAddr) {
                     ClientMsg::Stream { fps, pic_scale, gray, bw } => {
                         if let Some(l) = &live {
                             l.params.set(fps, pic_scale, gray, bw);
+                        }
+                    }
+                    ClientMsg::AppsSearch { q } => {
+                        let out2 = out.clone();
+                        let q2 = q.clone();
+                        tokio::spawn(async move {
+                            let items = tokio::task::spawn_blocking(move || apps::search(&q2))
+                                .await
+                                .unwrap_or_default();
+                            if let Ok(t) = serde_json::to_string(&HostMsg::Apps { q, items }) {
+                                let _ = out2.send(Message::Text(t)).await;
+                            }
+                        });
+                    }
+                    ClientMsg::AppLaunch { path } => {
+                        let p = path.clone();
+                        let r = tokio::task::spawn_blocking(move || apps::launch(&p)).await;
+                        let (ok, error) = match r {
+                            Ok(Ok(())) => (true, None),
+                            Ok(Err(e)) => (false, Some(e.to_string())),
+                            Err(e) => (false, Some(e.to_string())),
+                        };
+                        if let Ok(t) = serde_json::to_string(&HostMsg::AppResult { ok, error }) {
+                            let _ = out.send(Message::Text(t)).await;
+                        }
+                    }
+                    ClientMsg::AppClose { name } => {
+                        let id = next_fs_id();
+                        let n = name.clone();
+                        let r = tokio::task::spawn_blocking(move || apps::close(&n)).await;
+                        // report_fs reports the count in the error slot on failure
+                        // only; success carries no count, which is fine for the UI.
+                        match r {
+                            Ok(Ok(count)) => {
+                                if let Ok(t) = serde_json::to_string(&HostMsg::AppResult { ok: true, error: None }) {
+                                    let _ = out.send(Message::Text(t)).await;
+                                }
+                                let _ = count;
+                            }
+                            Ok(Err(e)) => {
+                                if let Ok(t) = serde_json::to_string(&HostMsg::AppResult { ok: false, error: Some(e.to_string()) }) {
+                                    let _ = out.send(Message::Text(t)).await;
+                                }
+                            }
+                            Err(e) => {
+                                if let Ok(t) = serde_json::to_string(&HostMsg::AppResult { ok: false, error: Some(e.to_string()) }) {
+                                    let _ = out.send(Message::Text(t)).await;
+                                }
+                            }
                         }
                     }
                     ClientMsg::ClipGet => {

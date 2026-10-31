@@ -377,4 +377,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get share => 'Share';
+
+  @override
+  String get appsTitle => 'Apps';
+
+  @override
+  String get searchApps => 'Search apps…';
+
+  @override
+  String get running => 'Running';
+
+  @override
+  String get appOpen => 'Launch';
+
+  @override
+  String get appClose => 'Close app';
+
+  @override
+  String get closeAppTitle => 'Close app?';
+
+  @override
+  String closeAppBody(Object name) {
+    return '\"$name\" will be closed on the PC (apps may prompt about unsaved work).';
+  }
+
+  @override
+  String get appDone => 'Done';
+
+  @override
+  String get appsEmpty => 'No apps match.';
 }

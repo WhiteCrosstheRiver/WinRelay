@@ -380,4 +380,33 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get share => 'Compartir';
+
+  @override
+  String get appsTitle => 'Aplicaciones';
+
+  @override
+  String get searchApps => 'Buscar aplicaciones…';
+
+  @override
+  String get running => 'En ejecución';
+
+  @override
+  String get appOpen => 'Abrir';
+
+  @override
+  String get appClose => 'Cerrar app';
+
+  @override
+  String get closeAppTitle => '¿Cerrar la app?';
+
+  @override
+  String closeAppBody(Object name) {
+    return '\"$name\" se cerrará en el PC (puede avisar de trabajo sin guardar).';
+  }
+
+  @override
+  String get appDone => 'Hecho';
+
+  @override
+  String get appsEmpty => 'Ninguna aplicación coincide.';
 }

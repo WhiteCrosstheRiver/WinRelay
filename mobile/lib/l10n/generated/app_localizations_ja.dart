@@ -370,4 +370,33 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get share => '共有';
+
+  @override
+  String get appsTitle => 'アプリ';
+
+  @override
+  String get searchApps => 'アプリを検索…';
+
+  @override
+  String get running => '起動中';
+
+  @override
+  String get appOpen => '起動';
+
+  @override
+  String get appClose => 'アプリを終了';
+
+  @override
+  String get closeAppTitle => '終了しますか?';
+
+  @override
+  String closeAppBody(Object name) {
+    return '「$name」は PC 上で終了されます(未保存の確認が出ることがあります)。';
+  }
+
+  @override
+  String get appDone => '完了';
+
+  @override
+  String get appsEmpty => '一致するアプリがありません。';
 }

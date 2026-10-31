@@ -114,5 +114,14 @@
   "pathHint": "PC のパス (例: C:\\Users\\me\\Desktop)",
   "invalidPath": "そのパスは開けません。",
   "savedTo": "スマホの Download に保存:{name}",
-  "share": "共有"
+  "share": "共有",
+  "appsTitle": "アプリ",
+  "searchApps": "アプリを検索…",
+  "running": "起動中",
+  "appOpen": "起動",
+  "appClose": "アプリを終了",
+  "closeAppTitle": "終了しますか?",
+  "closeAppBody": "「{name}」は PC 上で終了されます(未保存の確認が出ることがあります)。",
+  "appDone": "完了",
+  "appsEmpty": "一致するアプリがありません。"
 }

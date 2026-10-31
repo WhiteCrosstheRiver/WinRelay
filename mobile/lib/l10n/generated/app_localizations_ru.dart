@@ -378,4 +378,33 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get share => 'Поделиться';
+
+  @override
+  String get appsTitle => 'Приложения';
+
+  @override
+  String get searchApps => 'Поиск приложений…';
+
+  @override
+  String get running => 'Запущено';
+
+  @override
+  String get appOpen => 'Запустить';
+
+  @override
+  String get appClose => 'Закрыть приложение';
+
+  @override
+  String get closeAppTitle => 'Закрыть приложение?';
+
+  @override
+  String closeAppBody(Object name) {
+    return '«$name» будет закрыто на ПК (может спросить о несохранённом).';
+  }
+
+  @override
+  String get appDone => 'Готово';
+
+  @override
+  String get appsEmpty => 'Нет совпадающих приложений.';
 }

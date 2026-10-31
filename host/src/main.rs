@@ -1,6 +1,7 @@
 // WinRelay host. Release builds run without a console window.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod apps;
 mod browser;
 mod capture;
 mod clipboard;

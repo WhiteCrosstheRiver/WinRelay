@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-10-30 (v0.7.0) — App launcher: open / close PC programs with search
+
+Win+S-style launcher on the phone. New grid icon on the PC list opens an
+Apps screen: search Start-Menu apps with live candidates, launch one, or
+close a running one (gracefully, via WM_CLOSE to all its windows — apps
+still get to prompt about unsaved work).
+
+- Host `apps.rs`: Start-Menu .lnk enumeration (both ProgramData and user
+  menus, uninstall entries hidden, 5-min cache), substring search with
+  running apps first (running = a visible window's app/title contains the
+  name), launch via ShellExecute on the shortcut itself.
+- Protocol: `apps_search` / `app_launch` / `app_close` with `apps` (running
+  first) and `app_result` replies.
+- Phone: Apps screen with debounced search, launch/open-in-new button,
+  close button with a confirm dialog (running badge only), and automatic
+  re-search after any launch/close so badges stay truthful.
+- E2E `host/tests/…`: search "notepad" → launch → running flag flips true →
+  close → window gone. Emulator UI verified end to end.
+
 ## 2026-10-30 (v0.6.4) — Files screen: desktop default, real navigation
 
 - Files opens on the PC's **Desktop** (host sends the desktop path with the

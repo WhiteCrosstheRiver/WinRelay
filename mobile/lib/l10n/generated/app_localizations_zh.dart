@@ -368,6 +368,35 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get share => '分享';
+
+  @override
+  String get appsTitle => '应用';
+
+  @override
+  String get searchApps => '搜索应用…';
+
+  @override
+  String get running => '运行中';
+
+  @override
+  String get appOpen => '启动';
+
+  @override
+  String get appClose => '关闭程序';
+
+  @override
+  String get closeAppTitle => '关闭程序?';
+
+  @override
+  String closeAppBody(Object name) {
+    return '“$name”将在电脑上被关闭(程序可能会提示保存)。';
+  }
+
+  @override
+  String get appDone => '完成';
+
+  @override
+  String get appsEmpty => '没有匹配的应用。';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -734,4 +763,33 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get share => '分享';
+
+  @override
+  String get appsTitle => '應用';
+
+  @override
+  String get searchApps => '搜尋應用…';
+
+  @override
+  String get running => '執行中';
+
+  @override
+  String get appOpen => '啟動';
+
+  @override
+  String get appClose => '關閉程式';
+
+  @override
+  String get closeAppTitle => '關閉程式?';
+
+  @override
+  String closeAppBody(Object name) {
+    return '「$name」將在電腦上被關閉(程式可能會提示儲存)。';
+  }
+
+  @override
+  String get appDone => '完成';
+
+  @override
+  String get appsEmpty => '沒有符合的應用。';
 }
