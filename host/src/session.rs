@@ -156,6 +156,9 @@ fn fit(h: HWND, area: RECT, vp: Viewport, scale: f32, top_left: bool) {
         };
         let _ = SetWindowPos(h, HWND::default(), x, y, w as i32, ht as i32, SWP_NOZORDER | SWP_NOACTIVATE);
     }
+    // Apps may clamp to their own minimum size and stick out of the monitor
+    // after our sizing; shift them back so taps and capture stay reliable.
+    display::clamp_window_into_monitor(h);
 }
 
 fn save_placement(id: u64) -> anyhow::Result<Saved> {

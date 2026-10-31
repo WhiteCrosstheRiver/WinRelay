@@ -4,6 +4,9 @@ use windows::Win32::Graphics::Gdi::{
     EnumDisplayDevicesW, EnumDisplayMonitors, GetMonitorInfoW, MonitorFromWindow, DISPLAY_DEVICEW, HDC,
     HMONITOR, MONITORINFO, MONITORINFOEXW, MONITOR_DEFAULTTONEAREST,
 };
+use windows::Win32::UI::WindowsAndMessaging::{
+    GetWindowRect, SetWindowPos, SWP_NOACTIVATE, SWP_NOSIZE, SWP_NOZORDER,
+};
 
 #[derive(Clone, Debug)]
 pub struct Monitor {
@@ -99,6 +102,61 @@ pub fn physical_bounds(matchers: &str) -> Option<RECT> {
         r.bottom = r.bottom.max(m.rect.bottom);
     }
     Some(r)
+}
+
+/// Full rect of the monitor a window is on.
+pub fn monitor_rect_of(h: HWND) -> Option<RECT> {
+    unsafe {
+        let mon = MonitorFromWindow(h, MONITOR_DEFAULTTONEAREST);
+        let mut mi = MONITORINFO {
+            cbSize: std::mem::size_of::<MONITORINFO>() as u32,
+            ..Default::default()
+        };
+        if GetMonitorInfoW(mon, &mut mi).as_bool() {
+            Some(mi.rcMonitor)
+        } else {
+            None
+        }
+    }
+}
+
+/// Shifts a window back on-screen if it stuck out. Apps clamp SetWindowPos to
+/// their own minimum size, so a phone-shaped request can leave the real
+/// window hanging over the screen edge — where SetCursorPos would silently
+/// move every tap back onto the screen edge (taps "stuck").
+pub fn clamp_window_into_monitor(h: HWND) {
+    let Some(mon) = monitor_rect_of(h) else { return };
+    let mut r = RECT::default();
+    unsafe {
+        let _ = GetWindowRect(h, &mut r);
+    }
+    let dx = if r.right > mon.right {
+        mon.right - r.right
+    } else if r.left < mon.left {
+        mon.left - r.left
+    } else {
+        0
+    };
+    let dy = if r.bottom > mon.bottom {
+        mon.bottom - r.bottom
+    } else if r.top < mon.top {
+        mon.top - r.top
+    } else {
+        0
+    };
+    if dx != 0 || dy != 0 {
+        unsafe {
+            let _ = SetWindowPos(
+                h,
+                HWND::default(),
+                r.left + dx,
+                r.top + dy,
+                0,
+                0,
+                SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSIZE,
+            );
+        }
+    }
 }
 
 /// Work area (screen minus taskbar) of the monitor a window is on.

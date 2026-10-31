@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-10-30 (v0.7.1) — Tap fixes for min-size / off-screen windows
+
+Acceptance: taps in Tap mode sometimes "stuck", and windows hung half off the
+screen after resizing — worst with apps that clamp SetWindowPos to their own
+minimum size (the phone asks for 400 px wide, the app renders 900+).
+
+- `session::fit` now re-checks the real window rect after sizing and shifts
+  the window back fully on-screen (per-monitor). Verified with Clash Verge:
+  rect (897,193)-(1297,993) stays inside a 2194x1234 desktop.
+- Taps now **focus the target window first** (without foreground, Windows
+  swallows the first click as "activate") and **clamp the click point into
+  the window's monitor** — no more silently relocated clicks when part of
+  the window sits past the screen edge (e.g. after a manual PC-side resize).
+
 ## 2026-10-30 (v0.7.0) — App launcher: open / close PC programs with search
 
 Win+S-style launcher on the phone. New grid icon on the PC list opens an

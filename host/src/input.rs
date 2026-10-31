@@ -68,10 +68,18 @@ fn run(h: HWND, cmd: Cmd, parked: &mut Option<POINT>, last_scroll: &mut Option<I
             key(&k);
         }
         Cmd::Tap { x, y, kind } => {
+            // Without foreground, the first tap only activates the window and
+            // the click is swallowed — taps would feel "stuck".
             focus(h);
             let r = capture::visible_rect(h);
-            let px = r.left + ((r.right - r.left) as f32 * x.clamp(0.0, 1.0)) as i32;
-            let py = r.top + ((r.bottom - r.top) as f32 * y.clamp(0.0, 1.0)) as i32;
+            let mut px = r.left + ((r.right - r.left) as f32 * x.clamp(0.0, 1.0)) as i32;
+            let mut py = r.top + ((r.bottom - r.top) as f32 * y.clamp(0.0, 1.0)) as i32;
+            // A click on an off-screen part would be clamped by SetCursorPos
+            // and land at the screen edge — keep it on the window's monitor.
+            if let Some(mon) = crate::display::monitor_rect_of(h) {
+                px = px.clamp(mon.left, (mon.right - 1).max(mon.left));
+                py = py.clamp(mon.top, (mon.bottom - 1).max(mon.top));
+            }
             at_point(px, py, || click(kind));
         }
         Cmd::Scroll { dy, x, y } => scroll_at(h, dy, x, y, parked, last_scroll),
