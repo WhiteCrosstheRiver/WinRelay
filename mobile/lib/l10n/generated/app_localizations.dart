@@ -858,6 +858,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No apps match.'**
   String get appsEmpty;
+
+  /// No description provided for @openFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get openFile;
+
+  /// No description provided for @cameraPermNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access is needed to scan the pairing code.'**
+  String get cameraPermNeeded;
+
+  /// No description provided for @cameraPermOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera permission is off. Enable it in Settings to scan.'**
+  String get cameraPermOff;
+
+  /// No description provided for @cameraAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow camera'**
+  String get cameraAllow;
+
+  /// No description provided for @cameraOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get cameraOpenSettings;
+
+  /// No description provided for @cameraError.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera failed to start. Try again.'**
+  String get cameraError;
 }
 
 class _AppLocalizationsDelegate

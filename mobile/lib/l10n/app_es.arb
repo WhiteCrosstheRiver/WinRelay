@@ -123,5 +123,11 @@
   "closeAppTitle": "¿Cerrar la app?",
   "closeAppBody": "\"{name}\" se cerrará en el PC (puede avisar de trabajo sin guardar).",
   "appDone": "Hecho",
-  "appsEmpty": "Ninguna aplicación coincide."
+  "appsEmpty": "Ninguna aplicación coincide.",
+  "openFile": "Abrir",
+  "cameraPermNeeded": "Se necesita acceso a la cámara para escanear el código.",
+  "cameraPermOff": "El permiso de cámara está desactivado. Actívalo en Ajustes para escanear.",
+  "cameraAllow": "Permitir cámara",
+  "cameraOpenSettings": "Abrir ajustes",
+  "cameraError": "La cámara no arrancó. Inténtalo de nuevo."
 }

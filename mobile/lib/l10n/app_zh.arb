@@ -123,5 +123,11 @@
   "closeAppTitle": "关闭程序?",
   "closeAppBody": "“{name}”将在电脑上被关闭(程序可能会提示保存)。",
   "appDone": "完成",
-  "appsEmpty": "没有匹配的应用。"
+  "appsEmpty": "没有匹配的应用。",
+  "openFile": "打开",
+  "cameraPermNeeded": "需要相机权限才能扫描配对码。",
+  "cameraPermOff": "相机权限已被关闭,请到系统设置里开启后再扫。",
+  "cameraAllow": "允许相机",
+  "cameraOpenSettings": "打开设置",
+  "cameraError": "相机启动失败,请重试。"
 }

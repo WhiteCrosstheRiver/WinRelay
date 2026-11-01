@@ -398,4 +398,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get appsEmpty => '일치하는 앱이 없습니다.';
+
+  @override
+  String get openFile => '열기';
+
+  @override
+  String get cameraPermNeeded => '페어링 코드를 스캔하려면 카메라 권한이 필요합니다.';
+
+  @override
+  String get cameraPermOff => '카메라 권한이 꺼져 있습니다. 설정에서 허용 후 스캔하세요.';
+
+  @override
+  String get cameraAllow => '카메라 허용';
+
+  @override
+  String get cameraOpenSettings => '설정 열기';
+
+  @override
+  String get cameraError => '카메라를 시작하지 못했습니다. 다시 시도하세요.';
 }

@@ -406,4 +406,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appsEmpty => 'No apps match.';
+
+  @override
+  String get openFile => 'Open';
+
+  @override
+  String get cameraPermNeeded =>
+      'Camera access is needed to scan the pairing code.';
+
+  @override
+  String get cameraPermOff =>
+      'Camera permission is off. Enable it in Settings to scan.';
+
+  @override
+  String get cameraAllow => 'Allow camera';
+
+  @override
+  String get cameraOpenSettings => 'Open Settings';
+
+  @override
+  String get cameraError => 'Camera failed to start. Try again.';
 }

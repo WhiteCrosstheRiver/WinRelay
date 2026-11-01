@@ -123,5 +123,11 @@
   "closeAppTitle": "종료할까요?",
   "closeAppBody": "\"{name}\" 앱이 PC에서 종료됩니다(저장 여부를 물을 수 있음).",
   "appDone": "완료",
-  "appsEmpty": "일치하는 앱이 없습니다."
+  "appsEmpty": "일치하는 앱이 없습니다.",
+  "openFile": "열기",
+  "cameraPermNeeded": "페어링 코드를 스캔하려면 카메라 권한이 필요합니다.",
+  "cameraPermOff": "카메라 권한이 꺼져 있습니다. 설정에서 허용 후 스캔하세요.",
+  "cameraAllow": "카메라 허용",
+  "cameraOpenSettings": "설정 열기",
+  "cameraError": "카메라를 시작하지 못했습니다. 다시 시도하세요."
 }

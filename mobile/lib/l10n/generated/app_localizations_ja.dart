@@ -399,4 +399,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get appsEmpty => '一致するアプリがありません。';
+
+  @override
+  String get openFile => '開く';
+
+  @override
+  String get cameraPermNeeded => 'ペアリングコードをスキャンするにはカメラ権限が必要です。';
+
+  @override
+  String get cameraPermOff => 'カメラ権限がオフです。設定で有効にしてからスキャンしてください。';
+
+  @override
+  String get cameraAllow => 'カメラを許可';
+
+  @override
+  String get cameraOpenSettings => '設定を開く';
+
+  @override
+  String get cameraError => 'カメラを起動できませんでした。再試行してください。';
 }

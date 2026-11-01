@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:flutter/services.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../connection.dart';
 import '../l10n/generated/app_localizations.dart';
+import '../store.dart';
 
 /// Phone-side file manager for the PC: browse drives and folders like a
 /// mobile file manager, upload files from this phone, download to the phone
@@ -39,6 +40,10 @@ class _FilesScreenState extends State<FilesScreen> {
   Timer? _navTimeout;
   final Map<int, ({String file, int received, int total})> _downloads = {};
   final Map<int, String> _downloadNames = {};
+  // Chunks must hit the disk strictly in offset order; the WS events arrive
+  // in order but our disk writes are async, so chain them per download.
+  final Map<int, RandomAccessFile> _dlRafs = {};
+  final Map<int, Future<void>> _dlChains = {};
 
   HostConnection get conn => widget.conn;
 
@@ -46,7 +51,10 @@ class _FilesScreenState extends State<FilesScreen> {
   void initState() {
     super.initState();
     _fsSub = conn.fsEvents.stream.listen(_onFsEvent);
-    _fetch('');
+    // Remembered location wins; first open falls back to the PC's desktop.
+    final saved = Store.I.lastDirByPc[conn.pc.id];
+    _wantDesktop = (saved == null || saved.isEmpty);
+    _fetch(saved ?? '');
   }
 
   @override
@@ -73,6 +81,7 @@ class _FilesScreenState extends State<FilesScreen> {
             return;
           }
           _navTimeout?.cancel();
+          Store.I.setLastDir(conn.pc.id, path);
           setState(() {
             items = (m['items'] as List).cast<Map<String, dynamic>>();
             loading = false;
@@ -261,6 +270,7 @@ class _FilesScreenState extends State<FilesScreen> {
     final target = File('/sdcard/Download/$name');
     _downloads[id] = (file: target.path, received: 0, total: 0);
     _downloadNames[id] = name;
+    _dlRafs[id] = target.openSync(mode: FileMode.write);
     setState(() => busy = '${l10n.download} · $name · 0%');
     conn.fsDownload(id, _join(path, name));
   }
@@ -269,14 +279,17 @@ class _FilesScreenState extends State<FilesScreen> {
     if (m['kind'] != 3) return;
     final id = m['id'] as int;
     final dl = _downloads[id];
-    if (dl == null) return;
-    final data = m['data'] as Uint8List;
-    final f = File(dl.file);
-    if (m['offset'] == 0) {
-      await f.writeAsBytes(data, mode: FileMode.write);
-    } else {
-      await f.writeAsBytes(data, mode: FileMode.append);
-    }
+    final raf = _dlRafs[id];
+    if (dl == null || raf == null) return;
+    // Copy out of the message buffer, then serialize disk writes: event
+    // delivery is ordered but our async writes would race on a big file.
+    final data = Uint8List.fromList(m['data'] as Uint8List);
+    final off = m['offset'] as int;
+    final prev = _dlChains[id] ?? Future.value();
+    _dlChains[id] = prev.then((_) async {
+      await raf.setPosition(off);
+      await raf.writeFrom(data);
+    });
     final received = dl.received + data.length;
     final total = m['total'] as int;
     _downloads[id] = (file: dl.file, received: received, total: total);
@@ -297,8 +310,8 @@ class _FilesScreenState extends State<FilesScreen> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(l10n.savedTo(name)),
           action: SnackBarAction(
-            label: l10n.share,
-            onPressed: () => Share.shareXFiles([XFile(dl.file)], text: name),
+            label: l10n.openFile,
+            onPressed: () => OpenFilex.open(dl.file),
           ),
         ));
       } else if (mounted) {

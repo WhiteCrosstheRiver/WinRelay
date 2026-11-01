@@ -407,4 +407,24 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get appsEmpty => 'Nessuna app corrisponde.';
+
+  @override
+  String get openFile => 'Apri';
+
+  @override
+  String get cameraPermNeeded =>
+      'Serve la fotocamera per scansionare il codice.';
+
+  @override
+  String get cameraPermOff =>
+      'Il permesso fotocamera è spento. Abilitalo nelle impostazioni per scansionare.';
+
+  @override
+  String get cameraAllow => 'Consenti fotocamera';
+
+  @override
+  String get cameraOpenSettings => 'Apri impostazioni';
+
+  @override
+  String get cameraError => 'La fotocamera non si è avviata. Riprova.';
 }

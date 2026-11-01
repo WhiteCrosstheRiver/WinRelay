@@ -123,5 +123,11 @@
   "closeAppTitle": "App beenden?",
   "closeAppBody": "„{name}“ wird auf dem PC beendet (evtl. Nachfrage wegen ungespeicherter Daten).",
   "appDone": "Fertig",
-  "appsEmpty": "Keine passenden Apps."
+  "appsEmpty": "Keine passenden Apps.",
+  "openFile": "Öffnen",
+  "cameraPermNeeded": "Kamerazugriff wird zum Scannen des Codes benötigt.",
+  "cameraPermOff": "Kameraberechtigung ist aus. In den Einstellungen aktivieren zum Scannen.",
+  "cameraAllow": "Kamera erlauben",
+  "cameraOpenSettings": "Einstellungen öffnen",
+  "cameraError": "Kamera konnte nicht gestartet werden. Erneut versuchen."
 }

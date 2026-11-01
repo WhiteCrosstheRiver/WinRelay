@@ -407,4 +407,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get appsEmpty => 'Нет совпадающих приложений.';
+
+  @override
+  String get openFile => 'Открыть';
+
+  @override
+  String get cameraPermNeeded => 'Для сканирования кода нужен доступ к камере.';
+
+  @override
+  String get cameraPermOff =>
+      'Доступ к камере выключен. Включите в настройках и отсканируйте.';
+
+  @override
+  String get cameraAllow => 'Разрешить камеру';
+
+  @override
+  String get cameraOpenSettings => 'Открыть настройки';
+
+  @override
+  String get cameraError => 'Камера не запустилась. Попробуйте снова.';
 }

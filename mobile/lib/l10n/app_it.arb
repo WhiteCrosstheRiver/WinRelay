@@ -123,5 +123,11 @@
   "closeAppTitle": "Chiudere la app?",
   "closeAppBody": "\"{name}\" verrà chiusa sul PC (potrebbe chiedere di salvare).",
   "appDone": "Fatto",
-  "appsEmpty": "Nessuna app corrisponde."
+  "appsEmpty": "Nessuna app corrisponde.",
+  "openFile": "Apri",
+  "cameraPermNeeded": "Serve la fotocamera per scansionare il codice.",
+  "cameraPermOff": "Il permesso fotocamera è spento. Abilitalo nelle impostazioni per scansionare.",
+  "cameraAllow": "Consenti fotocamera",
+  "cameraOpenSettings": "Apri impostazioni",
+  "cameraError": "La fotocamera non si è avviata. Riprova."
 }

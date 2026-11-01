@@ -410,4 +410,24 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get appsEmpty => 'Aucune application trouvée.';
+
+  @override
+  String get openFile => 'Ouvrir';
+
+  @override
+  String get cameraPermNeeded =>
+      'L\'accès à la caméra est nécessaire pour scanner le code.';
+
+  @override
+  String get cameraPermOff =>
+      'L\'autorisation caméra est désactivée. Activez-la dans les paramètres pour scanner.';
+
+  @override
+  String get cameraAllow => 'Autoriser la caméra';
+
+  @override
+  String get cameraOpenSettings => 'Ouvrir les paramètres';
+
+  @override
+  String get cameraError => 'La caméra n\'a pas démarré. Réessayez.';
 }

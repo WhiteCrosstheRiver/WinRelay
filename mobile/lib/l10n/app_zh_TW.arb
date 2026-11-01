@@ -123,5 +123,11 @@
   "closeAppTitle": "關閉程式?",
   "closeAppBody": "「{name}」將在電腦上被關閉(程式可能會提示儲存)。",
   "appDone": "完成",
-  "appsEmpty": "沒有符合的應用。"
+  "appsEmpty": "沒有符合的應用。",
+  "openFile": "開啟",
+  "cameraPermNeeded": "需要相機權限才能掃描配對碼。",
+  "cameraPermOff": "相機權限已被關閉,請到系統設定裡開啟後再掃。",
+  "cameraAllow": "允許相機",
+  "cameraOpenSettings": "開啟設定",
+  "cameraError": "相機啟動失敗,請重試。"
 }

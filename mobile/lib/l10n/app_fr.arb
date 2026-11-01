@@ -123,5 +123,11 @@
   "closeAppTitle": "Fermer l'application ?",
   "closeAppBody": "« {name} » sera fermée sur le PC (elle peut demander à enregistrer).",
   "appDone": "Terminé",
-  "appsEmpty": "Aucune application trouvée."
+  "appsEmpty": "Aucune application trouvée.",
+  "openFile": "Ouvrir",
+  "cameraPermNeeded": "L'accès à la caméra est nécessaire pour scanner le code.",
+  "cameraPermOff": "L'autorisation caméra est désactivée. Activez-la dans les paramètres pour scanner.",
+  "cameraAllow": "Autoriser la caméra",
+  "cameraOpenSettings": "Ouvrir les paramètres",
+  "cameraError": "La caméra n'a pas démarré. Réessayez."
 }

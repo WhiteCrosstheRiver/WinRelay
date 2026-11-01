@@ -407,4 +407,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get appsEmpty => 'Keine passenden Apps.';
+
+  @override
+  String get openFile => 'Öffnen';
+
+  @override
+  String get cameraPermNeeded =>
+      'Kamerazugriff wird zum Scannen des Codes benötigt.';
+
+  @override
+  String get cameraPermOff =>
+      'Kameraberechtigung ist aus. In den Einstellungen aktivieren zum Scannen.';
+
+  @override
+  String get cameraAllow => 'Kamera erlauben';
+
+  @override
+  String get cameraOpenSettings => 'Einstellungen öffnen';
+
+  @override
+  String get cameraError =>
+      'Kamera konnte nicht gestartet werden. Erneut versuchen.';
 }

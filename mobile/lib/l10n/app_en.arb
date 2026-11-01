@@ -161,5 +161,11 @@
   "closeAppTitle": "Close app?",
   "closeAppBody": "\"{name}\" will be closed on the PC (apps may prompt about unsaved work).",
   "appDone": "Done",
-  "appsEmpty": "No apps match."
+  "appsEmpty": "No apps match.",
+  "openFile": "Open",
+  "cameraPermNeeded": "Camera access is needed to scan the pairing code.",
+  "cameraPermOff": "Camera permission is off. Enable it in Settings to scan.",
+  "cameraAllow": "Allow camera",
+  "cameraOpenSettings": "Open Settings",
+  "cameraError": "Camera failed to start. Try again."
 }

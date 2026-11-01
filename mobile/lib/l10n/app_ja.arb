@@ -123,5 +123,11 @@
   "closeAppTitle": "終了しますか?",
   "closeAppBody": "「{name}」は PC 上で終了されます(未保存の確認が出ることがあります)。",
   "appDone": "完了",
-  "appsEmpty": "一致するアプリがありません。"
+  "appsEmpty": "一致するアプリがありません。",
+  "openFile": "開く",
+  "cameraPermNeeded": "ペアリングコードをスキャンするにはカメラ権限が必要です。",
+  "cameraPermOff": "カメラ権限がオフです。設定で有効にしてからスキャンしてください。",
+  "cameraAllow": "カメラを許可",
+  "cameraOpenSettings": "設定を開く",
+  "cameraError": "カメラを起動できませんでした。再試行してください。"
 }

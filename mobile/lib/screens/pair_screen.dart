@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models.dart';
@@ -20,8 +21,31 @@ class PairScreen extends StatefulWidget {
 
 class _PairScreenState extends State<PairScreen> {
   final _link = TextEditingController();
+  final _controller = MobileScannerController(
+    detectionTimeoutMs: 600,
+    formats: const [BarcodeFormat.qrCode],
+  );
+  PermissionStatus _camStatus = PermissionStatus.denied;
   String? _error;
   bool _done = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkCam();
+  }
+
+  Future<void> _checkCam() async {
+    final st = await Permission.camera.status;
+    setState(() => _camStatus = st);
+    if (st.isGranted || st.isLimited) _controller.start();
+  }
+
+  Future<void> _askCam() async {
+    final st = await Permission.camera.request();
+    setState(() => _camStatus = st);
+    if (st.isGranted || st.isLimited) _controller.start();
+  }
 
   Future<void> _use(String raw) async {
     if (_done) return;
@@ -39,6 +63,23 @@ class _PairScreenState extends State<PairScreen> {
     } else {
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => WindowsScreen(pc: pc)));
     }
+  }
+
+  Widget _camBox(BuildContext ctx, IconData icon, String text, {String? button, VoidCallback? onTap}) {
+    return Center(
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Icon(icon, size: 44, color: Theme.of(ctx).colorScheme.primary),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(text, textAlign: TextAlign.center, style: Theme.of(ctx).textTheme.bodyMedium),
+        ),
+        if (button != null) ...[
+          const SizedBox(height: 14),
+          FilledButton.icon(onPressed: onTap, icon: const Icon(Icons.settings), label: Text(button)),
+        ],
+      ]),
+    );
   }
 
   Future<void> _paste() async {
@@ -61,12 +102,29 @@ class _PairScreenState extends State<PairScreen> {
             borderRadius: BorderRadius.circular(12),
             child: SizedBox(
               height: 280,
-              child: MobileScanner(
-                onDetect: (capture) {
-                  final value = capture.barcodes.isEmpty ? null : capture.barcodes.first.rawValue;
-                  if (value != null) _use(value);
-                },
-              ),
+              child: switch (_camStatus) {
+                PermissionStatus.granted ||
+                PermissionStatus.limited ||
+                PermissionStatus.provisional =>
+                  MobileScanner(
+                    controller: _controller,
+                    errorBuilder: (ctx, err, _) => _camBox(ctx, Icons.error_outline,
+                        AppLocalizations.of(ctx)!.cameraError),
+                    onDetect: (capture) {
+                      final value = capture.barcodes.isEmpty ? null : capture.barcodes.first.rawValue;
+                      if (value != null) _use(value);
+                    },
+                  ),
+                PermissionStatus.permanentlyDenied ||
+                PermissionStatus.restricted =>
+                  _camBox(context, Icons.block, AppLocalizations.of(context)!.cameraPermOff,
+                      button: AppLocalizations.of(context)!.cameraOpenSettings,
+                      onTap: () => openAppSettings()),
+                _ => _camBox(context, Icons.photo_camera_outlined,
+                    AppLocalizations.of(context)!.cameraPermNeeded,
+                    button: AppLocalizations.of(context)!.cameraAllow,
+                    onTap: _askCam),
+              },
             ),
           ),
           const SizedBox(height: 28),

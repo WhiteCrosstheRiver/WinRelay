@@ -18,6 +18,8 @@ class Store extends ChangeNotifier {
   /// Last text grabbed from a PC's clipboard (clipboard relay A -> phone -> B).
   /// In-memory only: it dies with the app, like a real clipboard would.
   String clipBuffer = '';
+  /// Last browsed folder per PC id, persisted so Files reopens there.
+  Map<String, String> lastDirByPc = {};
 
   Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
@@ -31,6 +33,15 @@ class Store extends ChangeNotifier {
     if (p != null) {
       pcs = (jsonDecode(p) as List).map((e) => PcEntry.fromJson(e as Map<String, dynamic>)).toList();
     }
+    final ld = _prefs.getString('lastDirs');
+    if (ld != null) {
+      lastDirByPc = (jsonDecode(ld) as Map).cast<String, String>();
+    }
+  }
+
+  void setLastDir(String pcId, String dir) {
+    lastDirByPc[pcId] = dir;
+    _prefs.setString('lastDirs', jsonEncode(lastDirByPc));
   }
 
   Future<void> saveSettings() async {

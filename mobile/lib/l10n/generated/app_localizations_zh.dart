@@ -397,6 +397,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get appsEmpty => '没有匹配的应用。';
+
+  @override
+  String get openFile => '打开';
+
+  @override
+  String get cameraPermNeeded => '需要相机权限才能扫描配对码。';
+
+  @override
+  String get cameraPermOff => '相机权限已被关闭,请到系统设置里开启后再扫。';
+
+  @override
+  String get cameraAllow => '允许相机';
+
+  @override
+  String get cameraOpenSettings => '打开设置';
+
+  @override
+  String get cameraError => '相机启动失败,请重试。';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -792,4 +810,22 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get appsEmpty => '沒有符合的應用。';
+
+  @override
+  String get openFile => '開啟';
+
+  @override
+  String get cameraPermNeeded => '需要相機權限才能掃描配對碼。';
+
+  @override
+  String get cameraPermOff => '相機權限已被關閉,請到系統設定裡開啟後再掃。';
+
+  @override
+  String get cameraAllow => '允許相機';
+
+  @override
+  String get cameraOpenSettings => '開啟設定';
+
+  @override
+  String get cameraError => '相機啟動失敗,請重試。';
 }

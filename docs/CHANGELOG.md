@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-11-01 (v0.7.2) — APK downloads fixed + camera permission UX + open button
+
+Real-device acceptance: downloading the arm64 APK through the Files screen
+still produced "解析包出现问题", and the camera prompt was a dead end.
+
+- **Download corruption root-caused and fixed**: chunks arrived in order but
+  our per-chunk disk writes were async and raced — big files (99 chunks)
+  scrambled while the old 4.8 KB test fitted in one chunk and passed. Writes
+  are now strictly ordered per download (RandomAccessFile + write chain),
+  the file is closed after the chain drains, and the final size is verified
+  against the declared total before success is reported.
+- **Open button on the download snackbar** (OpenFilex) — the APK/installed
+  file can be opened straight from the toast instead of hunting it in a
+  file manager. Saved location is now the phone's Download folder.
+- **Camera permission UX**: the pairing scanner no longer dead-ends. Three
+  explicit states (allow prompt / permanently-denied with an Open Settings
+  button / runtime error with retry text), QR-only scanning with a 600 ms
+  detection timeout, and a managed controller lifecycle.
+- Files remembers the last browsed folder per PC (first open still lands on
+  the PC's desktop).
+- Verified: a real 24.5 MB APK round-tripped through the channel in 99
+  chunks, byte-for-byte identical.
+
 ## 2026-10-30 (v0.7.1) — Tap fixes for min-size / off-screen windows
 
 Acceptance: taps in Tap mode sometimes "stuck", and windows hung half off the
